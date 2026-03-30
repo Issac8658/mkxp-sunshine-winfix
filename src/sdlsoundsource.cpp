@@ -22,19 +22,19 @@
 #include "aldatasource.h"
 #include "exception.h"
 
-#include <SDL_sound.h>
+#include <SDL3_sound/SDL_sound.h>
 
 struct SDLSoundSource : ALDataSource
 {
 	Sound_Sample *sample;
-	SDL_RWops &srcOps;
+	SDL_IOStream &srcOps;
 	uint8_t sampleSize;
 	bool looped;
 
 	ALenum alFormat;
 	ALsizei alFreq;
 
-	SDLSoundSource(SDL_RWops &ops,
+	SDLSoundSource(SDL_IOStream &ops,
 	               const char *extension,
 	               uint32_t maxBufSize,
 	               bool looped)
@@ -45,7 +45,7 @@ struct SDLSoundSource : ALDataSource
 
 		if (!sample)
 		{
-			SDL_RWclose(&ops);
+			SDL_CloseIO(&ops);
 			throw Exception(Exception::SDLError, "SDL_sound: %s", Sound_GetError());
 		}
 
@@ -121,7 +121,7 @@ struct SDLSoundSource : ALDataSource
 	}
 };
 
-ALDataSource *createSDLSource(SDL_RWops &ops,
+ALDataSource *createSDLSource(SDL_IOStream &ops,
                               const char *extension,
 			                  uint32_t maxBufSize,
 			                  bool looped)

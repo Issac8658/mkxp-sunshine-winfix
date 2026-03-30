@@ -21,11 +21,11 @@
 
 #include "settingsmenu.h"
 
-#include <SDL_video.h>
-#include <SDL_ttf.h>
-#include <SDL_surface.h>
-#include <SDL_keyboard.h>
-#include <SDL_rect.h>
+#include <SDL3/SDL_video.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <SDL3/SDL_surface.h>
+#include <SDL3/SDL_keyboard.h>
+#include <SDL3/SDL_rect.h>
 
 #include "keybindings.h"
 #include "eventthread.h"
@@ -164,29 +164,29 @@ std::string sourceDescString(const SourceDesc &src)
 
 	case CAxis:
 		switch (src.d.ja.axis) {
-		case SDL_CONTROLLER_AXIS_LEFTX:
+		case SDL_GAMEPAD_AXIS_LEFTX:
 			if (src.d.ja.dir == Negative)
 				return findtext(TRSTR_KEYBIND_LSTICKL, "Left Stick (Left)");
 			else
 				return findtext(TRSTR_KEYBIND_LSTICKR, "Left Stick (Right)");
-		case SDL_CONTROLLER_AXIS_LEFTY:
+		case SDL_GAMEPAD_AXIS_LEFTY:
 			if (src.d.ja.dir == Negative)
 				return findtext(TRSTR_KEYBIND_LSTICKU, "Left Stick (Up)");
 			else
 				return findtext(TRSTR_KEYBIND_LSTICKD, "Left Stick (Down)");
-		case SDL_CONTROLLER_AXIS_RIGHTX:
+		case SDL_GAMEPAD_AXIS_RIGHTX:
 			if (src.d.ja.dir == Negative)
 				return findtext(TRSTR_KEYBIND_RSTICKL, "Right Stick (Left)");
 			else
 				return findtext(TRSTR_KEYBIND_RSTICKR, "Right Stick (Right)");
-		case SDL_CONTROLLER_AXIS_RIGHTY:
+		case SDL_GAMEPAD_AXIS_RIGHTY:
 			if (src.d.ja.dir == Negative)
 				return findtext(TRSTR_KEYBIND_RSTICKU, "Right Stick (Up)");
 			else
 				return findtext(TRSTR_KEYBIND_RSTICKD, "Right Stick (Down)");
-		case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+		case SDL_GAMEPAD_AXIS_TRIGGERLEFT:
 			return findtext(TRSTR_KEYBIND_LTRIGGER, "Left Trigger");
-		case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+		case SDL_GAMEPAD_AXIS_TRIGGERRIGHT:
 			return findtext(TRSTR_KEYBIND_RTRIGGER, "Right Trigger");
 		}
 		return "";
@@ -395,15 +395,14 @@ struct SettingsMenuPrivate
 	{
 		int bpp;
 		Uint32 rMask, gMask, bMask, aMask;
-		SDL_PixelFormatEnumToMasks(SDL_PIXELFORMAT_ABGR8888,
+		SDL_GetMasksForPixelFormat(SDL_PIXELFORMAT_ABGR8888,
 		                           &bpp, &rMask, &gMask, &bMask, &aMask);
-
-		return SDL_CreateRGBSurface(0, w, h, bpp, rMask, gMask, bMask, 0);
+		//SDL_Surface *surface = SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
+		return SDL_CreateRGBSurface(w, h, rMask, gMask, bMask, 0);
 	}
 
-	void fillSurface(SDL_Surface *surf, uint8_t grey)
-	{
-		SDL_FillRect(surf, 0, SDL_MapRGBA(rgb, grey, grey, grey, 255));
+	void fillSurface(SDL_Surface *surf, uint8_t grey){
+		SDL_FillSurfaceRect(surf, 0, SDL_MapRGBA(rgb, grey, grey, grey, 255));
 	}
 
 	void fillRect(SDL_Surface *surf,
@@ -485,14 +484,14 @@ struct SettingsMenuPrivate
 		SDL_Color c = { cText, cText, cText, 255 };
 		applyFontStyle(bold);
 
-		return TTF_RenderUTF8_Blended(font, str, c);
+		return TTF_RenderText_Blended(font, str, c);
 	}
 
 	SDL_Surface *createTextSurface(const char *str, SDL_Color c,
 	                               bool bold)
 	{
 		applyFontStyle(bold);
-		return TTF_RenderUTF8_Blended(font, str, c);
+		return TTF_RenderText_Blended(font, str, c);
 	}
 
 	/* Horizontally centered */
@@ -541,7 +540,7 @@ struct SettingsMenuPrivate
 		SDL_Surface *txt = createTextSurface(str, c, bold);
 		if (txt) {
 			blitTextSurf(surf, x, y, alignW, txt, just);
-			SDL_FreeSurface(txt);
+			SDL_DestroySurface(txt);
 		}
 	}
 
@@ -661,8 +660,8 @@ struct SettingsMenuPrivate
 
 			SDL_BlitSurface(txt, 0, winSurf, &fill);
 
-			SDL_FreeSurface(txt);
-			SDL_FreeSurface(dark);
+			SDL_DestroySurface(txt);
+			SDL_DestroySurface(dark);
 		}
 
 		SDL_UpdateWindowSurface(window);
@@ -725,7 +724,7 @@ struct SettingsMenuPrivate
 
 		switch (event.type)
 		{
-		case SDL_KEYDOWN:
+		case SDL_EVENT_KEY_DOWN:
 			desc.type = Key;
 			desc.d.scan = event.key.keysym.scancode;
 
@@ -738,12 +737,12 @@ struct SettingsMenuPrivate
 
 			break;
 
-		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
 			desc.type = CButton;
 			desc.d.jb = event.cbutton.button;
 			break;
 
-		case SDL_CONTROLLERAXISMOTION:
+		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 		{
 			int v = event.caxis.value;
 
@@ -757,12 +756,12 @@ struct SettingsMenuPrivate
 			break;
 		}
 
-		case SDL_JOYBUTTONDOWN:
+		case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
 			desc.type = JButton;
 			desc.d.jb = event.cbutton.button;
 			break;
 
-		case SDL_JOYHATMOTION:
+		case SDL_EVENT_JOYSTICK_HAT_MOTION:
 		{
 			int v = event.jhat.value;
 
@@ -777,7 +776,7 @@ struct SettingsMenuPrivate
 			break;
 		}
 
-		case SDL_JOYAXISMOTION:
+		case SDL_EVENT_JOYSTICK_AXIS_MOTION:
 		{
 			int v = event.jaxis.value;
 
@@ -1075,7 +1074,6 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->destroyReq = false;
 
 	p->window = SDL_CreateWindow(findtext(TRSTR_KEYBIND_TITLE, "Key bindings"),
-	                             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 	                             winSize.x, winSize.y, SDL_WINDOW_INPUT_FOCUS);
 	p->winSurf = SDL_GetWindowSurface(p->window);
 	p->winID = SDL_GetWindowID(p->window);
@@ -1160,24 +1158,24 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 	switch (event.type)
 	{
 	case SDL_WINDOWEVENT :
-	case SDL_MOUSEBUTTONDOWN :
-	case SDL_MOUSEBUTTONUP :
-	case SDL_MOUSEMOTION :
-	case SDL_KEYDOWN :
-	case SDL_KEYUP :
+	case SDL_EVENT_MOUSE_BUTTON_DOWN :
+	case SDL_EVENT_MOUSE_BUTTON_UP :
+	case SDL_EVENT_MOUSE_MOTION :
+	case SDL_EVENT_KEY_DOWN :
+	case SDL_EVENT_KEY_UP :
 		/* We can do this because windowID has the same
 		 * struct offset in all these event types */
 		if (event.window.windowID != p->winID)
 			return false;
 		break;
 
-	case SDL_CONTROLLERBUTTONDOWN:
-	case SDL_CONTROLLERBUTTONUP:
-	case SDL_CONTROLLERAXISMOTION:
-	case SDL_JOYBUTTONDOWN :
-	case SDL_JOYBUTTONUP :
-	case SDL_JOYHATMOTION :
-	case SDL_JOYAXISMOTION :
+	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+	case SDL_EVENT_GAMEPAD_BUTTON_UP:
+	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+	case SDL_EVENT_JOYSTICK_BUTTON_DOWN :
+	case SDL_EVENT_JOYSTICK_BUTTON_UP :
+	case SDL_EVENT_JOYSTICK_HAT_MOTION :
+	case SDL_EVENT_JOYSTICK_AXIS_MOTION :
 		if (!p->hasFocus)
 			return false;
 		break;
@@ -1198,20 +1196,20 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 	case SDL_WINDOWEVENT :
 		switch (event.window.event)
 		{
-		case SDL_WINDOWEVENT_SHOWN : // SDL is bugged and doesn't give us a first FOCUS_GAINED event
-		case SDL_WINDOWEVENT_FOCUS_GAINED :
+		case SDL_EVENT_WINDOW_SHOWN : // SDL is bugged and doesn't give us a first FOCUS_GAINED event
+		case SDL_EVENT_WINDOW_FOCUS_GAINED :
 			p->hasFocus = true;
 			break;
 
-		case SDL_WINDOWEVENT_FOCUS_LOST :
+		case SDL_EVENT_WINDOW_FOCUS_LOST :
 			p->hasFocus = false;
 			break;
 
-		case SDL_WINDOWEVENT_EXPOSED :
+		case SDL_EVENT_WINDOW_EXPOSED :
 			SDL_UpdateWindowSurface(p->window);
 			break;
 
-		case SDL_WINDOWEVENT_LEAVE:
+		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 			if (p->hovered)
 			{
 				p->hovered->leave();
@@ -1219,17 +1217,17 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 			}
 			break;
 
-		case SDL_WINDOWEVENT_CLOSE:
+		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 			p->onCancel();
 		}
 
 		return true;
 
-	case SDL_MOUSEMOTION:
+	case SDL_EVENT_MOUSE_MOTION:
 		p->onMotion(event.motion);
 		return true;
 
-	case SDL_KEYDOWN:
+	case SDL_EVENT_KEY_DOWN:
 		if (p->state != AwaitingInput)
 		{
 			if (event.key.keysym.sym == SDLK_RETURN)
@@ -1253,32 +1251,32 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 		}
 		break;
 
-	case SDL_CONTROLLERBUTTONDOWN:
-	case SDL_CONTROLLERAXISMOTION:
+	case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+	case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 		if (p->state != AwaitingInput)
 			return true;
 		break;
 
-	case SDL_JOYBUTTONDOWN:
+	case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
 		if (p->state != AwaitingInput)
 			return true;
 		if (joysticks.find(event.jbutton.which) == joysticks.end())
 			return true;
 		break;
-	case SDL_JOYHATMOTION:
+	case SDL_EVENT_JOYSTICK_HAT_MOTION:
 		if (p->state != AwaitingInput)
 			return true;
 		if (joysticks.find(event.jhat.which) == joysticks.end())
 			return true;
 		break;
-	case SDL_JOYAXISMOTION:
+	case SDL_EVENT_JOYSTICK_AXIS_MOTION:
 		if (p->state != AwaitingInput)
 			return true;
 		if (joysticks.find(event.jaxis.which) == joysticks.end())
 			return true;
 		break;
 
-	case SDL_MOUSEBUTTONDOWN:
+	case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		p->onClick(event.button);
 		return true;
 	default:
