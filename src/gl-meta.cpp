@@ -42,10 +42,11 @@ void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY,
 	}
 	else
 	{
-		SDL_PixelFormat *form = &src->format
 		//SDL_PixelFormat *form = src->format;
-		SDL_Surface *tmp = SDL_CreateSurface(0, dstW, dstH, form->BitsPerPixel,
-		                                        form->Rmask, form->Gmask, form->Bmask, form->Amask);
+		/*SDL_Surface *tmp = SDL_CreateSurface(0, dstW, dstH, form->BitsPerPixel,
+		                                        form->Rmask, form->Gmask, form->Bmask, form->Amask);*/
+
+		SDL_Surface* tmp = SDL_CreateSurface(dstW, dstH, src->format);
 		SDL_Rect srcRect = { srcX, srcY, dstW, dstH };
 
 		SDL_BlitSurface(src, &srcRect, tmp, 0);
