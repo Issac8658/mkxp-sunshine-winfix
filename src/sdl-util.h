@@ -65,7 +65,7 @@ SDL_Thread *createSDLThread(C *obj, const std::string &name = std::string())
 //	if (!f)
 //		return SDL_RWFromFile(filename, mode);
 //
-//	return SDL_RWFromFP(f, SDL_TRUE);
+//	return SDL_RWFromFP(f, true);
 //}
 
 inline bool readFileSDL(const char *path, std::string &out){

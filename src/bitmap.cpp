@@ -434,7 +434,7 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 		SDL_Rect btmRect = { 0, 0, width(), height() };
 		SDL_Rect bltRect;
 
-		if (SDL_GetRectIntersection(&btmRect, &dstRect, &bltRect) != SDL_TRUE)
+		if (SDL_GetRectIntersection(&btmRect, &dstRect, &bltRect) != true)
 			return;
 
 		int bpp;
@@ -1268,7 +1268,7 @@ IntRect Bitmap::textSize(const char *str)
 	/* For cursive characters, returning the advance
 	 * as width yields better results */
 	if (p->font->getItalic() && *endPtr == '\0')
-		TTF_GlyphMetrics(font, ucs2, 0, 0, 0, 0, &w);
+		TTF_GetGlyphMetrics(font, ucs2, 0, 0, 0, 0, &w);
 
 	return IntRect(0, 0, w, h);
 }

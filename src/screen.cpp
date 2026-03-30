@@ -38,14 +38,14 @@ int screenMain(Config &conf)
 
 	Pipe ipc("oneshot-pipe", Pipe::Read);
 
-	int imgFlags = IMG_INIT_PNG;
-	if (IMG_Init(imgFlags) != imgFlags)
-	{
-		showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
-		SDL_Quit();
-
-		return 0;
-	}
+	//int imgFlags = IMG_INIT_PNG;
+	//if (IMG_Init(imgFlags) != imgFlags)
+	//{
+	//	showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
+	//	SDL_Quit();
+	//
+	//	return 0;
+	//}
 
 	SDL_Window *win;
 	win = SDL_CreateShapedWindow("The Journal",
@@ -74,7 +74,7 @@ int screenMain(Config &conf)
 		SDL_Event e;
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				return 0;
 			}
 		}

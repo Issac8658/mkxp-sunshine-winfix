@@ -40,7 +40,7 @@ DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 static VALUE
 fileIntForPath(const char *path, bool rubyExc)
 {
-	SDL_IOStream *ops = SDL_AllocRW();
+	SDL_IOStream *ops = SDL_OpenIO();
 
 	try
 	{
@@ -75,10 +75,10 @@ RB_METHOD(fileIntRead)
 
 	if (length == -1)
 	{
-		Sint64 cur = SDL_RWtell(ops);
-		Sint64 end = SDL_RWseek(ops, 0, SEEK_END);
+		Sint64 cur = SDL_TellIO(ops);
+		Sint64 end = SDL_SeekIO(ops, 0, SEEK_END);
 		length = end - cur;
-		SDL_RWseek(ops, cur, SEEK_SET);
+		SDL_SeekIO(ops, cur, SEEK_SET);
 	}
 
 	if (length == 0)

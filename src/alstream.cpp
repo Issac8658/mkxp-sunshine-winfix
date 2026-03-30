@@ -221,7 +221,7 @@ struct ALStreamOpenHandler : FileSystem::OpenHandler
 		/* Try to read ogg file signature */
 		char sig[5] = { 0 };
 		SDL_ReadIO(srcOps, sig, 1, 4);
-		SDL_SeekIO(srcOps, 0, RW_SEEK_SET);
+		SDL_SeekIO(srcOps, 0, SDL_IO_SEEK_SET);
 
 		try
 		{

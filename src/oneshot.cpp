@@ -358,7 +358,7 @@ void Oneshot::update()
 
 		//костыль ебучий
 		int num_displays;
-		SDL_DisplayID *displays = SDL_GetDisplays(&num_displays)
+		SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
 		SDL_free(displays);
 		//Update obscured map and texture for window portion offscreen
 		for (int i = 0, max = num_displays; i < max; ++i)
