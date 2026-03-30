@@ -357,11 +357,12 @@ void Oneshot::update()
 		screenRect.w = 640;
 		screenRect.h = 480;
 
+		//костыль ебучий
 		int num_displays;
 		SDL_DisplayID *displays = SDL_GetDisplays(&num_displays)
-
+		SDL_free(displays);
 		//Update obscured map and texture for window portion offscreen
-		for (int i = 0, max = SDL_GetNumVideoDisplays(); i < max; ++i)
+		for (int i = 0, max = num_displays; i < max; ++i)
 		{
 			SDL_Rect bounds;
 			SDL_GetDisplayBounds(i, &bounds);

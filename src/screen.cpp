@@ -1,6 +1,6 @@
-#include <SDL.h>
-#include <SDL_shape.h>
-#include <SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_shape.h>
+#include <SDL3_image/SDL_image.h>
 
 #define FPS 60
 #define DEFAULT_WIDTH 320
@@ -13,7 +13,7 @@
 static void showInitError(const std::string &msg)
 {
 	Debug() << msg;
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot", msg.c_str(), 0);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot: sunshine", msg.c_str(), 0);
 }
 
 static bool readMessage(Pipe &ipc, char *buf, size_t size)
@@ -61,9 +61,10 @@ int screenMain(Config &conf)
 	SDL_WindowShapeMode shapeMode;
 	shapeMode.mode = ShapeModeColorKey;
 	shapeMode.parameters.colorKey = colorKey;
-
-	SDL_Surface *shape = SDL_CreateRGBSurface(0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 8, 0, 0, 0, 0);
-	SDL_SetPaletteColors(shape->format->palette, &black, 0, 1);
+	//SDL_Surface *surface = SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
+	SDL_Surface *shape = SDL_CreateRGBSurface(DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, 0, 0);
+	//    SDL_Palette *palette = SDL_CreateSurfacePalette(surface);
+	SDL_SetPaletteColors(shape, &black, 0, 1);
 
 	char messageBuf[256];
 
@@ -83,7 +84,7 @@ int screenMain(Config &conf)
 			if (strcmp(messageBuf, "END") == 0)
 				break;
 			std::string imgname = conf.gameFolder + "/Journal/" + messageBuf + ".png";
-			SDL_FreeSurface(shape);
+			SDL_DestroySurface(shape);
 			if ((shape = IMG_Load(imgname.c_str())) == NULL)
 				break;
 			SDL_SetWindowSize(win, shape->w, shape->h);
@@ -101,6 +102,6 @@ int screenMain(Config &conf)
 	    ticks = SDL_GetTicks();
 	}
 
-	SDL_FreeSurface(shape);
+	SDL_DestroySurface(shape);
 	return 0;
 }
