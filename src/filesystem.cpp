@@ -78,12 +78,12 @@ static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf, PHYSFS_uint64 
 
 static int SDLRWIoSeek(struct PHYSFS_Io *io, PHYSFS_uint64 offset)
 {
-	return (SDL_SeekIO(getSDLRWops(io), offset, RW_SEEK_SET) != -1);
+	return (SDL_SeekIO(getSDLRWops(io), offset, SDL_IO_SEEK_SET) != -1);
 }
 
 static PHYSFS_sint64 SDLRWIoTell(struct PHYSFS_Io *io)
 {
-	return SDL_SeekIO(getSDLRWops(io), 0, RW_SEEK_CUR);
+	return SDL_SeekIO(getSDLRWops(io), 0, SDL_IO_SEEK_CUR);
 }
 
 static PHYSFS_sint64 SDLRWIoLength(struct PHYSFS_Io *io)
@@ -143,12 +143,12 @@ static PHYSFS_Io *createSDLRWIo(const char *filename)
 	return io;
 }
 
-static inline PHYSFS_File *sdlPHYS(SDL_RWops *ops)
+static inline PHYSFS_File *sdlPHYS(SDL_IOStream *ops)
 {
 	return static_cast<PHYSFS_File*>(ops->hidden.unknown.data1);
 }
 
-static Sint64 SDL_RWopsSize(SDL_RWops *ops)
+static Sint64 SDL_RWopsSize(SDL_IOStream *ops)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 

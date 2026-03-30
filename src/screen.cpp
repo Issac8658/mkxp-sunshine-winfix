@@ -1,5 +1,5 @@
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_shape.h>
+#include <SDL3/SDL_video.h>
 #include <SDL3_image/SDL_image.h>
 
 #define FPS 60

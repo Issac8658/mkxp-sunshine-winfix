@@ -184,9 +184,9 @@ std::string sourceDescString(const SourceDesc &src)
 				return findtext(TRSTR_KEYBIND_RSTICKU, "Right Stick (Up)");
 			else
 				return findtext(TRSTR_KEYBIND_RSTICKD, "Right Stick (Down)");
-		case SDL_GAMEPAD_AXIS_TRIGGERLEFT:
+		case SDL_GAMEPAD_AXIS_LEFT_TRIGGER:
 			return findtext(TRSTR_KEYBIND_LTRIGGER, "Left Trigger");
-		case SDL_GAMEPAD_AXIS_TRIGGERRIGHT:
+		case SDL_GAMEPAD_AXIS_RIGHT_TRIGGER:
 			return findtext(TRSTR_KEYBIND_RTRIGGER, "Right Trigger");
 		}
 		return "";
@@ -410,7 +410,7 @@ struct SettingsMenuPrivate
 	              uint8_t r, uint8_t g, uint8_t b)
 	{
 		SDL_Rect rect = { drawOff.x+x, drawOff.y+y, w, h };
-		SDL_FillRect(surf, &rect, SDL_MapRGB(rgb, r, g, b));
+		SDL_FillSurfaceRect(surf, &rect, SDL_MapRGB(rgb, r, g, b));
 	}
 
 	void fillRect(SDL_Surface *surf, uint8_t grey,
@@ -1189,8 +1189,8 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 	switch (event.type)
 	{
 	/* Ignore these event */
-	case SDL_MOUSEBUTTONUP :
-	case SDL_KEYUP :
+	case SDL_EVENT_MOUSE_BUTTON_UP :
+	case SDL_EVENT_KEY_UP :
 		return true;
 
 	case SDL_WINDOWEVENT :

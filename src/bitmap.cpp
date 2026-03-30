@@ -444,7 +444,7 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 		SDL_Surface *blitTemp =
 			SDL_CreateRGBSurface(0, destRect.w, destRect.h, bpp, rMask, gMask, bMask, aMask);
 
-		SDL_BlitScaled(srcSurf, &srcRect, blitTemp, 0);
+		SDL_BlitSurfaceScaled(srcSurf, &srcRect, blitTemp, 0);
 
 		TEX::bind(p->gl.tex);
 

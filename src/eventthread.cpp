@@ -619,7 +619,7 @@ void EventThread::resetInputStates(){
 }
 
 void EventThread::setFullscreen(SDL_Window *win, bool mode){
-	SDL_SetWindowFullscreen(win, mode ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	SDL_SetWindowFullscreen(win, mode);
 	fullscreen = mode;
 }
 
@@ -825,7 +825,7 @@ void SyncPoint::Util::waitForUnlock()
 	SDL_LockMutex(mut);
 
 	while (locked)
-		SDL_CondWait(cond, mut);
+		SDL_WaitCondition(cond, mut);
 
 	SDL_UnlockMutex(mut);
 }

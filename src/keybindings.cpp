@@ -111,14 +111,14 @@ static const GcBindingData defaultGcBindings[] =
     { SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    Input::Right      },
     { SDL_GAMEPAD_BUTTON_DPAD_UP,       Input::Up         },
     { SDL_GAMEPAD_BUTTON_DPAD_DOWN,     Input::Down       },
-    { SDL_GAMEPAD_BUTTON_A,             Input::Action     },
-    { SDL_GAMEPAD_BUTTON_B,             Input::Cancel     },
-    { SDL_GAMEPAD_BUTTON_X,             Input::Run        },
-    { SDL_GAMEPAD_BUTTON_Y,             Input::Items      },
+    { SDL_GAMEPAD_BUTTON_SOUTH,             Input::Action     },
+    { SDL_GAMEPAD_BUTTON_EAST,             Input::Cancel     },
+    { SDL_GAMEPAD_BUTTON_WEST,             Input::Run        },
+    { SDL_GAMEPAD_BUTTON_NORTH,             Input::Items      },
     { SDL_GAMEPAD_BUTTON_START,         Input::Menu       },
     { SDL_GAMEPAD_BUTTON_BACK,          Input::Deactivate },
-    { SDL_GAMEPAD_BUTTON_LEFTSHOULDER,  Input::L          },
-    { SDL_GAMEPAD_BUTTON_RIGHTSHOULDER, Input::R          },
+    { SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,  Input::L          },
+    { SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, Input::R          },
 };
 
 static elementsN(defaultGcBindings);
@@ -147,12 +147,12 @@ BDescVec genDefaultBindings()
 	for (size_t i = 0; i < defaultGcBindingsN; ++i)
 		defaultGcBindings[i].add(d);
 
-	addGcAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX,        Negative, Input::Left      );
-	addGcAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTX,        Positive, Input::Right     );
-	addGcAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY,        Negative, Input::Up        );
-	addGcAxisBinding(d, SDL_CONTROLLER_AXIS_LEFTY,        Positive, Input::Down      );
-	addGcAxisBinding(d, SDL_CONTROLLER_AXIS_TRIGGERLEFT,  Positive, Input::Deactivate);
-	addGcAxisBinding(d, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, Positive, Input::Run       );
+	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTX,        Negative, Input::Left      );
+	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTX,        Positive, Input::Right     );
+	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTY,        Negative, Input::Up        );
+	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFTY,        Positive, Input::Down      );
+	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_LEFT_TRIGGER,  Positive, Input::Deactivate);
+	addGcAxisBinding(d, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER, Positive, Input::Run       );
 
 	return d;
 }
@@ -246,7 +246,7 @@ static bool verifyDesc(const BindingDesc &desc)
 	case Invalid:
 		return true;
 	case Key:
-		return src.d.scan < SDL_NUM_SCANCODES;
+		return src.d.scan < SDL_SCANCODE_COUNT;
 	case CButton:
 	case JButton:
 		return true;
