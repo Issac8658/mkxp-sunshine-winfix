@@ -31,7 +31,7 @@
 
 #include <physfs.h>
 
-#include <SDL_sound.h>
+#include <SDL3_sound/SDL_sound.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -46,11 +46,11 @@
 
 struct SDLRWIoContext
 {
-	SDL_RWops *ops;
+	SDL_IOStream *ops;
 	std::string filename;
 
 	SDLRWIoContext(const char *filename)
-	    : ops(SDL_RWFromFile(filename, "r")),
+	    : ops(SDL_IOFromFile(filename, "r")),
 	      filename(filename)
 	{
 		if (!ops)
@@ -60,35 +60,35 @@ struct SDLRWIoContext
 
 	~SDLRWIoContext()
 	{
-		SDL_RWclose(ops);
+		SDL_CloseIO(ops);
 	}
 };
 
 static PHYSFS_Io *createSDLRWIo(const char *filename);
 
-static SDL_RWops *getSDLRWops(PHYSFS_Io *io)
+static SDL_IOStream *getSDLRWops(PHYSFS_Io *io)
 {
 	return static_cast<SDLRWIoContext*>(io->opaque)->ops;
 }
 
 static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf, PHYSFS_uint64 len)
 {
-	return SDL_RWread(getSDLRWops(io), buf, 1, len);
+	return SDL_ReadIO(getSDLRWops(io), buf, 1, len);
 }
 
 static int SDLRWIoSeek(struct PHYSFS_Io *io, PHYSFS_uint64 offset)
 {
-	return (SDL_RWseek(getSDLRWops(io), offset, RW_SEEK_SET) != -1);
+	return (SDL_SeekIO(getSDLRWops(io), offset, RW_SEEK_SET) != -1);
 }
 
 static PHYSFS_sint64 SDLRWIoTell(struct PHYSFS_Io *io)
 {
-	return SDL_RWseek(getSDLRWops(io), 0, RW_SEEK_CUR);
+	return SDL_SeekIO(getSDLRWops(io), 0, RW_SEEK_CUR);
 }
 
 static PHYSFS_sint64 SDLRWIoLength(struct PHYSFS_Io *io)
 {
-	return SDL_RWsize(getSDLRWops(io));
+	return SDL_GetIOSize(getSDLRWops(io));
 }
 
 static struct PHYSFS_Io *SDLRWIoDuplicate(struct PHYSFS_Io *io)
@@ -158,7 +158,7 @@ static Sint64 SDL_RWopsSize(SDL_RWops *ops)
 	return PHYSFS_fileLength(f);
 }
 
-static Sint64 SDL_RWopsSeek(SDL_RWops *ops, int64_t offset, int whence)
+static Sint64 SDL_RWopsSeek(SDL_IOStream *ops, int64_t offset, int whence)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -170,13 +170,13 @@ static Sint64 SDL_RWopsSeek(SDL_RWops *ops, int64_t offset, int whence)
 	switch (whence)
 	{
 	default:
-	case RW_SEEK_SET :
+	case SDL_IO_SEEK_SET :
 		base = 0;
 		break;
-	case RW_SEEK_CUR :
+	case SDL_IO_SEEK_CUR :
 		base = PHYSFS_tell(f);
 		break;
-	case RW_SEEK_END :
+	case SDL_IO_SEEK_END :
 		base = PHYSFS_fileLength(f);
 		break;
 	}
@@ -186,7 +186,7 @@ static Sint64 SDL_RWopsSeek(SDL_RWops *ops, int64_t offset, int whence)
 	return (result != 0) ? PHYSFS_tell(f) : -1;
 }
 
-static size_t SDL_RWopsRead(SDL_RWops *ops, void *buffer, size_t size, size_t maxnum)
+static size_t SDL_RWopsRead(SDL_IO_SEEK_END *ops, void *buffer, size_t size, size_t maxnum)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -198,7 +198,7 @@ static size_t SDL_RWopsRead(SDL_RWops *ops, void *buffer, size_t size, size_t ma
 	return (result != -1) ? (result / size) : 0;
 }
 
-static size_t SDL_RWopsWrite(SDL_RWops *ops, const void *buffer, size_t size, size_t num)
+static size_t SDL_RWopsWrite(SDL_IOStream *ops, const void *buffer, size_t size, size_t num)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -210,7 +210,7 @@ static size_t SDL_RWopsWrite(SDL_RWops *ops, const void *buffer, size_t size, si
 	return (result != -1) ? (result / size) : 0;
 }
 
-static int SDL_RWopsClose(SDL_RWops *ops)
+static int SDL_RWopsClose(SDL_IOStream *ops)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -223,7 +223,7 @@ static int SDL_RWopsClose(SDL_RWops *ops)
 	return (result != 0) ? 0 : -1;
 }
 
-static int SDL_RWopsCloseFree(SDL_RWops *ops)
+static int SDL_RWopsCloseFree(SDL_IOStream *ops)
 {
 	int result = SDL_RWopsClose(ops);
 
@@ -273,7 +273,7 @@ findExt(const char *filename)
 
 static void
 initReadOps(PHYSFS_File *handle,
-            SDL_RWops &ops,
+            SDL_IOStream &ops,
             bool freeOnClose)
 {
 	ops.size  = SDL_RWopsSize;
@@ -487,12 +487,12 @@ fontSetEnumCB (void *data, const char *dir, const char *fname)
 	if (!handle)
 		return PHYSFS_ENUM_ERROR;
 
-	SDL_RWops ops;
+	SDL_IOStream ops;
 	initReadOps(handle, ops, false);
 
 	d->sfs->initFontSetCB(ops, filename);
 
-	SDL_RWclose(&ops);
+	SDL_CloseIO(&ops);
 
 	return PHYSFS_ENUM_OK;
 }
@@ -507,7 +507,7 @@ void FileSystem::initFontSets(SharedFontState &sfs)
 struct OpenReadEnumData
 {
 	FileSystem::OpenHandler &handler;
-	SDL_RWops ops;
+	SDL_IOStream ops;
 
 	/* The filename (without directory) we're looking for */
 	const char *filename;
