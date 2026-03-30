@@ -24,9 +24,9 @@
 #include "util.h"
 #include "exception.h"
 
-#include <SDL_mutex.h>
-#include <SDL_thread.h>
-#include <SDL_timer.h>
+#include <SDL3/SDL_mutex.h>
+#include <SDL3/SDL_thread.h>
+#include <SDL3/SDL_timer.h>
 
 AudioStream::AudioStream(ALStream::LoopMode loopMode,
                          const std::string &threadId)
