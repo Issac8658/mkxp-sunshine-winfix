@@ -115,7 +115,7 @@ struct BitmapPrivate
 
 	~BitmapPrivate()
 	{
-		SDL_DestroyFormat(format);
+		//SDL_DeleteFormat(format);
 		pixman_region_fini(&tainted);
 	}
 

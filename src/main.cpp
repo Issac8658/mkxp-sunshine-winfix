@@ -237,15 +237,15 @@ static void setGamePathInRegistry() {
 int main(int argc, char *argv[])
 {
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
-	SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
 	//deleted from SDL3
+	//SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
 	//SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
 #if defined(__linux__) && SDL_VERSION_ATLEAST(2, 0, 8)
 	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 #endif
 
 	/* initialize SDL first */
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) < 0)
 	{
 		showInitError(std::string("Error initializing SDL: ") + SDL_GetError());
 		return 0;
@@ -267,12 +267,11 @@ int main(int argc, char *argv[])
 
 #ifndef WORKDIR_CURRENT
 	/* set working directory */
-	char *dataDir = SDL_GetBasePath();
-	if (dataDir)
-	{
+	const char *dataDir = SDL_GetBasePath();
+	if (dataDir) {
 		int result = chdir(dataDir);
 		(void)result;
-		SDL_free(dataDir);
+		SDL_free((void*)dataDir); // SDL_GetBasePath returns a heap pointer; SDL_free expects void*
 	}
 #endif
 
@@ -301,19 +300,20 @@ int main(int argc, char *argv[])
 	if (conf.windowTitle.empty())
 		conf.windowTitle = conf.game.title;
 
-	int imgFlags = IMG_INIT_PNG;
-	if (IMG_Init(imgFlags) != imgFlags)
-	{
-		showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
-		SDL_Quit();
-
-		return 0;
-	}
+	//IMG_Init() and IMG_Quit() are no longer necessary. If an image format requires dynamically loading a support library, that will be done automatically.
+	//int imgFlags = IMG_INIT_PNG;
+	//if (IMG_Init(imgFlags) != imgFlags)
+	//{
+	//	showInitError(std::string("Error initializing SDL_image: ") + SDL_GetError());
+	//	SDL_Quit();
+    //
+	//	return 0;
+	//}
 
 	if (TTF_Init() < 0)
 	{
 		showInitError(std::string("Error initializing SDL_ttf: ") + SDL_GetError());
-		IMG_Quit();
+		//IMG_Quit();
 		SDL_Quit();
 
 		return 0;
@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
 	{
 		showInitError(std::string("Error initializing SDL_sound: ") + Sound_GetError());
 		TTF_Quit();
-		IMG_Quit();
+		//IMG_Quit();
 		SDL_Quit();
 
 		return 0;
@@ -336,10 +336,11 @@ int main(int argc, char *argv[])
 	// 	winFlags |= SDL_WINDOW_RESIZABLE;
 	// #endif
 
-	if (conf.fullscreen)
-		winFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 	//SDL_CreateWindow() has been simplified and no longer takes a window position.
 	win = SDL_CreateWindow(conf.windowTitle.c_str(), conf.defScreenW, conf.defScreenH, winFlags);
+	if (conf.fullscreen)
+		SDL_SetWindowFullscreen(win, true);
+
 
 	if (!win)
 	{
@@ -362,22 +363,21 @@ int main(int argc, char *argv[])
 		showInitError("Error opening OpenAL device");
 		SDL_DestroyWindow(win);
 		TTF_Quit();
-		IMG_Quit();
+		//IMG_Quit();
 		SDL_Quit();
 
 		return 0;
 	}
 
-	SDL_DisplayMode mode;
-	SDL_GetDisplayMode(0, 0, &mode);
+	//SDL_DisplayMode mode;
+	//SDL_GetDisplayMode(0, 0, &mode);
 
 	/* Can't sync to display refresh rate if its value is unknown */
-	if (!mode.refresh_rate)
-		conf.syncToRefreshrate = false;
+	//if (!mode.refresh_rate)
+	//	conf.syncToRefreshrate = false;
 
 	EventThread eventThread;
-	RGSSThreadData rtData(&eventThread, win,
-	                      alcDev, mode.refresh_rate, conf);
+	//RGSSThreadData rtData(&eventThread, win, alcDev, mode.refresh_rate, conf);
 
 #ifndef STEAM
 	/* Add controller bindings from embedded controller DB */
@@ -445,7 +445,8 @@ int main(int argc, char *argv[])
 
 	Sound_Quit();
 	TTF_Quit();
-	IMG_Quit();
+	//IMG_Init() and IMG_Quit() are no longer necessary. If an image format requires dynamically loading a support library, that will be done automatically.
+	//IMG_Quit();
 	SDL_Quit();
 
 #ifdef STEAM

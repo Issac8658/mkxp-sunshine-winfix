@@ -630,7 +630,7 @@ void EventThread::updateCursorState(bool inWindow, const SDL_Rect &screen){
 	if (inScreen)
 		SDL_ShowCursor();
 	else
-		SDL_HideCursor()
+		SDL_HideCursor();
 }
 
 void EventThread::requestTerminate()
