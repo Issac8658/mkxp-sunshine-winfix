@@ -390,7 +390,7 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-			gcState.axes[event.caxis.axis] = event.caxis.value;
+			gcState.axes[event.gaxis.axis] = event.gaxis.value;
 			break;
 
 		case SDL_EVENT_GAMEPAD_ADDED:

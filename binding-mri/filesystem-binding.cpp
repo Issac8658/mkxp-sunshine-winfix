@@ -29,12 +29,10 @@
 #include "ruby/intern.h"
 
 static void
-fileIntFreeInstance(void *inst)
-{
+fileIntFreeInstance(void *inst){
 	SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
 
-	SDL_RWclose(ops);
-	SDL_FreeRW(ops);
+	SDL_CloseIO(ops);
 }
 
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
@@ -50,7 +48,7 @@ fileIntForPath(const char *path, bool rubyExc)
 	}
 	catch (const Exception &e)
 	{
-		SDL_FreeRW(ops);
+		SDL_CloseIO(ops);
 
 		if (rubyExc)
 			raiseRbExc(e);
@@ -88,7 +86,7 @@ RB_METHOD(fileIntRead)
 
 	VALUE data = rb_str_new(0, length);
 
-	SDL_RWread(ops, RSTRING_PTR(data), 1, length);
+	SDL_ReadIO(ops, RSTRING_PTR(data), length);
 
 	return data;
 }
@@ -98,7 +96,7 @@ RB_METHOD(fileIntClose)
 	RB_UNUSED_PARAM;
 
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
-	SDL_RWclose(ops);
+	SDL_CloseIO(ops);
 
 	return Qnil;
 }

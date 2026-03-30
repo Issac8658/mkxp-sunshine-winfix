@@ -744,14 +744,14 @@ struct SettingsMenuPrivate
 
 		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
 		{
-			int v = event.caxis.value;
+			int v = event.gaxis.value;
 
 			/* Only register if pushed halfway through */
 			if (v > -JAXIS_THRESHOLD && v < JAXIS_THRESHOLD)
 				return true;
 
 			desc.type = CAxis;
-			desc.d.ja.axis = event.caxis.axis;
+			desc.d.ja.axis = event.gaxis.axis;
 			desc.d.ja.dir = v < 0 ? Negative : Positive;
 			break;
 		}
