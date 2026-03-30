@@ -28,7 +28,7 @@
 #include "util.h"
 #include "debugwriter.h"
 
-#include <SDL_sound.h>
+#include <SDL3_sound/SDL_sound.h>
 
 #define SE_CACHE_MEM (10*1024*1024) // 10 MB
 
@@ -192,13 +192,13 @@ struct SoundOpenHandler : FileSystem::OpenHandler
 	    : buffer(0)
 	{}
 
-	bool tryRead(SDL_RWops &ops, const char *ext)
+	bool tryRead(SDL_IOStream &ops, const char *ext)
 	{
 		Sound_Sample *sample = Sound_NewSample(&ops, ext, 0, STREAM_BUF_SIZE);
 
 		if (!sample)
 		{
-			SDL_RWclose(&ops);
+			SDL_CloseIO(&ops);
 			return false;
 		}
 

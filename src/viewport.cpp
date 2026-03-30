@@ -28,7 +28,7 @@
 #include "glstate.h"
 #include "graphics.h"
 
-#include <SDL_rect.h>
+#include <SDL3/SDL_rect.h>
 
 #include <sigc++/connection.h>
 
@@ -87,7 +87,7 @@ struct ViewportPrivate
 		                rect->width, rect->height };
 
 		SDL_Rect result;
-		isOnScreen = SDL_IntersectRect(&r1, &r2, &result);
+		isOnScreen = SDL_GetRectIntersection(&r1, &r2, &result);
 	}
 
 	bool needsEffectRender(bool flashing)

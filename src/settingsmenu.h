@@ -25,7 +25,7 @@
 #include <stdint.h>
 
 #include <map>
-#include <SDL_joystick.h>
+#include <SDL3/SDL_joystick.h>
 
 struct SettingsMenuPrivate;
 struct RGSSThreadData;

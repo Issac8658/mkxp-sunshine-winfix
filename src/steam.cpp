@@ -2,7 +2,7 @@
 #include "debugwriter.h"
 
 #include <map>
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 #include "steamshim/steamshim_child.h"
 
 /* Achievements */
