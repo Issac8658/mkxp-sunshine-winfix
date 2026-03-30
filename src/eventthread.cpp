@@ -30,8 +30,10 @@
 #include <SDL3/SDL_touch.h>
 #include <SDL3/SDL_rect.h>
 
-#include <al.h>
-#include <alc.h>
+// #include <al.h>
+#include <AL/al.h>
+// #include <alc.h>
+#include <AL/alc.h>
 
 #include "sharedstate.h"
 #include "graphics.h"
@@ -123,7 +125,7 @@ void EventThread::process(RGSSThreadData &rtData)
 
 	// XXX this function breaks input focus on OSX
 	#ifndef __APPLE__
-		SDL_SetEventFilter(eventFilter, &rtData);
+		SDL_SetEventFilter(eventFilter, (void*)&rtData);
 	#endif
 
 	fullscreen = rtData.config.fullscreen;
@@ -541,7 +543,7 @@ void EventThread::process(RGSSThreadData &rtData)
 	delete sMenu;
 }
 
-int EventThread::eventFilter(void *data, SDL_Event *event)
+bool EventThread::eventFilter(void *data, SDL_Event *event)
 {
 	RGSSThreadData &rtData = *static_cast<RGSSThreadData*>(data);
 

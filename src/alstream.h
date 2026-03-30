@@ -74,7 +74,8 @@ struct ALStream
 	uint64_t procFrames;
 	AL::Buffer::ID lastBuf;
 
-	SDL_IOStream srcOps;
+	// made it pointer, idk if its right. never worked with SDL
+	SDL_IOStream* srcOps;
 
 	struct
 	{

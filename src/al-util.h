@@ -22,7 +22,7 @@
 #ifndef ALUTIL_H
 #define ALUTIL_H
 
-#include <al.h>
+#include <AL/al.h>
 #include <SDL3/SDL_audio.h>
 #include <assert.h>
 

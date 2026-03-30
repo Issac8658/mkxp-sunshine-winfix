@@ -24,7 +24,8 @@
 #include "serial-util.h"
 #include "exception.h"
 
-#include <SDL3/SDL_types.h>
+// this file doesn't exist, idk what to do if it, so i'll comment it.
+// #include <SDL3/SDL_types.h>
 #include <SDL3/SDL_pixels.h>
 
 Color::Color(double red, double green, double blue, double alpha)

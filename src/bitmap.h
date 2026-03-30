@@ -26,6 +26,7 @@
 #include "etc-internal.h"
 #include "etc.h"
 
+// #include <sigc++/signal.h>
 #include <sigc++/signal.h>
 
 class Font;

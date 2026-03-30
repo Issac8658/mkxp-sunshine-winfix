@@ -92,7 +92,7 @@ struct BitmapPrivate
 	 * getPixel calls. Is invalidated any time the bitmap
 	 * is modified */
 	SDL_Surface *surface;
-	SDL_PixelFormat *format;
+	SDL_PixelFormatDetails *format;
 
 	/* The 'tainted' area describes which parts of the
 	 * bitmap are not cleared, ie. don't have 0 opacity.

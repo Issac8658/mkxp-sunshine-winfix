@@ -22,7 +22,8 @@
 #ifndef SHAREDSTATE_H
 #define SHAREDSTATE_H
 
-#include <sigc++/signal.h>
+// #include <sigc++/signal.h>
+#include <sigc++-2.0/sigc++/signal.h>
 
 #define shState SharedState::instance
 #define glState shState->_glState()

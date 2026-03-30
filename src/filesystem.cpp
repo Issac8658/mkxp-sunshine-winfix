@@ -143,12 +143,12 @@ static PHYSFS_Io *createSDLRWIo(const char *filename)
 	return io;
 }
 
-static inline PHYSFS_File *sdlPHYS(SDL_IOStream *ops)
+static inline PHYSFS_File *sdlPHYS(SDL_RWops *ops)
 {
 	return static_cast<PHYSFS_File*>(ops->hidden.unknown.data1);
 }
 
-static Sint64 SDL_RWopsSize(SDL_IOStream *ops)
+static Sint64 SDL_RWopsSize(SDL_RWops *ops)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 

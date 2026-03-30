@@ -110,7 +110,7 @@ public:
 	void notifyGameScreenChange(const SDL_Rect &screen);
 
 private:
-	static int eventFilter(void *, SDL_Event*);
+	static bool eventFilter(void *, SDL_Event*);
 
 	void resetInputStates();
 	void setFullscreen(SDL_Window *, bool mode);

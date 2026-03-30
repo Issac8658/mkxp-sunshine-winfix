@@ -28,8 +28,11 @@
 #include "graphics.h"
 
 #include <assert.h>
+
 #include <sigc++/signal.h>
+// #include <sigc++2.0/sigc++/signal.h>
 #include <sigc++/connection.h>
+// #include <sigc++2.0/sigc++/connection.h>
 
 class Disposable
 {
