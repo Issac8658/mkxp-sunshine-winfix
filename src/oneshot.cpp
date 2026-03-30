@@ -603,7 +603,7 @@ std::string Oneshot::textinput(const char* prompt, int char_limit, const char* f
 	threadData.acceptingTextInput.set();
 	threadData.inputTextLimit = char_limit;
 	threadData.inputText.clear();
-	SDL_StartTextInput();
+	SDL_StartTextInput(this->p->window);
 
 	// Main loop
 	while (threadData.acceptingTextInput) {
@@ -615,7 +615,7 @@ std::string Oneshot::textinput(const char* prompt, int char_limit, const char* f
 	}
 
 	// Disable text input
-	SDL_StopTextInput();
+	SDL_StopTextInput(this->p->window);
 
 	return threadData.inputText;
 }

@@ -27,28 +27,25 @@
 #include <vector>
 #include <algorithm>
 
-static size_t vfRead(void* ptr, size_t size, void* ops){
+static size_t vfRead(void *ptr, size_t size, size_t nmemb, void *datasource) {
 	//size_t SDL_ReadIO(SDL_IOStream *context, void *ptr, size_t size);
-	return SDL_ReadIO(static_cast<SDL_IOStream*>(ops), ptr, size);
+	return SDL_ReadIO(static_cast<SDL_IOStream*>(datasource), ptr, size);
 }
 
-static int vfSeek(void* ops, ogg_int64_t offset, SDL_IOWhence whence)
-{
-	return SDL_SeekIO(static_cast<SDL_IOStream*>(ops), offset, whence);
+static int vfSeek(void *datasource, ogg_int64_t offset, int whence) {
+	return SDL_SeekIO(static_cast<SDL_IOStream*>(datasource), offset, (SDL_IOWhence)whence);
 }
 
-static long vfTell(void* ops)
-{
-	return SDL_TellIO(static_cast<SDL_IOStream*>(ops));
+static long vfTell(void *datasource) {
+	return SDL_TellIO(static_cast<SDL_IOStream*>(datasource));
 }
 
 static ov_callbacks OvCallbacks ={
     vfRead,
     vfSeek,
     0,
-    vfTell
+    vfTell 
 };
-
 
 struct VorbisSource : ALDataSource
 {
