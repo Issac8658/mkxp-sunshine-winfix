@@ -29,9 +29,9 @@
 #include "sdl-util.h"
 #include "debugwriter.h"
 
-#include <SDL_mutex.h>
-#include <SDL_thread.h>
-#include <SDL_timer.h>
+#include <SDL3/SDL_mutex.h>
+#include <SDL3/SDL_thread.h>
+#include <SDL3/SDL_timer.h>
 
 ALStream::ALStream(LoopMode loopMode,
 		           const std::string &threadId)
@@ -203,16 +203,16 @@ void ALStream::closeSource()
 
 struct ALStreamOpenHandler : FileSystem::OpenHandler
 {
-	SDL_RWops *srcOps;
+	SDL_IOStream *srcOps;
 	bool looped;
 	ALDataSource *source;
 	std::string errorMsg;
 
-	ALStreamOpenHandler(SDL_RWops &srcOps, bool looped)
+	ALStreamOpenHandler(SDL_IOStream &srcOps, bool looped)
 	    : srcOps(&srcOps), looped(looped), source(0)
 	{}
 
-	bool tryRead(SDL_RWops &ops, const char *ext)
+	bool tryRead(SDL_IOStream &ops, const char *ext)
 	{
 		/* Copy this because we need to keep it around,
 		 * as we will continue reading data from it later */
@@ -220,8 +220,8 @@ struct ALStreamOpenHandler : FileSystem::OpenHandler
 
 		/* Try to read ogg file signature */
 		char sig[5] = { 0 };
-		SDL_RWread(srcOps, sig, 1, 4);
-		SDL_RWseek(srcOps, 0, RW_SEEK_SET);
+		SDL_ReadIO(srcOps, sig, 1, 4);
+		SDL_SeekIO(srcOps, 0, RW_SEEK_SET);
 
 		try
 		{
