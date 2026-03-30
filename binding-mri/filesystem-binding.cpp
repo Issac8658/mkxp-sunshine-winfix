@@ -76,9 +76,9 @@ RB_METHOD(fileIntRead)
 	if (length == -1)
 	{
 		Sint64 cur = SDL_TellIO(ops);
-		Sint64 end = SDL_SeekIO(ops, 0, SEEK_END);
+		Sint64 end = SDL_SeekIO(ops, 0, SDL_IO_SEEK_END);
 		length = end - cur;
-		SDL_SeekIO(ops, cur, SEEK_SET);
+		SDL_SeekIO(ops, cur, SDL_IO_SEEK_SET);
 	}
 
 	if (length == 0)
