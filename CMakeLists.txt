@@ -320,6 +320,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
 target_include_directories(${PROJECT_NAME} PRIVATE src ${PIXMAN_INCLUDE_DIRS} ${SIGC2_INCLUDE_DIRS} ${RUBY_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf Boost::boost OpenAL::OpenAL physfs ${PIXMAN_LIBRARIES} ${SIGC2_INCLUDE_DIRS} ${PLATFORM_LIBRARIES} ${RUBY_LIBRARIES})
 
+#TODO: remove -w later
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math")
 

@@ -147,7 +147,7 @@ std::string sourceDescString(const SourceDesc &src)
 		if (src.d.scan == SDL_SCANCODE_LSHIFT)
 			return findtext(TRSTR_KEYBIND_SHIFT, "Shift");
 
-		SDL_Keycode key = SDL_GetKeyFromScancode(src.d.scan);
+		SDL_Keycode key = SDL_GetKeyFromScancode(src.d.scan, SDL_KMOD_NONE, false);
 		const char *str = SDL_GetKeyName(key);
 
 		if (*str == '\0') {

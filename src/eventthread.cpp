@@ -147,7 +147,10 @@ void EventThread::process(RGSSThreadData &rtData)
 	std::map<int, SDL_Gamepad*> controllers;
 	std::map<int, SDL_Joystick*> joysticks;
 
-	for (int i = 0; i < SDL_GetJoysticks(NULL); ++i) {
+	int tmpstupidshit;
+	SDL_GetJoysticks(&tmpstupidshit);
+
+	for (int i = 0; i < tmpstupidshit; ++i) {
 		if (SDL_IsGamepad(i)) {
 			//Load as game controller
 			SDL_Gamepad *gc = SDL_OpenGamepad(i);
@@ -580,7 +583,7 @@ bool EventThread::eventFilter(void *data, SDL_Event *event)
 
 	/* Workaround for Windows pausing on drag */
 	default:
-		if (event->window.event->type == SDL_EVENT_WINDOW_MOVED)
+		if (event->window.type == SDL_EVENT_WINDOW_MOVED)
 		{
 			if (shState != NULL && shState->rgssVersion > 0)
 			{
