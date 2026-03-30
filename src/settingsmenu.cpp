@@ -400,7 +400,7 @@ struct SettingsMenuPrivate
 	}
 
 	void fillSurface(SDL_Surface *surf, uint8_t grey){
-		SDL_FillSurfaceRect(surf, 0, SDL_MapRGBA(rgb, grey, grey, grey, 255));
+		SDL_FillSurfaceRect(surf, 0, SDL_MapSurfaceRGBA(surf, grey, grey, grey, 255));
 	}
 
 	void fillRect(SDL_Surface *surf,
@@ -408,7 +408,7 @@ struct SettingsMenuPrivate
 	              uint8_t r, uint8_t g, uint8_t b)
 	{
 		SDL_Rect rect = { drawOff.x+x, drawOff.y+y, w, h };
-		SDL_FillSurfaceRect(surf, &rect, SDL_MapRGB(rgb, r, g, b));
+		SDL_FillSurfaceRect(surf, &rect, SDL_MapSurfaceRGB(surf, r, g, b));
 	}
 
 	void fillRect(SDL_Surface *surf, uint8_t grey,
@@ -482,14 +482,14 @@ struct SettingsMenuPrivate
 		SDL_Color c = { cText, cText, cText, 255 };
 		applyFontStyle(bold);
 
-		return TTF_RenderText_Blended(font, str, c);
+		return TTF_RenderText_Blended(font, str, strlen(str), c);
 	}
 
 	SDL_Surface *createTextSurface(const char *str, SDL_Color c,
 	                               bool bold)
 	{
 		applyFontStyle(bold);
-		return TTF_RenderText_Blended(font, str, c);
+		return TTF_RenderText_Blended(font, str, strlen(str), c);
 	}
 
 	/* Horizontally centered */
@@ -1079,7 +1079,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->font = shState->fontState().getFont(getFontName(), getFontSize());
 
 
-	p->rgb = p->winSurf->format;
+	*p->rgb = p->winSurf->format;
 
 	const size_t layoutW = 2;
 	const size_t layoutH = 6;
@@ -1222,9 +1222,9 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 	case SDL_EVENT_KEY_DOWN:
 		if (p->state != AwaitingInput)
 		{
-			if (event.key.sym == SDLK_RETURN)
+			if (event.key.key == SDLK_RETURN)
 				p->onAccept();
-			else if (event.key.sym == SDLK_ESCAPE)
+			else if (event.key.key == SDLK_ESCAPE)
 				p->onCancel();
 
 			return true;
