@@ -5,7 +5,7 @@
 #include "binding-types.h"
 #include "eventthread.h"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <boost/crc.hpp>
 
 RB_METHOD(oneshotSetYesNo)

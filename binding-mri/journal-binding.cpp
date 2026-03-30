@@ -27,12 +27,12 @@
 	#include <string>
 #endif
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #define BUFFER_SIZE 256
 
 static SDL_Thread *thread = NULL;
-static SDL_mutex *mutex = NULL;
+static SDL_Mutex *mutex = NULL;
 static volatile char lang_buffer[BUFFER_SIZE];
 static volatile char message_buffer[BUFFER_SIZE];
 static volatile bool active = false;

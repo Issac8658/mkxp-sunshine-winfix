@@ -1,8 +1,5 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 Project(oneshot)
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
 
 ## Setup options ##
 
@@ -287,20 +284,28 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${EMBEDDED_SOURCE}
 )
 
+find_package(SDL3)
+find_package(SDL3_image)
+find_package(SDL3_sound)
+find_package(SDL3_ttf)
+find_package(OpenAL)
+find_package(Boost REQUIRED)
+find_package(PhysFS)
+find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
+find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
+find_package(Ruby 3.3)
+pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
+find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
+if(PIXMAN-1_FOUND)
+	set(PIXMAN_LIBRARIES ${PIXMAN_LIBRARY})
+	set(PIXMAN_INCLUDE_DIRS ${PIXMAN_INCLUDE_DIR})
+endif()
+
+mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-target_include_directories(${PROJECT_NAME} PRIVATE src)
-target_link_libraries(${PROJECT_NAME}
-	CONAN_PKG::boost
-	CONAN_PKG::openal
-	CONAN_PKG::physfs
-	CONAN_PKG::pixman
-	CONAN_PKG::ruby
-	CONAN_PKG::sdl2
-	CONAN_PKG::sdl2_image
-	CONAN_PKG::sdl2_ttf
-	CONAN_PKG::sdl_sound-mkxp
-	CONAN_PKG::sigc++
-	${PLATFORM_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE src ${PIXMAN_INCLUDE_DIRS} ${SIGC2_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf Boost::boost OpenAL::OpenAL physfs ${PIXMAN_LIBRARIES} ${SIGC2_INCLUDE_DIRS} ${PLATFORM_LIBRARIES})
 
 IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)

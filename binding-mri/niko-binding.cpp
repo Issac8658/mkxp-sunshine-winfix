@@ -28,9 +28,8 @@
 	#include <errno.h>
 #endif
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 namespace syswm {
-#include <SDL_syswm.h>
 }
 
 #define NIKO_X (320 - 16)
@@ -39,7 +38,7 @@ namespace syswm {
 #define BUFFER_SIZE 256
 
 static SDL_Thread *thread = NULL;
-static SDL_mutex *mutex = NULL;
+static SDL_Mutex *mutex = NULL;
 static volatile char message_buffer[BUFFER_SIZE];
 static volatile bool active = false;
 static volatile int message_len = 0;

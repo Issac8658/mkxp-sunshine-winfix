@@ -39,7 +39,7 @@
 #include <string>
 #include <zlib.h>
 
-#include <SDL_filesystem.h>
+#include <SDL3/SDL_filesystem.h>
 
 extern const char module_rpg1[];
 
