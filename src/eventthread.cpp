@@ -456,18 +456,18 @@ void EventThread::process(RGSSThreadData &rtData)
 			break;
 
 		case SDL_EVENT_FINGER_DOWN :
-			i = event.tfinger.fingerId;
+			i = event.tfinger.fingerID;
 			touchState.fingers[i].down = true;
 			/* falls through */
 
 		case SDL_EVENT_FINGER_MOTION :
-			i = event.tfinger.fingerId;
+			i = event.tfinger.fingerID;
 			touchState.fingers[i].x = event.tfinger.x * winW;
 			touchState.fingers[i].y = event.tfinger.y * winH;
 			break;
 
 		case SDL_EVENT_FINGER_UP :
-			i = event.tfinger.fingerId;
+			i = event.tfinger.fingerID;
 			memset(&touchState.fingers[i], 0, sizeof(touchState.fingers[0]));
 			break;
 
@@ -801,7 +801,7 @@ SyncPoint::Util::Util()
 
 SyncPoint::Util::~Util()
 {
-	SDL_DestroyCond(cond);
+	SDL_DestroyCondition(cond);
 	SDL_DestroyMutex(mut);
 }
 

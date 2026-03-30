@@ -31,7 +31,7 @@
 static void
 fileIntFreeInstance(void *inst)
 {
-	SDL_RWops *ops = static_cast<SDL_RWops*>(inst);
+	SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
 
 	SDL_RWclose(ops);
 	SDL_FreeRW(ops);
@@ -42,7 +42,7 @@ DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 static VALUE
 fileIntForPath(const char *path, bool rubyExc)
 {
-	SDL_RWops *ops = SDL_AllocRW();
+	SDL_IOStream *ops = SDL_AllocRW();
 
 	try
 	{
@@ -73,7 +73,7 @@ RB_METHOD(fileIntRead)
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length RB_ARG_END);
 
-	SDL_RWops *ops = getPrivateData<SDL_RWops>(self);
+	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 
 	if (length == -1)
 	{
@@ -97,7 +97,7 @@ RB_METHOD(fileIntClose)
 {
 	RB_UNUSED_PARAM;
 
-	SDL_RWops *ops = getPrivateData<SDL_RWops>(self);
+	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	SDL_RWclose(ops);
 
 	return Qnil;
@@ -107,7 +107,7 @@ RB_METHOD(fileIntGetByte)
 {
 	RB_UNUSED_PARAM;
 
-	SDL_RWops *ops = getPrivateData<SDL_RWops>(self);
+	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 
 	unsigned char byte;
 	size_t result = SDL_RWread(ops, &byte, 1, 1);

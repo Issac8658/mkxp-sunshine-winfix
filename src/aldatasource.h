@@ -57,12 +57,12 @@ struct ALDataSource
 	virtual bool setPitch(float value) = 0;
 };
 
-ALDataSource *createSDLSource(SDL_RWops &ops,
+ALDataSource *createSDLSource(SDL_IOStream &ops,
                               const char *extension,
 			                  uint32_t maxBufSize,
 			                  bool looped);
 
-ALDataSource *createVorbisSource(SDL_RWops &ops,
+ALDataSource *createVorbisSource(SDL_IOStream &ops,
                                  bool looped);
 
 #endif // ALDATASOURCE_H

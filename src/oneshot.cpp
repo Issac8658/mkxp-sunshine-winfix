@@ -10,8 +10,8 @@
 #include "font.h"
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_image.h>
-#include <SDL3/SDL_ttf.h>
+#include <SDL3_image/SDL_image.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 // OS-Specific code
 #if defined _WIN32
@@ -68,7 +68,7 @@ struct OneshotPrivate
 
 	// Alpha texture data for portions of window obscured by screen edges
 	int winX, winY;
-	SDL_mutex *winMutex;
+	SDL_Mutex *winMutex;
 	bool winPosChanged;
 	std::vector<uint8_t> obscuredMap;
 	bool obscuredCleared;

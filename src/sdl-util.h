@@ -57,7 +57,7 @@ SDL_Thread *createSDLThread(C *obj, const std::string &name = std::string())
  * on the physical filesystem. This wrapper attempts to open a
  * real file first before falling back to the assets folder */
 //static inline
-//SDL_RWops *RWFromFile(const char *filename,
+//SDL_IOStream *RWFromFile(const char *filename,
 //                      const char *mode)
 //{
 //	FILE *f = fopen(filename, mode);

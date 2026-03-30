@@ -148,7 +148,7 @@ static inline PHYSFS_File *sdlPHYS(SDL_IOStream *ops)
 	return static_cast<PHYSFS_File*>(ops->hidden.unknown.data1);
 }
 
-static Sint64 SDL_RWopsSize(SDL_IOStream *ops)
+static Sint64 SDL_IOStreamSize(SDL_IOStream *ops)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -158,7 +158,7 @@ static Sint64 SDL_RWopsSize(SDL_IOStream *ops)
 	return PHYSFS_fileLength(f);
 }
 
-static Sint64 SDL_RWopsSeek(SDL_IOStream *ops, int64_t offset, int whence)
+static Sint64 SDL_IOStreamSeek(SDL_IOStream *ops, int64_t offset, int whence)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -186,7 +186,7 @@ static Sint64 SDL_RWopsSeek(SDL_IOStream *ops, int64_t offset, int whence)
 	return (result != 0) ? PHYSFS_tell(f) : -1;
 }
 
-static size_t SDL_RWopsRead(SDL_IO_SEEK_END *ops, void *buffer, size_t size, size_t maxnum)
+static size_t SDL_IOStreamRead(SDL_IO_SEEK_END *ops, void *buffer, size_t size, size_t maxnum)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -198,7 +198,7 @@ static size_t SDL_RWopsRead(SDL_IO_SEEK_END *ops, void *buffer, size_t size, siz
 	return (result != -1) ? (result / size) : 0;
 }
 
-static size_t SDL_RWopsWrite(SDL_IOStream *ops, const void *buffer, size_t size, size_t num)
+static size_t SDL_IOStreamWrite(SDL_IOStream *ops, const void *buffer, size_t size, size_t num)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -210,7 +210,7 @@ static size_t SDL_RWopsWrite(SDL_IOStream *ops, const void *buffer, size_t size,
 	return (result != -1) ? (result / size) : 0;
 }
 
-static int SDL_RWopsClose(SDL_IOStream *ops)
+static int SDL_IOStreamClose(SDL_IOStream *ops)
 {
 	PHYSFS_File *f = sdlPHYS(ops);
 
@@ -223,9 +223,9 @@ static int SDL_RWopsClose(SDL_IOStream *ops)
 	return (result != 0) ? 0 : -1;
 }
 
-static int SDL_RWopsCloseFree(SDL_IOStream *ops)
+static int SDL_IOStreamCloseFree(SDL_IOStream *ops)
 {
-	int result = SDL_RWopsClose(ops);
+	int result = SDL_IOStreamClose(ops);
 
 	SDL_CloseIO(ops);
 
@@ -276,15 +276,15 @@ initReadOps(PHYSFS_File *handle,
             SDL_IOStream &ops,
             bool freeOnClose)
 {
-	ops.size  = SDL_RWopsSize;
-	ops.seek  = SDL_RWopsSeek;
-	ops.read  = SDL_RWopsRead;
-	ops.write = SDL_RWopsWrite;
+	ops.size  = SDL_IOStreamSize;
+	ops.seek  = SDL_IOStreamSeek;
+	ops.read  = SDL_IOStreamRead;
+	ops.write = SDL_IOStreamWrite;
 
 	if (freeOnClose)
-		ops.close = SDL_RWopsCloseFree;
+		ops.close = SDL_IOStreamCloseFree;
 	else
-		ops.close = SDL_RWopsClose;
+		ops.close = SDL_IOStreamClose;
 
 	ops.type = SDL_RWOPS_PHYSFS;
 	ops.hidden.unknown.data1 = handle;
@@ -339,7 +339,7 @@ void FileSystem::addPath(const char *path)
 	if (!PHYSFS_mount(path, 0, 1))
 	{
 		/* If it didn't work, try mounting via a wrapped
-		 * SDL_RWops */
+		 * SDL_IOStream */
 		PHYSFS_Io *io = createSDLRWIo(path);
 
 		if (io)
@@ -648,7 +648,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename)
 		throw Exception(Exception::NoFileError, "%s", filename);
 }
 
-void FileSystem::openReadRaw(SDL_RWops &ops,
+void FileSystem::openReadRaw(SDL_IOStream &ops,
                              const char *filename,
                              bool freeOnClose)
 {
