@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.14)
-Project(oneshot)
-
+cmake_minimum_required(VERSION 4.0)
+project(oneshot)
 ## Setup options ##
+
+include(FindPackageHandleStandardArgs)
 
 option(STEAM "Build for Steam" OFF)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
@@ -58,7 +59,6 @@ set(MAIN_HEADERS
 	src/filesystem.h
 	src/serial-util.h
 	src/intrulist.h
-	src/binding.h
 	src/gl-util.h
 	src/util.h
 	src/config.h
@@ -220,7 +220,7 @@ find_program(XXD_EXE xxd
 macro(ProcessWithXXD outvar inputfile outdir)
 	get_filename_component(basefile ${inputfile} NAME)
 	set(outputfile ${outdir}/${basefile}.xxd)
-	set_source_files_properties(${outputfile} PROPERTIES HEADER_ONLY TRUE)
+	set_source_files_properties(${outputfile} PROPERTIES HEADER_FILE_ONLY TRUE)
 	add_custom_command(
 		OUTPUT ${outputfile}
 		COMMAND ${XXD_EXE} -i ${inputfile} ${outputfile}
@@ -297,16 +297,16 @@ add_executable(${PROJECT_NAME} MACOSX_BUNDLE WIN32
 	${EMBEDDED_SOURCE}
 )
 
-find_package(SDL3)
-find_package(SDL3_image)
-find_package(SDL3_sound)
-find_package(SDL3_ttf)
-find_package(OpenAL)
-find_package(Boost REQUIRED)
-find_package(PhysFS)
+find_package(SDL3 CONFIG)
+find_package(SDL3_image CONFIG)
+find_package(SDL3_sound CONFIG)
+find_package(SDL3_ttf CONFIG)
+find_package(OpenAL CONFIG)
+find_package(Boost REQUIRED COMPONENTS CONFIG)
+find_package(PhysFS CONFIG)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
-find_package(Ruby COMPONENTS Interpreter Development REQUIRED)
+find_package(Ruby REQUIRED)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 if(PIXMAN-1_FOUND)
@@ -317,12 +317,15 @@ endif()
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-target_include_directories(${PROJECT_NAME} PRIVATE src ${PIXMAN_INCLUDE_DIRS} ${SIGC2_INCLUDE_DIRS} ${RUBY_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf Boost::boost OpenAL::OpenAL physfs ${PIXMAN_LIBRARIES} ${SIGC2_INCLUDE_DIRS} ${PLATFORM_LIBRARIES} ${RUBY_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PRIVATE src ${PIXMAN_INCLUDE_DIRS} ${SIGC2_INCLUDE_DIRS} ${RUBY_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} Boost::boost)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf Boost::boost OpenAL::OpenAL physfs ${PIXMAN_LIBRARIES} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} ${RUBY_LIBRARIES})
 
-#TODO: remove -w later
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math")
+
+message(STATUS "Ruby found: ${RUBY_EXECUTABLE}")
+message(STATUS "Ruby includes: ${RUBY_INCLUDE_DIRS}")
+message(STATUS "Ruby libs: ${RUBY_LIBRARIES}")
 
 IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
