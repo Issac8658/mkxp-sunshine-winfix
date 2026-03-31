@@ -78,8 +78,14 @@ raiseRbExc(const Exception &exc);
 #define DEF_TYPE_FLAGS
 #endif
 
+/*
 #define DEF_TYPE_CUSTOMNAME_AND_FREE(Klass, Name, Free) \
 	rb_data_type_t Klass##Type = { Name, { 0, Free, 0, { 0, 0 } }, 0, 0, (void*)DEF_TYPE_FLAGS }
+*/
+
+// should able to compile now, i think?
+#define DEF_TYPE_CUSTOMNAME_AND_FREE(Klass, Name, Free) \
+	rb_data_type_t Klass##Type = { Name, { 0, Free, 0, }, 0, NULL, DEF_TYPE_FLAGS }
 
 #define DEF_TYPE_CUSTOMFREE(Klass, Free) \
 	DEF_TYPE_CUSTOMNAME_AND_FREE(Klass, #Klass, Free)
