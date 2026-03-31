@@ -26,6 +26,7 @@ set(OLDIMPLS_SOURCE
 
 # main stuff
 set(MAIN_HEADERS
+	${OLDIMPLS_HEADERS}
 	src/quadarray.h
 	src/audio.h
 	src/binding.h
@@ -85,10 +86,10 @@ set(MAIN_HEADERS
 	chromasdk/RzErrors.h
 	chromasdk/ChromaApi.h
 	src/i18n.h
-	${OLDIMPLS_HEADERS}
 )
 
 set(MAIN_SOURCE
+	${OLDIMPLS_SOURCE}
 	src/main.cpp
 	src/audio.cpp
 	src/bitmap.cpp
@@ -128,7 +129,6 @@ set(MAIN_SOURCE
 	src/oneshot.cpp
 	src/screen.cpp
 	src/i18n.cpp
-	${OLDIMPLS_SOURCE}
 )
 
 if(WIN32)
@@ -302,12 +302,13 @@ find_package(SDL3_image CONFIG)
 find_package(SDL3_sound CONFIG)
 find_package(SDL3_ttf CONFIG)
 find_package(OpenAL CONFIG)
-find_package(Boost REQUIRED COMPONENTS CONFIG)
+find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(PhysFS CONFIG)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
 find_package(Ruby REQUIRED)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
+pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)
 if(PIXMAN-1_FOUND)
 	set(PIXMAN_LIBRARIES ${PIXMAN_LIBRARY})
@@ -316,16 +317,33 @@ endif()
 
 mark_as_advanced(PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${DEFINES})
-target_include_directories(${PROJECT_NAME} PRIVATE src ${PIXMAN_INCLUDE_DIRS} ${SIGC2_INCLUDE_DIRS} ${RUBY_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} Boost::boost)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf Boost::boost OpenAL::OpenAL physfs ${PIXMAN_LIBRARIES} ${SIGC2_LIBRARIES} ${PLATFORM_LIBRARIES} ${RUBY_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME}
+	PRIVATE
+		${DEFINES})
+
+target_include_directories(${PROJECT_NAME}
+	PRIVATE
+		src
+		${PIXMAN_INCLUDE_DIRS}
+		${SIGC2_INCLUDE_DIRS}
+		${Ruby_INCLUDE_DIRS}
+		Boost::boost ${Boost_INCLUDE_DIRS}
+		${VORBISFILE_INCLUDE_DIRS})
+
+target_link_libraries(${PROJECT_NAME}
+	PRIVATE
+		SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf
+		OpenAL::OpenAL
+		physfs
+		${PIXMAN_LIBRARIES}
+		${SIGC2_LIBRARIES}
+		${PLATFORM_LIBRARIES}
+		${Ruby_LIBRARIES}
+		Boost::boost ${Boost_LIBRARIES}
+		${VORBISFILE_LIBRARIES})
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
 #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math")
-
-message(STATUS "Ruby found: ${RUBY_EXECUTABLE}")
-message(STATUS "Ruby includes: ${RUBY_INCLUDE_DIRS}")
-message(STATUS "Ruby libs: ${RUBY_LIBRARIES}")
 
 IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
