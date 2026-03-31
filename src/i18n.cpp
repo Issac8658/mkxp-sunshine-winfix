@@ -67,7 +67,8 @@ void loadLanguageMetadata() {
 		unloadLanguageMetadata();
 	}
 
-	char line[256];
+	// char line[256];
+	char line[1024];
 
 	languageMetadata = (LanguageFontAndSize**) calloc(MAX_LANGUAGES, sizeof(LanguageFontAndSize*));
 	FILE* fontsFile = fopen("Languages/internal/language_fonts.ini", "r");

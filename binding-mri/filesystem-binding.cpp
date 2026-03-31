@@ -44,7 +44,7 @@ fileIntForPath(const char *path, bool rubyExc)
 
 	try
 	{
-		shState->fileSystem().openReadRaw(ops*, path);
+		shState->fileSystem().openReadRaw(ops, path);
 	}
 	catch (const Exception &e)
 	{
