@@ -33,26 +33,22 @@
 
 typedef std::pair<uint16_t, uint16_t> Size;
 
-static uint32_t byteCount(Size &s)
-{
+static uint32_t byteCount(Size &s){
 	return s.first * s.second * 4;
 }
 
-struct CacheNode
-{
+struct CacheNode{
 	TEXFBO obj;
 	std::list<TEXFBO>::iterator prioIter;
 
-	bool operator==(const CacheNode &o) const
-	{
+	bool operator==(const CacheNode &o) const{
 		return obj == o.obj;
 	}
 };
 
 typedef std::list<CacheNode> CNodeList;
 
-struct TexPoolPrivate
-{
+struct TexPoolPrivate{
 	/* Contains all cached TexFBOs, grouped by size */
 	BoostHash<Size, CNodeList> poolHash;
 
@@ -79,13 +75,11 @@ struct TexPoolPrivate
 	{}
 };
 
-TexPool::TexPool(uint32_t maxMemSize)
-{
+TexPool::TexPool(uint32_t maxMemSize){
 	p = new TexPoolPrivate(maxMemSize);
 }
 
-TexPool::~TexPool()
-{
+TexPool::~TexPool(){
 	std::list<TEXFBO>::iterator iter;
 
 	for (iter = p->priorityQueue.begin();
@@ -102,16 +96,14 @@ TexPool::~TexPool()
 	delete p;
 }
 
-TEXFBO TexPool::request(int width, int height)
-{
+TEXFBO TexPool::request(int width, int height){
 	CacheNode cnode;
 	Size size(width, height);
 
 	/* See if we can statisfy request from cache */
 	CNodeList &bucket = p->poolHash[size];
 
-	if (!bucket.empty())
-	{
+	if (!bucket.empty()){
 		/* Found one! */
 		cnode = bucket.back();
 		bucket.pop_back();
@@ -142,16 +134,13 @@ TEXFBO TexPool::request(int width, int height)
 	return cnode.obj;
 }
 
-void TexPool::release(TEXFBO &obj)
-{
-	if (obj.tex == TEX::ID(0) || obj.fbo == FBO::ID(0))
-	{
+void TexPool::release(TEXFBO &obj){
+	if (obj.tex == TEX::ID(0) || obj.fbo == FBO::ID(0)){
 		TEXFBO::fini(obj);
 		return;
 	}
 
-	if (p->disabled)
-	{
+	if (p->disabled){
 		/* If we're disabled, delete without caching */
 //		Debug() << "TexPool: <!#> (" << obj.width << obj.height << ")";
 		TEXFBO::fini(obj);
@@ -164,8 +153,7 @@ void TexPool::release(TEXFBO &obj)
 
 	/* If caching this object would spill over the allowed memory budget,
 	 * delete least used objects until we're good again */
-	while (newMemSize > p->maxMemSize)
-	{
+	while (newMemSize > p->maxMemSize){
 		if (p->objCount == 0)
 			break;
 
@@ -208,8 +196,7 @@ void TexPool::release(TEXFBO &obj)
 //	Debug() << "TexPool: <!+> (" << obj.width << obj.height << ") Current size:" << p->memSize;
 }
 
-void TexPool::disable()
-{
+void TexPool::disable(){
 	p->disabled = true;
 }
 

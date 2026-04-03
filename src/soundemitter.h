@@ -32,8 +32,7 @@
 struct SoundBuffer;
 struct Config;
 
-struct SoundEmitter
-{
+struct SoundEmitter{
 	typedef BoostHash<std::string, SoundBuffer*> BufferHash;
 
 	IntruList<SoundBuffer> buffers;

@@ -51,8 +51,7 @@ SharedState *SharedState::instance = 0;
 int SharedState::rgssVersion = 0;
 static GlobalIBO *_globalIBO = 0;
 
-struct SharedStatePrivate
-{
+struct SharedStatePrivate{
 	void *bindingData;
 	SDL_Window *sdlWindow;
 	Scene *screen;
@@ -135,16 +134,14 @@ struct SharedStatePrivate
 		TEXFBO::linkFBO(gpTexFBO);
 	}
 
-	~SharedStatePrivate()
-	{
+	~SharedStatePrivate(){
 		TEX::del(globalTex);
 		TEXFBO::fini(gpTexFBO);
 		TEXFBO::fini(atlasTex);
 	}
 };
 
-void SharedState::initInstance(RGSSThreadData *threadData)
-{
+void SharedState::initInstance(RGSSThreadData *threadData){
 	/* This section is tricky because of dependencies:
 	 * SharedState depends on GlobalIBO existing,
 	 * Font depends on SharedState existing */
@@ -157,14 +154,11 @@ void SharedState::initInstance(RGSSThreadData *threadData)
 	SharedState::instance = 0;
 	Font *defaultFont = 0;
 
-	try
-	{
+	try{
 		SharedState::instance = new SharedState(threadData);
 		Font::initDefaults(instance->p->fontState);
 		defaultFont = new Font();
-	}
-	catch (const Exception &exc)
-	{
+	}catch (const Exception &exc){
 		delete _globalIBO;
 		delete SharedState::instance;
 		delete defaultFont;
@@ -175,8 +169,7 @@ void SharedState::initInstance(RGSSThreadData *threadData)
 	SharedState::instance->p->defaultFont = defaultFont;
 }
 
-void SharedState::finiInstance()
-{
+void SharedState::finiInstance(){
 	delete SharedState::instance->p->defaultFont;
 
 	delete SharedState::instance;
@@ -184,8 +177,7 @@ void SharedState::finiInstance()
 	delete _globalIBO;
 }
 
-void SharedState::setScreen(Scene &screen)
-{
+void SharedState::setScreen(Scene &screen){
 	p->screen = &screen;
 }
 
@@ -215,23 +207,19 @@ GSATT(TexPool&, texPool)
 GSATT(Quad&, gpQuad)
 GSATT(SharedFontState&, fontState)
 
-void SharedState::setBindingData(void *data)
-{
+void SharedState::setBindingData(void *data){
 	p->bindingData = data;
 }
 
-void SharedState::ensureQuadIBO(size_t minSize)
-{
+void SharedState::ensureQuadIBO(size_t minSize){
 	_globalIBO->ensureSize(minSize);
 }
 
-GlobalIBO &SharedState::globalIBO()
-{
+GlobalIBO &SharedState::globalIBO(){
 	return *_globalIBO;
 }
 
-void SharedState::bindTex()
-{
+void SharedState::bindTex(){
 	TEX::bind(p->globalTex);
 
 	if (p->globalTexDirty)
@@ -241,16 +229,13 @@ void SharedState::bindTex()
 	}
 }
 
-void SharedState::ensureTexSize(int minW, int minH, Vec2i &currentSizeOut)
-{
-	if (minW > p->globalTexW)
-	{
+void SharedState::ensureTexSize(int minW, int minH, Vec2i &currentSizeOut){
+	if (minW > p->globalTexW){
 		p->globalTexDirty = true;
 		p->globalTexW = findNextPow2(minW);
 	}
 
-	if (minH > p->globalTexH)
-	{
+	if (minH > p->globalTexH){
 		p->globalTexDirty = true;
 		p->globalTexH = findNextPow2(minH);
 	}
@@ -258,24 +243,20 @@ void SharedState::ensureTexSize(int minW, int minH, Vec2i &currentSizeOut)
 	currentSizeOut = Vec2i(p->globalTexW, p->globalTexH);
 }
 
-TEXFBO &SharedState::gpTexFBO(int minW, int minH)
-{
+TEXFBO &SharedState::gpTexFBO(int minW, int minH){
 	bool needResize = false;
 
-	if (minW > p->gpTexFBO.width)
-	{
+	if (minW > p->gpTexFBO.width){
 		p->gpTexFBO.width = findNextPow2(minW);
 		needResize = true;
 	}
 
-	if (minH > p->gpTexFBO.height)
-	{
+	if (minH > p->gpTexFBO.height){
 		p->gpTexFBO.height = findNextPow2(minH);
 		needResize = true;
 	}
 
-	if (needResize)
-	{
+	if (needResize){
 		TEX::bind(p->gpTexFBO.tex);
 		TEX::allocEmpty(p->gpTexFBO.width, p->gpTexFBO.height);
 	}
@@ -283,17 +264,13 @@ TEXFBO &SharedState::gpTexFBO(int minW, int minH)
 	return p->gpTexFBO;
 }
 
-void SharedState::requestAtlasTex(int w, int h, TEXFBO &out)
-{
+void SharedState::requestAtlasTex(int w, int h, TEXFBO &out){
 	TEXFBO tex;
 
-	if (w == p->atlasTex.width && h == p->atlasTex.height)
-	{
+	if (w == p->atlasTex.width && h == p->atlasTex.height){
 		tex = p->atlasTex;
 		p->atlasTex = TEXFBO();
-	}
-	else
-	{
+	}else{
 		TEXFBO::init(tex);
 		TEXFBO::allocEmpty(tex, w, h);
 		TEXFBO::linkFBO(tex);
@@ -302,8 +279,7 @@ void SharedState::requestAtlasTex(int w, int h, TEXFBO &out)
 	out = tex;
 }
 
-void SharedState::releaseAtlasTex(TEXFBO &tex)
-{
+void SharedState::releaseAtlasTex(TEXFBO &tex){
 	/* No point in caching an invalid object */
 	if (tex.tex == TEX::ID(0))
 		return;
@@ -313,8 +289,7 @@ void SharedState::releaseAtlasTex(TEXFBO &tex)
 	p->atlasTex = tex;
 }
 
-void SharedState::checkShutdown()
-{
+void SharedState::checkShutdown(){
 	if (!p->rtData.rqTerm)
 		return;
 
@@ -323,8 +298,7 @@ void SharedState::checkShutdown()
 	scriptBinding->terminate();
 }
 
-void SharedState::checkReset()
-{
+void SharedState::checkReset(){
 	if (!p->rtData.rqReset)
 		return;
 
@@ -332,23 +306,19 @@ void SharedState::checkReset()
 	scriptBinding->reset();
 }
 
-Font &SharedState::defaultFont() const
-{
+Font &SharedState::defaultFont() const{
 	return *p->defaultFont;
 }
 
-unsigned int SharedState::genTimeStamp()
-{
+unsigned int SharedState::genTimeStamp(){
 	return p->stampCounter++;
 }
 
-SharedState::SharedState(RGSSThreadData *threadData)
-{
+SharedState::SharedState(RGSSThreadData *threadData){
 	p = new SharedStatePrivate(threadData);
 	p->screen = p->graphics.getScreen();
 }
 
-SharedState::~SharedState()
-{
+SharedState::~SharedState(){
 	delete p;
 }

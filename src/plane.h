@@ -31,8 +31,7 @@ struct Tone;
 
 struct PlanePrivate;
 
-class Plane : public ViewportElement, public Disposable
-{
+class Plane : public ViewportElement, public Disposable{
 public:
 	Plane(Viewport *viewport = 0);
 	~Plane();

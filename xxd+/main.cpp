@@ -45,8 +45,7 @@ int writeDump(const QString &srcFilename,
 	int columnInd = 0;
 	int byteCount = 0;
 
-	while (!in.atEnd())
-	{
+	while (!in.atEnd()){
 		uchar byte;
 		in >> byte;
 
@@ -86,8 +85,7 @@ QString getNamedOption(const QStringList &args,
 {
 	QString value = defValue;
 
-	if (args.contains(optName))
-	{
+	if (args.contains(optName)){
 		int argInd = args.indexOf(optName);
 		if (argInd < args.count())
 			value = args.at(argInd+1);
@@ -105,20 +103,17 @@ static const char usageStr[] =
         "  --string          Use char for data array. Implies \"--null-terminated\".\n"
         "  --help            Yo dawg.\n";
 
-void usage(const QString &argv0)
-{
+void usage(const QString &argv0){
 	QTextStream out(stdout);
 
 	out << QString(usageStr).arg(argv0);
 }
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	(void) argc; (void) argv;
 
-	if (argc < 2)
-	{
+	if (argc < 2){
 		usage(*argv);
 		return 0;
 	}
@@ -130,8 +125,7 @@ int main(int argc, char *argv[])
 	for (int i = 2; i < argc; ++i)
 		restArg << argv[i];
 
-	if (restArg.contains("--help"))
-	{
+	if (restArg.contains("--help")){
 		usage(*argv);
 		return 0;
 	}
@@ -142,8 +136,7 @@ int main(int argc, char *argv[])
 	if (restArg.contains("--null-terminated"))
 		nullTerm = true;
 
-	if (restArg.contains("--string"))
-	{
+	if (restArg.contains("--string")){
 		stringData = true;
 		nullTerm = true;
 	}

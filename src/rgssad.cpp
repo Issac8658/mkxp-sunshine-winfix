@@ -25,15 +25,13 @@
 #include <stdint.h>
 #include <string.h>
 
-struct RGSS_entryData
-{
+struct RGSS_entryData{
 	int64_t offset;
 	uint64_t size;
 	uint32_t startMagic;
 };
 
-struct RGSS_entryHandle
-{
+struct RGSS_entryHandle{
 	const RGSS_entryData data;
 	uint32_t currentMagic;
 	uint64_t currentOffset;
@@ -47,14 +45,12 @@ struct RGSS_entryHandle
 		io = archIo->duplicate(archIo);
 	}
 
-	~RGSS_entryHandle()
-	{
+	~RGSS_entryHandle(){
 		io->destroy(io);
 	}
 };
 
-struct RGSS_archiveData
-{
+struct RGSS_archiveData{
 	PHYSFS_Io *archiveIo;
 
 	/* Maps: file path
@@ -66,9 +62,7 @@ struct RGSS_archiveData
 	BoostHash<std::string, BoostSet<std::string> > dirHash;
 };
 
-static bool
-readUint32(PHYSFS_Io *io, uint32_t &result)
-{
+static bool readUint32(PHYSFS_Io *io, uint32_t &result){
 	char buff[4];
 	PHYSFS_sint64 count = io->read(io, buff, 4);
 
@@ -89,8 +83,7 @@ readUint32(PHYSFS_Io *io, uint32_t &result)
 #define IO_READ(io, dest, size) (io->read(io, dest, size) == size)
 
 static inline uint32_t
-advanceMagic(uint32_t &magic)
-{
+advanceMagic(uint32_t &magic) {
 	uint32_t old = magic;
 
 	magic = magic * 7 + 3;
@@ -99,8 +92,7 @@ advanceMagic(uint32_t &magic)
 }
 
 static PHYSFS_sint64
-RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len)
-{
+RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len) {
 	RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	PHYSFS_Io *io = entry->io;
@@ -142,8 +134,7 @@ RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len)
 	/* Byte buffer pointer */
 	uint8_t *bBufferP = static_cast<uint8_t*>(buffer);
 
-	if (preAlign > 0)
-	{
+	if (preAlign > 0){
 		uint32_t dword;
 		io->read(io, &dword, preAlign);
 
@@ -164,8 +155,7 @@ RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len)
 			advanceMagic(entry->currentMagic);
 	}
 
-	if (align > 0)
-	{
+	if (align > 0){
 		/* Double word buffer pointer */
 		uint32_t *dwBufferP = reinterpret_cast<uint32_t*>(bBufferP);
 
@@ -179,8 +169,7 @@ RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len)
 		bBufferP += align;
 	}
 
-	if (postAlign > 0)
-	{
+	if (postAlign > 0){
 		uint32_t dword;
 		io->read(io, &dword, postAlign);
 
@@ -195,8 +184,7 @@ RGSS_ioRead(PHYSFS_Io *self, void *buffer, PHYSFS_uint64 len)
 }
 
 static int
-RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset)
-{
+RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset){
 	RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	if (offset == entry->currentOffset)
@@ -206,8 +194,7 @@ RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset)
 		return 0;
 
 	/* If rewinding, we need to rewind to begining */
-	if (offset < entry->currentOffset)
-	{
+	if (offset < entry->currentOffset){
 		entry->currentOffset = 0;
 		entry->currentMagic = entry->data.startMagic;
 	}
@@ -227,8 +214,7 @@ RGSS_ioSeek(PHYSFS_Io *self, PHYSFS_uint64 offset)
 }
 
 static PHYSFS_sint64
-RGSS_ioTell(PHYSFS_Io *self)
-{
+RGSS_ioTell(PHYSFS_Io *self){
 	const RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	return entry->currentOffset;
@@ -243,8 +229,7 @@ RGSS_ioLength(PHYSFS_Io *self)
 }
 
 static PHYSFS_Io*
-RGSS_ioDuplicate(PHYSFS_Io *self)
-{
+RGSS_ioDuplicate(PHYSFS_Io *self){
 	const RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 	RGSS_entryHandle *entryDup = new RGSS_entryHandle(*entry);
 
@@ -256,8 +241,7 @@ RGSS_ioDuplicate(PHYSFS_Io *self)
 }
 
 static void
-RGSS_ioDestroy(PHYSFS_Io *self)
-{
+RGSS_ioDestroy(PHYSFS_Io *self){
 	RGSS_entryHandle *entry = static_cast<RGSS_entryHandle*>(self->opaque);
 
 	delete entry;
@@ -265,8 +249,7 @@ RGSS_ioDestroy(PHYSFS_Io *self)
 	PHYSFS_getAllocator()->Free(self);
 }
 
-static const PHYSFS_Io RGSS_IoTemplate =
-{
+static const PHYSFS_Io RGSS_IoTemplate ={
     0, /* version */
     0, /* opaque */
     RGSS_ioRead,
@@ -303,8 +286,7 @@ processDirectories(RGSS_archiveData *data, BoostSet<std::string> &topLevel,
 
 	/* Check for more entries */
 	for (uint32_t i = nameLen; i > 0; i--)
-		if (nameBuf[i] == '/')
-		{
+		if (nameBuf[i] == '/'){
 			nameBuf[i] = '\0';
 
 			const char *dir = nameBuf;
@@ -316,8 +298,7 @@ processDirectories(RGSS_archiveData *data, BoostSet<std::string> &topLevel,
 }
 
 static bool
-verifyHeader(PHYSFS_Io *io, char version)
-{
+verifyHeader(PHYSFS_Io *io, char version){
 	char header[8];
 
 	if (!IO_READ(io, header, sizeof(header)))
@@ -333,8 +314,7 @@ verifyHeader(PHYSFS_Io *io, char version)
 }
 
 static void*
-RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
-{
+RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
 	if (forWrite)
 		return NULL;
 
@@ -352,8 +332,7 @@ RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
 	/* Top level entry list */
 	BoostSet<std::string> &topLevel = data->dirHash[""];
 
-	while (true)
-	{
+	while (true){
 		/* Read filename length,
          * if nothing was read, no files remain */
 		uint32_t nameLen;
@@ -364,8 +343,7 @@ RGSS_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
 		nameLen ^= advanceMagic(magic);
 
 		static char nameBuf[512];
-		for (uint32_t i = 0; i < nameLen; ++i)
-		{
+		for (uint32_t i = 0; i < nameLen; ++i){
 			char c;
 			io->read(io, &c, 1);
 			nameBuf[i] = c ^ (advanceMagic(magic) & 0xFF);
@@ -415,8 +393,7 @@ RGSS_enumerateFiles(void *opaque, const char *dirname,
 }
 
 static PHYSFS_Io*
-RGSS_openRead(void *opaque, const char *filename)
-{
+RGSS_openRead(void *opaque, const char *filename){
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	if (!data->entryHash.contains(filename))
@@ -434,15 +411,13 @@ RGSS_openRead(void *opaque, const char *filename)
 }
 
 static int
-RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat)
-{
+RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat){
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	bool hasFile = data->entryHash.contains(filename);
 	bool hasDir  = data->dirHash.contains(filename);
 
-	if (!hasFile && !hasDir)
-	{
+	if (!hasFile && !hasDir){
 		PHYSFS_setErrorCode(PHYSFS_ERR_NOT_FOUND);
 		return 0;
 	}
@@ -452,15 +427,12 @@ RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat)
 	stat->accesstime = 0;
 	stat->readonly   = 1;
 
-	if (hasFile)
-	{
+	if (hasFile){
 		const RGSS_entryData &entry = data->entryHash[filename];
 
 		stat->filesize = entry.size;
 		stat->filetype = PHYSFS_FILETYPE_REGULAR;
-	}
-	else
-	{
+	}else{
 		stat->filesize = 0;
 		stat->filetype = PHYSFS_FILETYPE_DIRECTORY;
 	}
@@ -469,27 +441,23 @@ RGSS_stat(void *opaque, const char *filename, PHYSFS_Stat *stat)
 }
 
 static void
-RGSS_closeArchive(void *opaque)
-{
+RGSS_closeArchive(void *opaque){
 	RGSS_archiveData *data = static_cast<RGSS_archiveData*>(opaque);
 
 	delete data;
 }
 
 static PHYSFS_Io*
-RGSS_noop1(void*, const char*)
-{
+RGSS_noop1(void*, const char*){
 	return 0;
 }
 
 static int
-RGSS_noop2(void*, const char*)
-{
+RGSS_noop2(void*, const char*){
 	return 0;
 }
 
-const PHYSFS_Archiver RGSS1_Archiver =
-{
+const PHYSFS_Archiver RGSS1_Archiver ={
 	0,
 	{
 		"RGSSAD",
@@ -509,8 +477,7 @@ const PHYSFS_Archiver RGSS1_Archiver =
 	RGSS_closeArchive
 };
 
-const PHYSFS_Archiver RGSS2_Archiver =
-{
+const PHYSFS_Archiver RGSS2_Archiver = {
 	0,
 	{
 		"RGSS2A",
@@ -531,8 +498,7 @@ const PHYSFS_Archiver RGSS2_Archiver =
 };
 
 static bool
-readUint32AndXor(PHYSFS_Io *io, uint32_t &result, uint32_t key)
-{
+readUint32AndXor(PHYSFS_Io *io, uint32_t &result, uint32_t key){
 	if (!readUint32(io, result))
 		return false;
 
@@ -542,8 +508,7 @@ readUint32AndXor(PHYSFS_Io *io, uint32_t &result, uint32_t key)
 }
 
 static void*
-RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
-{
+RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed){
 	if (forWrite)
 		return NULL;
 
@@ -566,8 +531,7 @@ RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
 	/* Top level entry list */
 	BoostSet<std::string> &topLevel = data->dirHash[""];
 
-	while (true)
-	{
+	while (true){
 		uint32_t offset, size, magic, nameLen;
 
 		if (!readUint32AndXor(io, offset, baseMagic))
@@ -591,8 +555,7 @@ RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
 		if (!IO_READ(io, nameBuf, nameLen))
 			goto error;
 
-		for (uint32_t i = 0; i < nameLen; ++i)
-		{
+		for (uint32_t i = 0; i < nameLen; ++i){
 			nameBuf[i] ^= ((baseMagic >> 8*(i%4)) & 0xFF);
 
 			if (nameBuf[i] == '\\')
@@ -619,8 +582,7 @@ RGSS3_openArchive(PHYSFS_Io *io, const char *, int forWrite, int *claimed)
 	return data;
 }
 
-const PHYSFS_Archiver RGSS3_Archiver =
-{
+const PHYSFS_Archiver RGSS3_Archiver ={
 	0,
 	{
 		"RGSS3A",

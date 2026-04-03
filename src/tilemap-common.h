@@ -40,22 +40,19 @@
 #include <sigc++/connection.h>
 
 static inline int
-wrap(int value, int range)
-{
+wrap(int value, int range){
 	int res = value % range;
 	return res < 0 ? res + range : res;
 }
 
 static inline Vec2i
-wrap(const Vec2i &value, int range)
-{
+wrap(const Vec2i &value, int range){
 	return Vec2i(wrap(value.x, range),
 	             wrap(value.y, range));
 }
 
 static inline int16_t
-tableGetWrapped(const Table &t, int x, int y, int z = 0)
-{
+tableGetWrapped(const Table &t, int x, int y, int z = 0){
 	return t.get(wrap(x, t.xSize()),
 	             wrap(y, t.ySize()),
 	             z);
@@ -63,16 +60,14 @@ tableGetWrapped(const Table &t, int x, int y, int z = 0)
 
 /* Calculate the tile x/y on which this pixel x/y lies */
 static inline Vec2i
-getTilePos(const Vec2i &pixelPos)
-{
+getTilePos(const Vec2i &pixelPos){
 	/* Round the pixel position down to the nearest top left
 	 * tile boundary, by masking off the lower 5 bits (2^5 = 32).
 	 * Then divide by 32 to convert into tile units. */
 	return (pixelPos & ~(32-1)) / 32;
 }
 
-enum AtSubPos
-{
+enum AtSubPos{
 	TopLeft          = 0,
 	TopRight         = 1,
 	BottomLeft       = 2,
@@ -82,10 +77,8 @@ enum AtSubPos
 };
 
 static inline void
-atSelectSubPos(FloatRect &pos, int i)
-{
-	switch (i)
-	{
+atSelectSubPos(FloatRect &pos, int i){
+	switch (i){
 	case TopLeft:
 		return;
 	case TopRight:
@@ -110,8 +103,7 @@ atSelectSubPos(FloatRect &pos, int i)
 	}
 }
 
-struct FlashMap
-{
+struct FlashMap{
 	FlashMap()
 		: dirty(false),
 	      data(0),
@@ -124,20 +116,17 @@ struct FlashMap
 		GLMeta::vaoInit(vao);
 	}
 
-	~FlashMap()
-	{
+	~FlashMap(){
 		GLMeta::vaoFini(vao);
 		VBO::del(vao.vbo);
 		dataCon.disconnect();
 	}
 
-	Table *getData() const
-	{
+	Table *getData() const{
 		return data;
 	}
 
-	void setData(Table *value)
-	{
+	void setData(Table *value){
 		if (data == value)
 			return;
 
@@ -152,14 +141,12 @@ struct FlashMap
 			(sigc::mem_fun(this, &FlashMap::setDirty));
 	}
 
-	void setViewport(const IntRect &value)
-	{
+	void setViewport(const IntRect &value){
 		viewp = value;
 		dirty = true;
 	}
 
-	void prepare()
-	{
+	void prepare(){
 		if (!dirty)
 			return;
 
@@ -167,8 +154,7 @@ struct FlashMap
 		dirty = false;
 	}
 
-	void draw(float alpha, const Vec2i &trans)
-	{
+	void draw(float alpha, const Vec2i &trans){
 		const size_t count = quadCount();
 
 		if (count == 0)
@@ -191,18 +177,15 @@ struct FlashMap
 	}
 
 private:
-	void setDirty()
-	{
+	void setDirty(){
 		dirty = true;
 	}
 
-	size_t quadCount() const
-	{
+	size_t quadCount() const{
 		return vertices.size() / 4;
 	}
 
-	bool sampleFlashColor(Vec4 &out, int x, int y) const
-	{
+	bool sampleFlashColor(Vec4 &out, int x, int y) const{
 		int16_t packed = tableGetWrapped(*data, x, y);
 
 		if (packed == 0)
@@ -219,8 +202,7 @@ private:
 		return true;
 	}
 
-	void rebuildBuffer()
-	{
+	void rebuildBuffer(){
 		vertices.clear();
 
 		if (!data)
@@ -249,8 +231,7 @@ private:
 
 		VBO::bind(vao.vbo);
 
-		if (quadCount() > allocQuads)
-		{
+		if (quadCount() > allocQuads){
 			allocQuads = quadCount();
 			VBO::allocEmpty(sizeof(CVertex) * vertices.size());
 		}

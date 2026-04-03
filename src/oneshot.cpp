@@ -45,8 +45,7 @@
 #define DEF_SCREEN_W 640
 #define DEF_SCREEN_H 480
 
-struct OneshotPrivate
-{
+struct OneshotPrivate{
 	// Main SDL window
 	SDL_Window *window;
 
@@ -79,16 +78,14 @@ struct OneshotPrivate
 	{
 	}
 
-	~OneshotPrivate()
-	{
+	~OneshotPrivate(){
 		SDL_DestroyMutex(winMutex);
 	}
 };
 
 //OS-SPECIFIC FUNCTIONS
 #if defined OS_LINUX
-struct linux_DialogData
-{
+struct linux_DialogData{
 	// Input
 	int type;
 	const char *body;
@@ -104,8 +101,7 @@ static int linux_dialog(void *rawData){
 	// Determine correct flags
 	GtkMessageType gtktype;
 	GtkButtonsType gtkbuttons = GTK_BUTTONS_OK;
-	switch (data->type)
-	{
+	switch (data->type){
 		case Oneshot::MSG_INFO:
 			gtktype = GTK_MESSAGE_INFO;
 			break;
@@ -137,12 +133,10 @@ static int linux_dialog(void *rawData){
 }
 #elif defined OS_W32
 /* Convert WCHAR pointer to std::string */
-static std::string w32_fromWide(const WCHAR *ustr)
-{
+static std::string w32_fromWide(const WCHAR *ustr){
 	std::string result;
 	int size = WideCharToMultiByte(CP_UTF8, 0, ustr, -1, 0, 0, 0, 0);
-	if (size > 0)
-	{
+	if (size > 0){
 		CHAR *str = new CHAR[size];
 		if (WideCharToMultiByte(CP_UTF8, 0, ustr, -1, str, size, 0, 0) == size)
 			result = str;
@@ -151,13 +145,10 @@ static std::string w32_fromWide(const WCHAR *ustr)
 	return result;
 }
 /* Convert WCHAR pointer from const char* */
-static WCHAR *w32_toWide(const char *str)
-{
-	if (str)
-	{
+static WCHAR *w32_toWide(const char *str){
+	if (str){
 		int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, 0, 0);
-		if (size > 0)
-		{
+		if (size > 0){
 			WCHAR *ustr = new WCHAR[size];
 			if (MultiByteToWideChar(CP_UTF8, 0, str, -1, ustr, size) == size)
 				return ustr;
@@ -207,21 +198,17 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	//Get user's name
 	ULONG size = 0;
 	GetUserNameEx(NameDisplay, 0, &size);
-	if (GetLastError() == ERROR_MORE_DATA)
-	{
+	if (GetLastError() == ERROR_MORE_DATA){
 		//Get their full (display) name
 		WCHAR *name = new WCHAR[size];
 		GetUserNameEx(NameDisplay, name, &size);
 		p->userName = w32_fromWide(name);
 		delete [] name;
-	}
-	else
-	{
+	}else{
 		//Get their login name
 		DWORD size2 = 0;
 		GetUserName(0, &size2);
-		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
-		{
+		if (GetLastError() == ERROR_INSUFFICIENT_BUFFER){
 			WCHAR *name = new WCHAR[size2];
 			GetUserName(name, &size2);
 			p->userName = w32_fromWide(name);
@@ -240,14 +227,12 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	const char *lc_all = getenv("LC_ALL");
 	const char *lang = getenv("LANG");
 	const char *code = (lc_all ? lc_all : lang);
-	if (code)
-	{
+	if (code){
 		// find first dot, copy language code
 		int end = 0;
 		for (; code[end] && code[end] != '.'; ++end) {}
 		p->lang = std::string(code, end);
-	}
-	else
+	}else
 		p->lang = "en";
 
 	// Get user's name
@@ -256,16 +241,13 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	#elif defined OS_LINUX
 		struct passwd *pwd = getpwuid(getuid());
 	#endif
-	if (pwd)
-	{
-		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ',')
-		{
+	if (pwd){
+		if (pwd->pw_gecos && pwd->pw_gecos[0] && pwd->pw_gecos[0] != ','){
 			//Get the user's full name
 			int comma = 0;
 			for (; pwd->pw_gecos[comma] && pwd->pw_gecos[comma] != ','; ++comma) {}
 			p->userName = std::string(pwd->pw_gecos, comma);
-		}
-		else
+		}else
 			p->userName = pwd->pw_name;
 	}
 
@@ -332,15 +314,12 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 #endif
 }
 
-Oneshot::~Oneshot()
-{
+Oneshot::~Oneshot(){
 	delete p;
 }
 
-void Oneshot::update()
-{
-	if (p->winPosChanged)
-	{
+void Oneshot::update(){
+	if (p->winPosChanged){
 		p->winPosChanged = false;
 
 		//Map of unobscured pixels in this frame
@@ -361,8 +340,7 @@ void Oneshot::update()
 		SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
 		SDL_free(displays);
 		//Update obscured map and texture for window portion offscreen
-		for (int i = 0, max = num_displays; i < max; ++i)
-		{
+		for (int i = 0, max = num_displays; i < max; ++i){
 			SDL_Rect bounds;
 			SDL_GetDisplayBounds(i, &bounds);
 
@@ -378,8 +356,7 @@ void Oneshot::update()
 			if (intersect.x == 0 && intersect.y == 0 && intersect.w == 640 && intersect.h == 480)
 				return;
 
-			for (int y = intersect.y; y < intersect.y + intersect.h; ++y)
-			{
+			for (int y = intersect.y; y < intersect.y + intersect.h; ++y){
 				int start = y * 640 + intersect.x;
 				std::fill(obscuredFrame.begin() + start, obscuredFrame.begin() + (start + intersect.w), false);
 			}
@@ -389,10 +366,8 @@ void Oneshot::update()
 		//to make to the texture
 		bool needsUpdate = false;
 		bool cleared = true;
-		for (size_t i = 0; i < obscuredFrame.size(); ++i)
-		{
-			if (obscuredFrame[i])
-			{
+		for (size_t i = 0; i < obscuredFrame.size(); ++i){
+			if (obscuredFrame[i]){
 				p->obscuredMap[i] = 0;
 				needsUpdate = true;
 			}
@@ -408,69 +383,56 @@ void Oneshot::update()
 	}
 }
 
-const std::string &Oneshot::os() const
-{
+const std::string &Oneshot::os() const{
 	return p->os;
 }
 
-const std::string &Oneshot::lang() const
-{
+const std::string &Oneshot::lang() const{
 	return p->lang;
 }
 
-const std::string &Oneshot::userName() const
-{
+const std::string &Oneshot::userName() const{
 	return p->userName;
 }
 
-const std::string &Oneshot::savePath() const
-{
+const std::string &Oneshot::savePath() const{
 	return p->savePath;
 }
 
-const std::string &Oneshot::docsPath() const
-{
+const std::string &Oneshot::docsPath() const{
 	return p->docsPath;
 }
 
-const std::string &Oneshot::gamePath() const
-{
+const std::string &Oneshot::gamePath() const{
 	return p->gamePath;
 }
 
-const std::string &Oneshot::journal() const
-{
+const std::string &Oneshot::journal() const{
 	return p->journal;
 }
 
-const std::vector<uint8_t> &Oneshot::obscuredMap() const
-{
+const std::vector<uint8_t> &Oneshot::obscuredMap() const{
 	return p->obscuredMap;
 }
 
-bool Oneshot::obscuredCleared() const
-{
+bool Oneshot::obscuredCleared() const{
 	return p->obscuredCleared;
 }
 
-bool Oneshot::exiting() const
-{
+bool Oneshot::exiting() const{
 	return p->exiting;
 }
 
-bool Oneshot::allowExit() const
-{
+bool Oneshot::allowExit() const{
 	return p->allowExit;
 }
 
-void Oneshot::setYesNo(const char *yes, const char *no)
-{
+void Oneshot::setYesNo(const char *yes, const char *no){
 	p->txtYes = yes;
 	p->txtNo = no;
 }
 
-void Oneshot::setExiting(bool exiting)
-{
+void Oneshot::setExiting(bool exiting){
 	if (p->exiting != exiting) {
 		p->exiting = exiting;
 		if (exiting) {
@@ -481,8 +443,7 @@ void Oneshot::setExiting(bool exiting)
 	}
 }
 
-void Oneshot::setAllowExit(bool allowExit)
-{
+void Oneshot::setAllowExit(bool allowExit){
 	if (p->allowExit != allowExit) {
 		p->allowExit = allowExit;
 		if (allowExit) {
@@ -493,8 +454,7 @@ void Oneshot::setAllowExit(bool allowExit)
 	}
 }
 
-bool Oneshot::msgbox(int type, const char *body, const char *title)
-{
+bool Oneshot::msgbox(int type, const char *body, const char *title){
 	if (!title)
 		title = "";
 #ifdef OS_LINUX
@@ -548,8 +508,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title)
 	}
 
 	// Set buttons
-	switch (type)
-	{
+	switch (type){
 	case MSG_INFO:
 	case MSG_WARN:
 	case MSG_ERR:
@@ -620,8 +579,7 @@ std::string Oneshot::textinput(const char* prompt, int char_limit, const char* f
 	return threadData.inputText;
 }
 
-void Oneshot::setWindowPos(int x, int y)
-{
+void Oneshot::setWindowPos(int x, int y){
 	SDL_LockMutex(p->winMutex);
 	p->winX = x;
 	p->winY = y;
@@ -629,8 +587,7 @@ void Oneshot::setWindowPos(int x, int y)
 	SDL_UnlockMutex(p->winMutex);
 }
 
-void Oneshot::resetObscured()
-{
+void Oneshot::resetObscured(){
 	std::fill(p->obscuredMap.begin(), p->obscuredMap.end(), 255);
 	obscuredDirty = true;
 	p->obscuredCleared = false;

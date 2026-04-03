@@ -29,16 +29,14 @@
 #include "global-ibo.h"
 #include "shader.h"
 
-struct Quad
-{
+struct Quad{
 	Vertex vert[4];
 	VBO::ID vbo;
 	GLMeta::VAO vao;
 	bool vboDirty;
 
 	template<typename V>
-	static void setPosRect(V *vert, const FloatRect &r)
-	{
+	static void setPosRect(V *vert, const FloatRect &r){
 		int i = 0;
 		vert[i++].pos = r.topLeft();
 		vert[i++].pos = r.topRight();
@@ -47,8 +45,7 @@ struct Quad
 	}
 
 	template<typename V>
-	static void setTexRect(V *vert, const FloatRect &r)
-	{
+	static void setTexRect(V *vert, const FloatRect &r){
 		int i = 0;
 		vert[i++].texPos = r.topLeft();
 		vert[i++].texPos = r.topRight();
@@ -57,8 +54,7 @@ struct Quad
 	}
 
 	template<typename V>
-	static int setTexPosRect(V *vert, const FloatRect &tex, const FloatRect &pos)
-	{
+	static int setTexPosRect(V *vert, const FloatRect &tex, const FloatRect &pos){
 		setPosRect(vert, pos);
 		setTexRect(vert, tex);
 
@@ -66,16 +62,14 @@ struct Quad
 	}
 
 	template<typename V>
-	static void setColor(V *vert, const Vec4 &c)
-	{
+	static void setColor(V *vert, const Vec4 &c){
 		for (int i = 0; i < 4; ++i)
 			vert[i].color = c;
 	}
 
 	Quad()
 	    : vbo(VBO::gen()),
-	      vboDirty(true)
-	{
+	      vboDirty(true){
 		GLMeta::vaoFillInVertexData<Vertex>(vao);
 		vao.vbo = vbo;
 		vao.ibo = shState->globalIBO().ibo;
@@ -87,49 +81,41 @@ struct Quad
 		setColor(Vec4(1, 1, 1, 1));
 	}
 
-	~Quad()
-	{
+	~Quad(){
 		GLMeta::vaoFini(vao);
 		VBO::del(vbo);
 	}
 
-	void updateBuffer()
-	{
+	void updateBuffer(){
 		VBO::bind(vbo);
 		VBO::uploadSubData(0, sizeof(Vertex[4]), vert);
 		VBO::unbind();
 	}
 
-	void setPosRect(const FloatRect &r)
-	{
+	void setPosRect(const FloatRect &r){
 		setPosRect(vert, r);
 		vboDirty = true;
 	}
 
-	void setTexRect(const FloatRect &r)
-	{
+	void setTexRect(const FloatRect &r){
 		setTexRect(vert, r);
 		vboDirty = true;
 	}
 
-	void setTexPosRect(const FloatRect &tex, const FloatRect &pos)
-	{
+	void setTexPosRect(const FloatRect &tex, const FloatRect &pos){
 		setTexPosRect(vert, tex, pos);
 		vboDirty = true;
 	}
 
-	void setColor(const Vec4 &c)
-	{
+	void setColor(const Vec4 &c){
 		for (int i = 0; i < 4; ++i)
 			vert[i].color = c;
 
 		vboDirty = true;
 	}
 
-	void draw()
-	{
-		if (vboDirty)
-		{
+	void draw(){
+		if (vboDirty){
 			updateBuffer();
 			vboDirty = false;
 		}

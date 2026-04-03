@@ -32,8 +32,7 @@
 
 #define SE_CACHE_MEM (10*1024*1024) // 10 MB
 
-struct SoundBuffer
-{
+struct SoundBuffer{
 	/* Uniquely identifies this or equal buffer */
 	std::string key;
 
@@ -56,15 +55,13 @@ struct SoundBuffer
 		alBuffer = AL::Buffer::gen();
 	}
 
-	static SoundBuffer *ref(SoundBuffer *buffer)
-	{
+	static SoundBuffer *ref(SoundBuffer *buffer){
 		++buffer->refCount;
 
 		return buffer;
 	}
 
-	static void deref(SoundBuffer *buffer)
-	{
+	static void deref(SoundBuffer *buffer){
 		if (--buffer->refCount == 0)
 			delete buffer;
 	}
@@ -78,8 +75,7 @@ private:
 
 /* Before: [a][b][c][d], After (index=1): [a][c][d][b] */
 static void
-arrayPushBack(std::vector<size_t> &array, size_t size, size_t index)
-{
+arrayPushBack(std::vector<size_t> &array, size_t size, size_t index){
 	size_t v = array[index];
 
 	for (size_t t = index; t < size-1; ++t)
@@ -95,18 +91,15 @@ SoundEmitter::SoundEmitter(const Config &conf)
       atchBufs(srcCount),
       srcPrio(srcCount)
 {
-	for (size_t i = 0; i < srcCount; ++i)
-	{
+	for (size_t i = 0; i < srcCount; ++i){
 		alSrcs[i] = AL::Source::gen();
 		atchBufs[i] = 0;
 		srcPrio[i] = i;
 	}
 }
 
-SoundEmitter::~SoundEmitter()
-{
-	for (size_t i = 0; i < srcCount; ++i)
-	{
+SoundEmitter::~SoundEmitter(){
+	for (size_t i = 0; i < srcCount; ++i){
 		AL::Source::stop(alSrcs[i]);
 		AL::Source::del(alSrcs[i]);
 
@@ -178,26 +171,22 @@ void SoundEmitter::play(const std::string &filename,
 	AL::Source::play(src);
 }
 
-void SoundEmitter::stop()
-{
+void SoundEmitter::stop(){
 	for (size_t i = 0; i < srcCount; i++)
 		AL::Source::stop(alSrcs[i]);
 }
 
-struct SoundOpenHandler : FileSystem::OpenHandler
-{
+struct SoundOpenHandler : FileSystem::OpenHandler{
 	SoundBuffer *buffer;
 
 	SoundOpenHandler()
 	    : buffer(0)
 	{}
 
-	bool tryRead(SDL_IOStream* &ops, const char *ext)
-	{
+	bool tryRead(SDL_IOStream* &ops, const char *ext){
 		Sound_Sample *sample = Sound_NewSample(ops, ext, 0, STREAM_BUF_SIZE);
 
-		if (!sample)
-		{
+		if (!sample){
 			SDL_CloseIO(ops);
 			return false;
 		}
@@ -222,28 +211,23 @@ struct SoundOpenHandler : FileSystem::OpenHandler
 	}
 };
 
-SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename)
-{
+SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename){
 	SoundBuffer *buffer = bufferHash.value(filename, 0);
 
-	if (buffer)
-	{
+	if (buffer){
 		/* Buffer still in cashe.
 		 * Move to front of priority list */
 		buffers.remove(buffer->link);
 		buffers.append(buffer->link);
 
 		return buffer;
-	}
-	else
-	{
+	}else{
 		/* Buffer not in cache, needs to be loaded */
 		SoundOpenHandler handler;
 		shState->fileSystem().openRead(handler, filename.c_str());
 		buffer = handler.buffer;
 
-		if (!buffer)
-		{
+		if (!buffer){
 			char buf[512];
 			snprintf(buf, sizeof(buf), "Unable to decode sound: %s: %s",
 			         filename.c_str(), Sound_GetError());
@@ -257,8 +241,7 @@ SoundBuffer *SoundEmitter::allocateBuffer(const std::string &filename)
 
 		/* If memory limit is reached, delete lowest priority buffer
 		 * until there is room or no buffers left */
-		while (wouldBeBytes > SE_CACHE_MEM && !buffers.isEmpty())
-		{
+		while (wouldBeBytes > SE_CACHE_MEM && !buffers.isEmpty()){
 			SoundBuffer *last = buffers.tail();
 			bufferHash.remove(last->key);
 			buffers.remove(last->link);

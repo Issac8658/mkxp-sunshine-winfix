@@ -34,19 +34,16 @@ class Window;
 struct ScanRow;
 struct TilemapPrivate;
 
-class Scene
-{
+class Scene{
 public:
-	struct Geometry
-	{
+	struct Geometry{
 		/* Position and size relative to parent */
 		IntRect rect;
 
 		/* Origin of contents */
 		Vec2i orig;
 
-		Vec2i offset() const
-		{
+		Vec2i offset() const{
 			return rect.pos() - orig;
 		}
 	};
@@ -78,8 +75,7 @@ protected:
 	friend struct ZLayer;
 };
 
-class SceneElement
-{
+class SceneElement{
 public:
 	SceneElement(Scene &scene, int z = 0, int spriteY = 0);
 	virtual ~SceneElement();

@@ -24,8 +24,7 @@
 
 #include <SDL3_sound/SDL_sound.h>
 
-struct SDLSoundSource : ALDataSource
-{
+struct SDLSoundSource : ALDataSource{
 	Sound_Sample *sample;
 	SDL_IOStream &srcOps;
 	uint8_t sampleSize;
@@ -43,8 +42,7 @@ struct SDLSoundSource : ALDataSource
 	{
 		sample = Sound_NewSample(&srcOps, extension, 0, maxBufSize);
 
-		if (!sample)
-		{
+		if (!sample){
 			SDL_CloseIO(&ops);
 			throw Exception(Exception::SDLError, "SDL_sound: %s", Sound_GetError());
 		}
@@ -55,18 +53,15 @@ struct SDLSoundSource : ALDataSource
 		alFreq = sample->actual.freq;
 	}
 
-	~SDLSoundSource()
-	{
+	~SDLSoundSource(){
 		/* This also closes 'srcOps' */
 		Sound_FreeSample(sample);
 	}
 
-	Status fillBuffer(AL::Buffer::ID alBuffer)
-	{
+	Status fillBuffer(AL::Buffer::ID alBuffer){
 		uint32_t decoded = Sound_Decode(sample);
 
-		if (sample->flags & SOUND_SAMPLEFLAG_EAGAIN)
-		{
+		if (sample->flags & SOUND_SAMPLEFLAG_EAGAIN){
 			/* Try to decode one more time on EAGAIN */
 			decoded = Sound_Decode(sample);
 
@@ -80,15 +75,11 @@ struct SDLSoundSource : ALDataSource
 
 		AL::Buffer::uploadData(alBuffer, alFormat, sample->buffer, decoded, alFreq);
 
-		if (sample->flags & SOUND_SAMPLEFLAG_EOF)
-		{
-			if (looped)
-			{
+		if (sample->flags & SOUND_SAMPLEFLAG_EOF){
+			if (looped){
 				Sound_Rewind(sample);
 				return ALDataSource::WrapAround;
-			}
-			else
-			{
+			}else{
 				return ALDataSource::EndOfStream;
 			}
 		}
@@ -96,27 +87,23 @@ struct SDLSoundSource : ALDataSource
 		return ALDataSource::NoError;
 	}
 
-	int sampleRate()
-	{
+	int sampleRate(){
 		return sample->actual.freq;
 	}
 
-	void seekToOffset(float seconds)
-	{
+	void seekToOffset(float seconds){
 		if (seconds <= 0)
 			Sound_Rewind(sample);
 		else
 			Sound_Seek(sample, static_cast<uint32_t>(seconds * 1000));
 	}
 
-	uint32_t loopStartFrames()
-	{
+	uint32_t loopStartFrames(){
 		/* Loops from the beginning of the file */
 		return 0;
 	}
 
-	bool setPitch(float)
-	{
+	bool setPitch(float){
 		return false;
 	}
 };

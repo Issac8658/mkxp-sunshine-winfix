@@ -32,16 +32,13 @@ void subRectImageUpload(GLint srcW, GLint srcX, GLint srcY,
                         GLint dstX, GLint dstY, GLsizei dstW, GLsizei dstH,
                         SDL_Surface *src, GLenum format)
 {
-	if (gl.unpack_subimage)
-	{
+	if (gl.unpack_subimage){
 		gl.PixelStorei(GL_UNPACK_ROW_LENGTH, srcW);
 		gl.PixelStorei(GL_UNPACK_SKIP_PIXELS, srcX);
 		gl.PixelStorei(GL_UNPACK_SKIP_ROWS, srcY);
 
 		TEX::uploadSubImage(dstX, dstY, dstW, dstH, src->pixels, format);
-	}
-	else
-	{
+	}else{
 		//SDL_PixelFormat *form = src->format;
 		/*SDL_Surface *tmp = SDL_CreateSurface(0, dstW, dstH, form->BitsPerPixel,
 		                                        form->Rmask, form->Gmask, form->Bmask, form->Amask);*/

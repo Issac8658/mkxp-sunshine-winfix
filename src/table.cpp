@@ -39,13 +39,11 @@ Table::Table(const Table &other)
       data(other.data)
 {}
 
-int16_t Table::get(int x, int y, int z) const
-{
+int16_t Table::get(int x, int y, int z) const{
 	return data[xs*ys*z + xs*y + x];
 }
 
-void Table::set(int16_t value, int x, int y, int z)
-{
+void Table::set(int16_t value, int x, int y, int z){
 	if (x < 0 || x >= xs
 	||  y < 0 || y >= ys
 	||  z < 0 || z >= zs)
@@ -58,8 +56,7 @@ void Table::set(int16_t value, int x, int y, int z)
 	modified();
 }
 
-void Table::resize(int x, int y, int z)
-{
+void Table::resize(int x, int y, int z){
 	if (x == xs && y == ys && z == zs)
 		return;
 
@@ -79,25 +76,21 @@ void Table::resize(int x, int y, int z)
 	return;
 }
 
-void Table::resize(int x, int y)
-{
+void Table::resize(int x, int y){
 	resize(x, y, zs);
 }
 
-void Table::resize(int x)
-{
+void Table::resize(int x){
 	resize(x, ys, zs);
 }
 
 /* Serializable */
-int Table::serialSize() const
-{
+int Table::serialSize() const{
 	/* header + data */
 	return 20 + (xs * ys * zs) * 2;
 }
 
-void Table::serialize(char *buffer) const
-{
+void Table::serialize(char *buffer) const{
 	/* Table dimensions: we don't care
 	 * about them but RMXP needs them */
 	int dim = 1;
@@ -119,8 +112,7 @@ void Table::serialize(char *buffer) const
 }
 
 
-Table *Table::deserialize(const char *data, int len)
-{
+Table *Table::deserialize(const char *data, int len){
 	if (len < 20)
 		throw Exception(Exception::RGSSError, "Marshal: Table: bad file format");
 

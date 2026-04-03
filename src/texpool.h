@@ -26,8 +26,7 @@
 
 struct TexPoolPrivate;
 
-class TexPool
-{
+class TexPool{
 public:
 	TexPool(uint32_t maxMemSize = 20000000 /* 20 MB */);
 	~TexPool();

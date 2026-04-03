@@ -67,8 +67,7 @@ private:
 	IntruListLink<Scene> sceneLink;
 };
 
-class ViewportElement : public SceneElement
-{
+class ViewportElement : public SceneElement{
 public:
 	ViewportElement(Viewport *viewport = 0, int z = 0, int spriteY = 0);
 

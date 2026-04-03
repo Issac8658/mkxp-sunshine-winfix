@@ -32,8 +32,7 @@ struct RGSSThreadData;
 struct GraphicsPrivate;
 struct AtomicFlag;
 
-class Graphics
-{
+class Graphics{
 public:
 	void update(bool limitFps = true);
 	void freeze();

@@ -35,8 +35,7 @@
 
 #define BUTTON_CODE_COUNT 24
 
-struct ButtonState
-{
+struct ButtonState{
 	bool pressed;
 	bool triggered;
 	bool repeated;
@@ -48,14 +47,12 @@ struct ButtonState
 	{}
 };
 
-struct KbBindingData
-{
+struct KbBindingData{
 	SDL_Scancode source;
 	Input::ButtonCode target;
 };
 
-struct Binding
-{
+struct Binding{
 	Binding(Input::ButtonCode target = Input::None)
 		: target(target)
 	{}
@@ -67,8 +64,7 @@ struct Binding
 };
 
 /* Keyboard binding */
-struct KbBinding : public Binding
-{
+struct KbBinding : public Binding{
 	KbBinding() {}
 
 	KbBinding(const KbBindingData &data)
@@ -76,8 +72,7 @@ struct KbBinding : public Binding
 		  source(data.source)
 	{}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		/* Special case aliases */
 		if (source == SDL_SCANCODE_LSHIFT)
 			return EventThread::keyStates[source]
@@ -90,8 +85,7 @@ struct KbBinding : public Binding
 		return EventThread::keyStates[source];
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return (source >= SDL_SCANCODE_A     && source <= SDL_SCANCODE_0)    ||
 		       (source >= SDL_SCANCODE_RIGHT && source <= SDL_SCANCODE_UP)   ||
 		       (source >= SDL_SCANCODE_F1    && source <= SDL_SCANCODE_F12);
@@ -101,17 +95,14 @@ struct KbBinding : public Binding
 };
 
 /* Controller button binding */
-struct GcButtonBinding : public Binding
-{
+struct GcButtonBinding : public Binding{
 	GcButtonBinding() {}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		return EventThread::gcState.buttons[source];
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return true;
 	}
 
@@ -119,8 +110,7 @@ struct GcButtonBinding : public Binding
 };
 
 /* Controller axis binding */
-struct GcAxisBinding : public Binding
-{
+struct GcAxisBinding : public Binding{
 	GcAxisBinding() {}
 
 	GcAxisBinding(uint8_t source,
@@ -131,8 +121,7 @@ struct GcAxisBinding : public Binding
 	      dir(dir)
 	{}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		int val = EventThread::gcState.axes[source];
 
 		if (dir == Negative)
@@ -141,8 +130,7 @@ struct GcAxisBinding : public Binding
 			return val > JAXIS_THRESHOLD;
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return true;
 	}
 
@@ -151,17 +139,14 @@ struct GcAxisBinding : public Binding
 };
 
 /* Joystick button binding */
-struct JsButtonBinding : public Binding
-{
+struct JsButtonBinding : public Binding{
 	JsButtonBinding() {}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		return EventThread::joyState.buttons[source];
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return true;
 	}
 
@@ -169,8 +154,7 @@ struct JsButtonBinding : public Binding
 };
 
 /* Joystick axis binding */
-struct JsAxisBinding : public Binding
-{
+struct JsAxisBinding : public Binding{
 	JsAxisBinding() {}
 
 	JsAxisBinding(uint8_t source,
@@ -181,8 +165,7 @@ struct JsAxisBinding : public Binding
 	      dir(dir)
 	{}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		int val = EventThread::joyState.axes[source];
 
 		if (dir == Negative)
@@ -191,8 +174,7 @@ struct JsAxisBinding : public Binding
 			return val > JAXIS_THRESHOLD;
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return true;
 	}
 
@@ -201,8 +183,7 @@ struct JsAxisBinding : public Binding
 };
 
 /* Joystick hat binding */
-struct JsHatBinding : public Binding
-{
+struct JsHatBinding : public Binding{
 	JsHatBinding() {}
 
 	JsHatBinding(uint8_t source,
@@ -213,14 +194,12 @@ struct JsHatBinding : public Binding
 	      pos(pos)
 	{}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		/* For a diagonal input accept it as an input for both the axes */
 		return (pos & EventThread::joyState.hats[source]) != 0;
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return true;
 	}
 
@@ -229,8 +208,7 @@ struct JsHatBinding : public Binding
 };
 
 /* Mouse button binding */
-struct MsBinding : public Binding
-{
+struct MsBinding : public Binding{
 	MsBinding() {}
 
 	MsBinding(int buttonIndex,
@@ -239,13 +217,11 @@ struct MsBinding : public Binding
 	      index(buttonIndex)
 	{}
 
-	bool sourceActive() const
-	{
+	bool sourceActive() const{
 		return EventThread::mouseState.buttons[index];
 	}
 
-	bool sourceRepeatable() const
-	{
+	bool sourceRepeatable() const{
 		return false;
 	}
 
@@ -253,8 +229,7 @@ struct MsBinding : public Binding
 };
 
 /* Not rebindable */
-static const KbBindingData staticKbBindings[] =
-{
+static const KbBindingData staticKbBindings[] ={
 	{ SDL_SCANCODE_F5,     Input::F5    },
 	{ SDL_SCANCODE_F6,     Input::F6    },
 	{ SDL_SCANCODE_F7,     Input::F7    },
@@ -266,8 +241,7 @@ static elementsN(staticKbBindings);
 
 /* Maps ButtonCode enum values to indices
  * in the button state array */
-static const int mapToIndex[] =
-{
+static const int mapToIndex[] = {
 	0, 0,
 	1, 0, 2, 0, 3, 0, 4, 0,
 	0,
@@ -285,8 +259,7 @@ static elementsN(mapToIndex);
 static const Input::ButtonCode dirs[] =
 { Input::Down, Input::Left, Input::Right, Input::Up };
 
-static const int dirFlags[] =
-{
+static const int dirFlags[] = {
 	1 << Input::Down,
 	1 << Input::Left,
 	1 << Input::Right,
@@ -294,22 +267,19 @@ static const int dirFlags[] =
 };
 
 /* Dir4 is always zero on these combinations */
-static const int deadDirFlags[] =
-{
+static const int deadDirFlags[] = {
 	dirFlags[0] | dirFlags[3],
 	dirFlags[1] | dirFlags[2]
 };
 
-static const Input::ButtonCode otherDirs[4][3] =
-{
+static const Input::ButtonCode otherDirs[4][3] = {
 	{ Input::Left, Input::Right, Input::Up    }, /* Down  */
 	{ Input::Down, Input::Up,    Input::Right }, /* Left  */
 	{ Input::Down, Input::Up,    Input::Left  }, /* Right */
 	{ Input::Left, Input::Right, Input::Up    }  /* Up    */
 };
 
-struct InputPrivate
-{
+struct InputPrivate {
 	std::vector<KbBinding> kbStatBindings;
 	std::vector<KbBinding> kbBindings;
 	std::vector<GcAxisBinding> gcABindings;
@@ -371,8 +341,7 @@ struct InputPrivate
 		triedExit = false;
 	}
 
-	inline ButtonState &getStateCheck(int code)
-	{
+	inline ButtonState &getStateCheck(int code){
 		int index;
 
 		if (code < 0 || (size_t) code > mapToIndexN-1)
@@ -383,31 +352,26 @@ struct InputPrivate
 		return states[index];
 	}
 
-	inline ButtonState &getState(Input::ButtonCode code)
-	{
+	inline ButtonState &getState(Input::ButtonCode code){
 		return states[mapToIndex[code]];
 	}
 
-	inline ButtonState &getOldState(Input::ButtonCode code)
-	{
+	inline ButtonState &getOldState(Input::ButtonCode code){
 		return statesOld[mapToIndex[code]];
 	}
 
-	void swapBuffers()
-	{
+	void swapBuffers(){
 		ButtonState *tmp = states;
 		states = statesOld;
 		statesOld = tmp;
 	}
 
-	void clearBuffer()
-	{
+	void clearBuffer(){
 		const size_t size = sizeof(ButtonState) * BUTTON_CODE_COUNT;
 		memset(states, 0, size);
 	}
 
-	void checkBindingChange(const RGSSThreadData &rtData)
-	{
+	void checkBindingChange(const RGSSThreadData &rtData){
 		BDescVec d;
 
 		if (!rtData.bindingUpdateMsg.poll(d))
@@ -417,14 +381,12 @@ struct InputPrivate
 	}
 
 	template<class B>
-	void appendBindings(std::vector<B> &bind)
-	{
+	void appendBindings(std::vector<B> &bind){
 		for (size_t i = 0; i < bind.size(); ++i)
 			bindings.push_back(&bind[i]);
 	}
 
-	void applyBindingDesc(const BDescVec &d)
-	{
+	void applyBindingDesc(const BDescVec &d){
 		kbBindings.clear();
 		gcABindings.clear();
 		gcBBindings.clear();
@@ -432,16 +394,14 @@ struct InputPrivate
 		jsHBindings.clear();
 		jsBBindings.clear();
 
-		for (size_t i = 0; i < d.size(); ++i)
-		{
+		for (size_t i = 0; i < d.size(); ++i){
 			const BindingDesc &desc = d[i];
 			const SourceDesc &src = desc.src;
 
 			if (desc.target == Input::None)
 				continue;
 
-			switch (desc.src.type)
-			{
+			switch (desc.src.type){
 			case Invalid :
 				break;
 			case Key :
@@ -519,16 +479,14 @@ struct InputPrivate
 		appendBindings(jsBBindings);
 	}
 
-	void initStaticKbBindings()
-	{
+	void initStaticKbBindings(){
 		kbStatBindings.clear();
 
 		for (size_t i = 0; i < staticKbBindingsN; ++i)
 			kbStatBindings.push_back(KbBinding(staticKbBindings[i]));
 	}
 
-	void initMsBindings()
-	{
+	void initMsBindings(){
 		msBindings.resize(3);
 
 		size_t i = 0;
@@ -537,8 +495,7 @@ struct InputPrivate
 		msBindings[i++] = MsBinding(SDL_BUTTON_RIGHT,  Input::MouseRight);
 	}
 
-	void pollBindings(Input::ButtonCode &repeatCand)
-	{
+	void pollBindings(Input::ButtonCode &repeatCand){
 		for (size_t i = 0; i < bindings.size(); ++i)
 			pollBindingPriv(*bindings[i], repeatCand);
 
@@ -547,8 +504,7 @@ struct InputPrivate
 	}
 
 	void pollBindingPriv(const Binding &b,
-	                     Input::ButtonCode &repeatCand)
-	{	
+	                     Input::ButtonCode &repeatCand){
 		if (!b.sourceActive())
 			return;
 
@@ -579,21 +535,18 @@ struct InputPrivate
 		}
 	}
 
-	void updateDir4()
-	{
+	void updateDir4(){
 		int dirFlag = 0;
 
 		for (size_t i = 0; i < 4; ++i)
 			dirFlag |= (getState(dirs[i]).pressed ? dirFlags[i] : 0);
 
-		if (dirFlag == deadDirFlags[0] || dirFlag == deadDirFlags[1])
-		{
+		if (dirFlag == deadDirFlags[0] || dirFlag == deadDirFlags[1]){
 			dir4Data.active = Input::None;
 			return;
 		}
 
-		if (dir4Data.previous != Input::None)
-		{
+		if (dir4Data.previous != Input::None){
 			/* Check if prev still pressed */
 			if (getState(dir4Data.previous).pressed)
 			{
@@ -611,8 +564,7 @@ struct InputPrivate
 			}
 		}
 
-		for (size_t i = 0; i < 4; ++i)
-		{
+		for (size_t i = 0; i < 4; ++i){
 			if (!getState(dirs[i]).pressed)
 				continue;
 
@@ -627,8 +579,7 @@ struct InputPrivate
 
 	void updateDir8()
 	{
-		static const int combos[4][4] =
-		{
+		static const int combos[4][4] = {
 			{ 2, 1, 3, 0 },
 			{ 1, 4, 0, 7 },
 			{ 3, 0, 6, 9 },
@@ -637,15 +588,13 @@ struct InputPrivate
 
 		dir8Data.active = 0;
 
-		for (size_t i = 0; i < 4; ++i)
-		{
+		for (size_t i = 0; i < 4; ++i) {
 			Input::ButtonCode one = dirs[i];
 
 			if (!getState(one).pressed)
 				continue;
 
-			for (int j = 0; j < 3; ++j)
-			{
+			for (int j = 0; j < 3; ++j){
 				Input::ButtonCode other = otherDirs[i][j];
 
 				if (!getState(other).pressed)
@@ -662,13 +611,11 @@ struct InputPrivate
 };
 
 
-Input::Input(const RGSSThreadData &rtData)
-{
+Input::Input(const RGSSThreadData &rtData){
 	p = new InputPrivate(rtData);
 }
 
-void Input::update()
-{
+void Input::update(){
 	shState->checkShutdown();
 	p->checkBindingChange(shState->rtData());
 
@@ -681,8 +628,7 @@ void Input::update()
 	p->pollBindings(repeatCand);
 
 	/* Check for new repeating key */
-	if (repeatCand != None && repeatCand != p->repeating)
-	{
+	if (repeatCand != None && repeatCand != p->repeating){
 		p->repeating = repeatCand;
 		p->repeatCount = 0;
 		p->getState(repeatCand).repeated = true;
@@ -691,8 +637,7 @@ void Input::update()
 	}
 
 	/* Check if repeating key is still pressed */
-	if (p->getState(p->repeating).pressed)
-	{
+	if (p->getState(p->repeating).pressed){
 		p->repeatCount++;
 
 		bool repeated;
@@ -713,51 +658,42 @@ void Input::update()
 	rtData.triedExit.clear();
 }
 
-bool Input::isPressed(int button)
-{
+bool Input::isPressed(int button){
 	return p->getStateCheck(button).pressed;
 }
 
-bool Input::isTriggered(int button)
-{
+bool Input::isTriggered(int button){
 	return p->getStateCheck(button).triggered;
 }
 
-bool Input::isRepeated(int button)
-{
+bool Input::isRepeated(int button){
 	return p->getStateCheck(button).repeated;
 }
 
-int Input::dir4Value()
-{
+int Input::dir4Value(){
 	return p->dir4Data.active;
 }
 
-int Input::dir8Value()
-{
+int Input::dir8Value(){
 	return p->dir8Data.active;
 }
 
-int Input::mouseX()
-{
+int Input::mouseX(){
 	RGSSThreadData &rtData = shState->rtData();
 
 	return (EventThread::mouseState.x - rtData.screenOffset.x) * rtData.sizeResoRatio.x;
 }
 
-int Input::mouseY()
-{
+int Input::mouseY(){
 	RGSSThreadData &rtData = shState->rtData();
 
 	return (EventThread::mouseState.y - rtData.screenOffset.y) * rtData.sizeResoRatio.y;
 }
 
-bool Input::hasQuit()
-{
+bool Input::hasQuit(){
 	return p->triedExit;
 }
 
-Input::~Input()
-{
+Input::~Input(){
 	delete p;
 }

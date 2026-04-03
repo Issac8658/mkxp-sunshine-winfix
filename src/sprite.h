@@ -35,8 +35,7 @@ struct Rect;
 
 struct SpritePrivate;
 
-class Sprite : public ViewportElement, public Flashable, public Disposable
-{
+class Sprite : public ViewportElement, public Flashable, public Disposable{
 public:
 	Sprite(Viewport *viewport = 0);
 	~Sprite();

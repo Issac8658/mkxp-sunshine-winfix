@@ -31,14 +31,12 @@
 #include <assert.h>
 #include <vector>
 
-enum AxisDir
-{
+enum AxisDir{
 	Negative,
 	Positive
 };
 
-enum SourceType
-{
+enum SourceType{
 	Invalid,
 	Key,
 	CButton,
@@ -48,25 +46,21 @@ enum SourceType
 	JHat
 };
 
-struct SourceDesc
-{
+struct SourceDesc{
 	SourceType type;
 
-	union Data
-	{
+	union Data{
 		/* Keyboard scancode */
 		SDL_Scancode scan;
 		/* Joystick button index */
 		uint8_t jb;
-		struct
-		{
+		struct{
 			/* Joystick axis index */
 			uint8_t axis;
 			/* Joystick axis direction */
 			AxisDir dir;
 		} ja;
-		struct
-		{
+		struct{
 			/* Joystick axis index */
 			uint8_t hat;
 			/* Joystick axis direction */
@@ -74,13 +68,11 @@ struct SourceDesc
 		} jh;
 	} d;
 
-	bool operator==(const SourceDesc &o) const
-	{
+	bool operator==(const SourceDesc &o) const{
 		if (type != o.type)
 			return false;
 
-		switch (type)
-		{
+		switch (type){
 		case Invalid:
 			return true;
 		case Key:
@@ -99,16 +91,14 @@ struct SourceDesc
 		}
 	}
 
-	bool operator!=(const SourceDesc &o) const
-	{
+	bool operator!=(const SourceDesc &o) const{
 		return !(*this == o);
 	}
 };
 
 #define JAXIS_THRESHOLD 0x4000
 
-struct BindingDesc
-{
+struct BindingDesc{
 	SourceDesc src;
 	Input::ButtonCode target;
 };

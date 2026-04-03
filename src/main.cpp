@@ -56,30 +56,26 @@
 #endif
 
 static void
-rgssThreadError(RGSSThreadData *rtData, const std::string &msg)
-{
+rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
 	rtData->ethread->requestTerminate();
 	rtData->rqTermAck.set();
 }
 
 static inline const char*
-glGetStringInt(GLenum name)
-{
+glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
 static void
-printGLInfo()
-{
+printGLInfo(){
 	Debug() << "GL Vendor    :" << glGetStringInt(GL_VENDOR);
 	Debug() << "GL Renderer  :" << glGetStringInt(GL_RENDERER);
 	Debug() << "GL Version   :" << glGetStringInt(GL_VERSION);
 	Debug() << "GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 }
 
-int rgssThreadFun(void *userdata)
-{
+int rgssThreadFun(void *userdata){
 	RGSSThreadData *threadData = static_cast<RGSSThreadData*>(userdata);
 	const Config &conf = threadData->config;
 	SDL_Window *win = threadData->window;
@@ -94,18 +90,15 @@ int rgssThreadFun(void *userdata)
 
 	glCtx = SDL_GL_CreateContext(win);
 
-	if (!glCtx)
-	{
+	if (!glCtx){
 		rgssThreadError(threadData, std::string("Error creating context: ") + SDL_GetError());
 		return 0;
 	}
 
-	try
-	{
+	try{
 		initGLFunctions();
 	}
-	catch (const Exception &exc)
-	{
+	catch (const Exception &exc){
 		rgssThreadError(threadData, exc.msg);
 		SDL_GL_DestroyContext(glCtx);
 
@@ -131,8 +124,7 @@ int rgssThreadFun(void *userdata)
 	/* Setup AL context */
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
 
-	if (!alcCtx)
-	{
+	if (!alcCtx){
 		rgssThreadError(threadData, "Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
 
@@ -141,12 +133,9 @@ int rgssThreadFun(void *userdata)
 
 	alcMakeContextCurrent(alcCtx);
 
-	try
-	{
+	try{
 		SharedState::initInstance(threadData);
-	}
-	catch (const Exception &exc)
-	{
+	}catch (const Exception &exc){
 		rgssThreadError(threadData, exc.msg);
 		alcDestroyContext(alcCtx);
 		SDL_GL_DestroyContext(glCtx);
@@ -168,14 +157,12 @@ int rgssThreadFun(void *userdata)
 	return 0;
 }
 
-static void showInitError(const std::string &msg)
-{
+static void showInitError(const std::string &msg){
 	Debug() << msg;
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot: sunshine", msg.c_str(), 0);
 }
 
-static void setupWindowIcon(const Config &conf, SDL_Window *win)
-{
+static void setupWindowIcon(const Config &conf, SDL_Window *win){
 	SDL_IOStream *iconSrc;
 
 	if (conf.iconPath.empty())
@@ -198,8 +185,7 @@ static void setGamePathInRegistry() {
 #if defined WIN32
 	// this logic is currently windows specific
 	char* dataDir = SDL_GetBasePath();
-	if (dataDir)
-	{
+	if (dataDir){
 		HKEY key;
 		long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
 
@@ -207,23 +193,19 @@ static void setGamePathInRegistry() {
 			// try creating the key first
 			long keyCreateError = RegCreateKeyEx(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), 0L, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key, NULL);
 
-			if (keyCreateError != ERROR_SUCCESS)
-			{
+			if (keyCreateError != ERROR_SUCCESS){
 				showInitError("Unable to create key in registry.");
-			}
-			else {
+			}else {
 				keyOpenError = ERROR_SUCCESS;
 			}
 		}
 
-		if (keyOpenError != ERROR_SUCCESS)
-		{
+		if (keyOpenError != ERROR_SUCCESS){
 			showInitError("Unable to open registry.");
 		}
 		else {
 			DWORD dataSize = (strlen(dataDir) + 1) * sizeof(char);
-			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS)
-			{
+			if (RegSetValueEx(key, TEXT("GameDirectory"), 0, REG_SZ, (LPBYTE)dataDir, dataSize) != ERROR_SUCCESS){
 				showInitError("Unable to set GameDirectory registry value.");
 			}
 			RegCloseKey(key);
@@ -234,8 +216,7 @@ static void setGamePathInRegistry() {
 	//TODO handle this for Linux/Mac
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	//deleted from SDL3
 	//SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
@@ -245,22 +226,19 @@ int main(int argc, char *argv[])
 #endif
 
 	/* initialize SDL first */
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) < 0)
-	{
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD) < 0){
 		showInitError(std::string("Error initializing SDL: ") + SDL_GetError());
 		return 0;
 	}
 
 #ifdef STEAM
-	if (!STEAMSHIM_init())
-	{
+	if (!STEAMSHIM_init()){
 		showInitError("Could not initialize Steamworks API");
 		return 0;
 	}
 #endif
 
-	if (!EventThread::allocUserEvents())
-	{
+	if (!EventThread::allocUserEvents()){
 		showInitError("Error allocating SDL user events");
 		return 0;
 	}
@@ -287,8 +265,7 @@ int main(int argc, char *argv[])
 	conf.read(argc, argv);
 
 	if (!conf.gameFolder.empty())
-		if (chdir(conf.gameFolder.c_str()) != 0)
-		{
+		if (chdir(conf.gameFolder.c_str()) != 0){
 			showInitError(std::string("Unable to switch into gameFolder ") + conf.gameFolder);
 			return 0;
 		}
@@ -310,8 +287,7 @@ int main(int argc, char *argv[])
 	//	return 0;
 	//}
 
-	if (TTF_Init() < 0)
-	{
+	if (TTF_Init() < 0){
 		showInitError(std::string("Error initializing SDL_ttf: ") + SDL_GetError());
 		//IMG_Quit();
 		SDL_Quit();
@@ -319,8 +295,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	if (Sound_Init() == 0)
-	{
+	if (Sound_Init() == 0){
 		showInitError(std::string("Error initializing SDL_sound: ") + Sound_GetError());
 		TTF_Quit();
 		//IMG_Quit();
@@ -342,8 +317,7 @@ int main(int argc, char *argv[])
 		SDL_SetWindowFullscreen(win, true);
 
 
-	if (!win)
-	{
+	if (!win){
 		showInitError(std::string("Error creating window: ") + SDL_GetError());
 		return 0;
 	}
@@ -358,8 +332,7 @@ int main(int argc, char *argv[])
 
 	ALCdevice *alcDev = alcOpenDevice(0);
 
-	if (!alcDev)
-	{
+	if (!alcDev){
 		showInitError("Error opening OpenAL device");
 		SDL_DestroyWindow(win);
 		TTF_Quit();
@@ -402,11 +375,9 @@ int main(int argc, char *argv[])
 	rtData.rqTerm.set();
 
 	/* Wait for RGSS thread response */
-	for (int i = 0; i < 1000; ++i)
-	{
+	for (int i = 0; i < 1000; ++i){
 		/* We can stop waiting when the request was ack'd */
-		if (rtData.rqTermAck)
-		{
+		if (rtData.rqTermAck){
 			Debug() << "RGSS thread ack'd request after" << i*10 << "ms";
 			break;
 		}
@@ -423,8 +394,7 @@ int main(int argc, char *argv[])
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
 		                         "The RGSS script seems to be stuck and OneShot will now force quit", win);
 
-	if (!rtData.rgssErrorMsg.empty())
-	{
+	if (!rtData.rgssErrorMsg.empty()){
 		Debug() << rtData.rgssErrorMsg;
 		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
 		                         rtData.rgssErrorMsg.c_str(), win);

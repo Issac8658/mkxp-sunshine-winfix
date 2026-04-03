@@ -62,8 +62,7 @@
 
 #define GET_U(name) u_##name = gl.GetUniformLocation(program, #name)
 
-static void printShaderLog(GLuint shader)
-{
+static void printShaderLog(GLuint shader){
 	GLint logLength;
 	gl.GetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -73,8 +72,7 @@ static void printShaderLog(GLuint shader)
 	std::clog << "Shader log:\n" << log;
 }
 
-static void printProgramLog(GLuint program)
-{
+static void printProgramLog(GLuint program){
 	GLint logLength;
 	gl.GetProgramiv(program, GL_INFO_LOG_LENGTH, &logLength);
 
@@ -84,36 +82,31 @@ static void printProgramLog(GLuint program)
 	std::clog << "Program log:\n" << log;
 }
 
-Shader::Shader()
-{
+Shader::Shader(){
 	vertShader = gl.CreateShader(GL_VERTEX_SHADER);
 	fragShader = gl.CreateShader(GL_FRAGMENT_SHADER);
 
 	program = gl.CreateProgram();
 }
 
-Shader::~Shader()
-{
+Shader::~Shader(){
 	gl.UseProgram(0);
 	gl.DeleteProgram(program);
 	gl.DeleteShader(vertShader);
 	gl.DeleteShader(fragShader);
 }
 
-void Shader::bind()
-{
+void Shader::bind(){
 	glState.program.set(program);
 }
 
-void Shader::unbind()
-{
+void Shader::unbind(){
 	gl.ActiveTexture(GL_TEXTURE0);
 	glState.program.set(0);
 }
 
 static void setupShaderSource(GLuint shader, GLenum type,
-                              const unsigned char *body, int bodySize)
-{
+                              const unsigned char *body, int bodySize){
 	static const char glesDefine[] = "#define GLSLES\n";
 	static const char fragDefine[] = "#define FRAGMENT_SHADER\n";
 
@@ -121,15 +114,13 @@ static void setupShaderSource(GLuint shader, GLenum type,
 	GLint shaderSrcSize[4];
 	size_t i = 0;
 
-	if (gl.glsles)
-	{
+	if (gl.glsles){
 		shaderSrc[i] = glesDefine;
 		shaderSrcSize[i] = sizeof(glesDefine)-1;
 		++i;
 	}
 
-	if (type == GL_FRAGMENT_SHADER)
-	{
+	if (type == GL_FRAGMENT_SHADER){
 		shaderSrc[i] = fragDefine;
 		shaderSrcSize[i] = sizeof(fragDefine)-1;
 		++i;
@@ -159,8 +150,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 
 	gl.GetShaderiv(vertShader, GL_COMPILE_STATUS, &success);
 
-	if (!success)
-	{
+	if (!success){
 		printShaderLog(vertShader);
 		throw Exception(Exception::MKXPError,
 	                    "GLSL: An error occured while compiling vertex shader '%s' in program '%s'",
@@ -173,8 +163,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 
 	gl.GetShaderiv(fragShader, GL_COMPILE_STATUS, &success);
 
-	if (!success)
-	{
+	if (!success){
 		printShaderLog(fragShader);
 		throw Exception(Exception::MKXPError,
 	                    "GLSL: An error occured while compiling fragment shader '%s' in program '%s'",
@@ -193,8 +182,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 
 	gl.GetProgramiv(program, GL_LINK_STATUS, &success);
 
-	if (!success)
-	{
+	if (!success){
 		printProgramLog(program);
 		throw Exception(Exception::MKXPError,
 	                    "GLSL: An error occured while linking program '%s' (vertex '%s', fragment '%s')",
@@ -202,9 +190,7 @@ void Shader::init(const unsigned char *vert, int vertSize,
 	}
 }
 
-void Shader::initFromFile(const char *_vertFile, const char *_fragFile,
-                          const char *programName)
-{
+void Shader::initFromFile(const char *_vertFile, const char *_fragFile, const char *programName){
 	std::string vertContents, fragContents;
 	readFile(_vertFile, vertContents);
 	readFile(_fragFile, fragContents);
@@ -214,13 +200,11 @@ void Shader::initFromFile(const char *_vertFile, const char *_fragFile,
 	     _vertFile, _fragFile, programName);
 }
 
-void Shader::setVec4Uniform(GLint location, const Vec4 &vec)
-{
+void Shader::setVec4Uniform(GLint location, const Vec4 &vec) {
 	gl.Uniform4f(location, vec.x, vec.y, vec.z, vec.w);
 }
 
-void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture)
-{
+void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture) {
 	GLenum texUnit = GL_TEXTURE0 + unitIndex;
 
 	gl.ActiveTexture(texUnit);
@@ -229,8 +213,7 @@ void Shader::setTexUniform(GLint location, unsigned unitIndex, TEX::ID texture)
 	gl.ActiveTexture(GL_TEXTURE0);
 }
 
-void ShaderBase::GLProjMat::apply(const Vec2i &value)
-{
+void ShaderBase::GLProjMat::apply(const Vec2i &value) {
 	/* glOrtho replacement */
 	const float a = 2.f / value.x;
 	const float b = 2.f / value.y;
@@ -247,33 +230,28 @@ void ShaderBase::GLProjMat::apply(const Vec2i &value)
 	gl.UniformMatrix4fv(u_mat, 1, GL_FALSE, mat);
 }
 
-void ShaderBase::init()
-{
+void ShaderBase::init(){
 	GET_U(texSizeInv);
 	GET_U(translation);
 
 	projMat.u_mat = gl.GetUniformLocation(program, "projMat");
 }
 
-void ShaderBase::applyViewportProj()
-{
+void ShaderBase::applyViewportProj(){
 	const IntRect &vp = glState.viewport.get();
 	projMat.set(Vec2i(vp.w, vp.h));
 }
 
-void ShaderBase::setTexSize(const Vec2i &value)
-{
+void ShaderBase::setTexSize(const Vec2i &value){
 	gl.Uniform2f(u_texSizeInv, 1.f / value.x, 1.f / value.y);
 }
 
-void ShaderBase::setTranslation(const Vec2i &value)
-{
+void ShaderBase::setTranslation(const Vec2i &value){
 	gl.Uniform2f(u_translation, value.x, value.y);
 }
 
 
-FlatColorShader::FlatColorShader()
-{
+FlatColorShader::FlatColorShader(){
 	INIT_SHADER(minimal, flatColor, FlatColorShader);
 
 	ShaderBase::init();
@@ -281,14 +259,12 @@ FlatColorShader::FlatColorShader()
 	GET_U(color);
 }
 
-void FlatColorShader::setColor(const Vec4 &value)
-{
+void FlatColorShader::setColor(const Vec4 &value){
 	setVec4Uniform(u_color, value);
 }
 
 
-SimpleShader::SimpleShader()
-{
+SimpleShader::SimpleShader(){
 	INIT_SHADER(simple, simple, SimpleShader);
 
 	ShaderBase::init();
@@ -296,30 +272,26 @@ SimpleShader::SimpleShader()
 	GET_U(texOffsetX);
 }
 
-void SimpleShader::setTexOffsetX(int value)
-{
+void SimpleShader::setTexOffsetX(int value){
 	gl.Uniform1f(u_texOffsetX, value);
 }
 
 
-SimpleColorShader::SimpleColorShader()
-{
+SimpleColorShader::SimpleColorShader(){
 	INIT_SHADER(simpleColor, simpleColor, SimpleColorShader);
 
 	ShaderBase::init();
 }
 
 
-SimpleAlphaShader::SimpleAlphaShader()
-{
+SimpleAlphaShader::SimpleAlphaShader(){
 	INIT_SHADER(simpleColor, simpleAlpha, SimpleAlphaShader);
 
 	ShaderBase::init();
 }
 
 
-SimpleSpriteShader::SimpleSpriteShader()
-{
+SimpleSpriteShader::SimpleSpriteShader(){
 	INIT_SHADER(sprite, simple, SimpleSpriteShader);
 
 	ShaderBase::init();
@@ -327,14 +299,12 @@ SimpleSpriteShader::SimpleSpriteShader()
 	GET_U(spriteMat);
 }
 
-void SimpleSpriteShader::setSpriteMat(const float value[16])
-{
+void SimpleSpriteShader::setSpriteMat(const float value[16]){
 	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }
 
 
-AlphaSpriteShader::AlphaSpriteShader()
-{
+AlphaSpriteShader::AlphaSpriteShader(){
 	INIT_SHADER(sprite, simpleAlphaUni, AlphaSpriteShader);
 
 	ShaderBase::init();
@@ -343,19 +313,16 @@ AlphaSpriteShader::AlphaSpriteShader()
 	GET_U(alpha);
 }
 
-void AlphaSpriteShader::setSpriteMat(const float value[16])
-{
+void AlphaSpriteShader::setSpriteMat(const float value[16]){
 	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }
 
-void AlphaSpriteShader::setAlpha(float value)
-{
+void AlphaSpriteShader::setAlpha(float value){
 	gl.Uniform1f(u_alpha, value);
 }
 
 
-TransShader::TransShader()
-{
+TransShader::TransShader(){
 	INIT_SHADER(simple, trans, TransShader);
 
 	ShaderBase::init();
@@ -367,34 +334,28 @@ TransShader::TransShader()
 	GET_U(vague);
 }
 
-void TransShader::setCurrentScene(TEX::ID tex)
-{
+void TransShader::setCurrentScene(TEX::ID tex){
 	setTexUniform(u_currentScene, 1, tex);
 }
 
-void TransShader::setFrozenScene(TEX::ID tex)
-{
+void TransShader::setFrozenScene(TEX::ID tex){
 	setTexUniform(u_frozenScene, 2, tex);
 }
 
-void TransShader::setTransMap(TEX::ID tex)
-{
+void TransShader::setTransMap(TEX::ID tex){
 	setTexUniform(u_transMap, 3, tex);
 }
 
-void TransShader::setProg(float value)
-{
+void TransShader::setProg(float value){
 	gl.Uniform1f(u_prog, value);
 }
 
-void TransShader::setVague(float value)
-{
+void TransShader::setVague(float value){
 	gl.Uniform1f(u_vague, value);
 }
 
 
-SimpleTransShader::SimpleTransShader()
-{
+SimpleTransShader::SimpleTransShader(){
 	INIT_SHADER(simple, transSimple, SimpleTransShader);
 
 	ShaderBase::init();
@@ -404,24 +365,20 @@ SimpleTransShader::SimpleTransShader()
 	GET_U(prog);
 }
 
-void SimpleTransShader::setCurrentScene(TEX::ID tex)
-{
+void SimpleTransShader::setCurrentScene(TEX::ID tex){
 	setTexUniform(u_currentScene, 1, tex);
 }
 
-void SimpleTransShader::setFrozenScene(TEX::ID tex)
-{
+void SimpleTransShader::setFrozenScene(TEX::ID tex){
 	setTexUniform(u_frozenScene, 2, tex);
 }
 
-void SimpleTransShader::setProg(float value)
-{
+void SimpleTransShader::setProg(float value){
 	gl.Uniform1f(u_prog, value);
 }
 
 
-SpriteShader::SpriteShader()
-{
+SpriteShader::SpriteShader(){
 	INIT_SHADER(sprite, sprite, SpriteShader);
 
 	ShaderBase::init();
@@ -434,39 +391,32 @@ SpriteShader::SpriteShader()
 	GET_U(bushOpacity);
 }
 
-void SpriteShader::setSpriteMat(const float value[16])
-{
+void SpriteShader::setSpriteMat(const float value[16]){
 	gl.UniformMatrix4fv(u_spriteMat, 1, GL_FALSE, value);
 }
 
-void SpriteShader::setTone(const Vec4 &tone)
-{
+void SpriteShader::setTone(const Vec4 &tone){
 	setVec4Uniform(u_tone, tone);
 }
 
-void SpriteShader::setColor(const Vec4 &color)
-{
+void SpriteShader::setColor(const Vec4 &color){
 	setVec4Uniform(u_color, color);
 }
 
-void SpriteShader::setOpacity(float value)
-{
+void SpriteShader::setOpacity(float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
-void SpriteShader::setBushDepth(float value)
-{
+void SpriteShader::setBushDepth(float value){
 	gl.Uniform1f(u_bushDepth, value);
 }
 
-void SpriteShader::setBushOpacity(float value)
-{
+void SpriteShader::setBushOpacity(float value){
 	gl.Uniform1f(u_bushOpacity, value);
 }
 
 
-PlaneShader::PlaneShader()
-{
+PlaneShader::PlaneShader(){
 	INIT_SHADER(simple, plane, PlaneShader);
 
 	ShaderBase::init();
@@ -477,29 +427,24 @@ PlaneShader::PlaneShader()
 	GET_U(opacity);
 }
 
-void PlaneShader::setTone(const Vec4 &tone)
-{
+void PlaneShader::setTone(const Vec4 &tone){
 	setVec4Uniform(u_tone, tone);
 }
 
-void PlaneShader::setColor(const Vec4 &color)
-{
+void PlaneShader::setColor(const Vec4 &color){
 	setVec4Uniform(u_color, color);
 }
 
-void PlaneShader::setFlash(const Vec4 &flash)
-{
+void PlaneShader::setFlash(const Vec4 &flash){
 	setVec4Uniform(u_flash, flash);
 }
 
-void PlaneShader::setOpacity(float value)
-{
+void PlaneShader::setOpacity(float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
 
-GrayShader::GrayShader()
-{
+GrayShader::GrayShader(){
 	INIT_SHADER(simple, gray, GrayShader);
 
 	ShaderBase::init();
@@ -507,14 +452,12 @@ GrayShader::GrayShader()
 	GET_U(gray);
 }
 
-void GrayShader::setGray(float value)
-{
+void GrayShader::setGray(float value){
 	gl.Uniform1f(u_gray, value);
 }
 
 
-TilemapShader::TilemapShader()
-{
+TilemapShader::TilemapShader(){
 	INIT_SHADER(tilemap, simple, TilemapShader);
 
 	ShaderBase::init();
@@ -522,15 +465,13 @@ TilemapShader::TilemapShader()
 	GET_U(aniIndex);
 }
 
-void TilemapShader::setAniIndex(int value)
-{
+void TilemapShader::setAniIndex(int value){
 	gl.Uniform1f(u_aniIndex, value);
 }
 
 
 
-FlashMapShader::FlashMapShader()
-{
+FlashMapShader::FlashMapShader(){
 	INIT_SHADER(simpleColor, flashMap, FlashMapShader);
 
 	ShaderBase::init();
@@ -538,14 +479,11 @@ FlashMapShader::FlashMapShader()
 	GET_U(alpha);
 }
 
-void FlashMapShader::setAlpha(float value)
-{
+void FlashMapShader::setAlpha(float value){
 	gl.Uniform1f(u_alpha, value);
 }
 
-
-HueShader::HueShader()
-{
+HueShader::HueShader(){
 	INIT_SHADER(simple, hue, HueShader);
 
 	ShaderBase::init();
@@ -553,14 +491,12 @@ HueShader::HueShader()
 	GET_U(hueAdjust);
 }
 
-void HueShader::setHueAdjust(float value)
-{
+void HueShader::setHueAdjust(float value){
 	gl.Uniform1f(u_hueAdjust, value);
 }
 
 
-SimpleMatrixShader::SimpleMatrixShader()
-{
+SimpleMatrixShader::SimpleMatrixShader(){
 	INIT_SHADER(simpleMatrix, simpleAlpha, SimpleMatrixShader);
 
 	ShaderBase::init();
@@ -568,29 +504,25 @@ SimpleMatrixShader::SimpleMatrixShader()
 	GET_U(matrix);
 }
 
-void SimpleMatrixShader::setMatrix(const float value[16])
-{
+void SimpleMatrixShader::setMatrix(const float value[16]){
 	gl.UniformMatrix4fv(u_matrix, 1, GL_FALSE, value);
 }
 
 
-BlurShader::HPass::HPass()
-{
+BlurShader::HPass::HPass(){
 	INIT_SHADER(blurH, blur, BlurShader::HPass);
 
 	ShaderBase::init();
 }
 
-BlurShader::VPass::VPass()
-{
+BlurShader::VPass::VPass(){
 	INIT_SHADER(blurV, blur, BlurShader::VPass);
 
 	ShaderBase::init();
 }
 
 
-BltShader::BltShader()
-{
+BltShader::BltShader(){
 	INIT_SHADER(simple, bitmapBlit, BltShader);
 
 	ShaderBase::init();
@@ -601,28 +533,23 @@ BltShader::BltShader()
 	GET_U(opacity);
 }
 
-void BltShader::setSource()
-{
+void BltShader::setSource(){
 	gl.Uniform1i(u_source, 0);
 }
 
-void BltShader::setDestination(const TEX::ID value)
-{
+void BltShader::setDestination(const TEX::ID value){
 	setTexUniform(u_destination, 1, value);
 }
 
-void BltShader::setSubRect(const FloatRect &value)
-{
+void BltShader::setSubRect(const FloatRect &value){
 	gl.Uniform4f(u_subRect, value.x, value.y, value.w, value.h);
 }
 
-void BltShader::setOpacity(float value)
-{
+void BltShader::setOpacity(float value){
 	gl.Uniform1f(u_opacity, value);
 }
 
-ObscuredShader::ObscuredShader()
-{
+ObscuredShader::ObscuredShader(){
 	INIT_SHADER(simple, obscured, ObscuredShader);
 
 	ShaderBase::init();
@@ -630,7 +557,6 @@ ObscuredShader::ObscuredShader()
 	GET_U(obscured);
 }
 
-void ObscuredShader::setObscured(const TEX::ID value)
-{
+void ObscuredShader::setObscured(const TEX::ID value){
 	setTexUniform(u_obscured, 1, value);
 }

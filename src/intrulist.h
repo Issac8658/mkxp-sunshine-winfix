@@ -23,8 +23,7 @@
 #define INTRULIST_H
 
 template <typename T>
-struct IntruListLink
-{
+struct IntruListLink{
 	IntruListLink<T> *prev;
 	IntruListLink<T> *next;
 	T *data;
@@ -35,8 +34,7 @@ struct IntruListLink
 	      data(data)
 	{}
 
-	~IntruListLink()
-	{
+	~IntruListLink(){
 		if (prev && next)
 		{
 			next->prev = prev;
@@ -46,8 +44,7 @@ struct IntruListLink
 };
 
 template <typename T>
-class IntruList
-{
+class IntruList{
 	IntruListLink<T> root;
 	int size;
 
@@ -60,8 +57,7 @@ public:
 		root.next = &root;
 	}
 
-	void prepend(IntruListLink<T> &node)
-	{
+	void prepend(IntruListLink<T> &node){
 		root.next->prev = &node;
 		node.prev = &root;
 		node.next = root.next;
@@ -70,8 +66,7 @@ public:
 		size++;
 	}
 
-	void append(IntruListLink<T> &node)
-	{
+	void append(IntruListLink<T> &node){
 		root.prev->next = &node;
 		node.next = &root;
 		node.prev = root.prev;
@@ -81,8 +76,7 @@ public:
 	}
 
 	void insertBefore(IntruListLink<T> &node,
-	                  IntruListLink<T> &prev)
-	{
+	                  IntruListLink<T> &prev){
 		node.next = &prev;
 		node.prev = prev.prev;
 		prev.prev->next = &node;
@@ -91,8 +85,7 @@ public:
 		size++;
 	}
 
-	void remove(IntruListLink<T> &node)
-	{
+	void remove(IntruListLink<T> &node){
 		if (!node.next)
 			return;
 
@@ -105,8 +98,7 @@ public:
 		size--;
 	}
 
-	void clear()
-	{
+	void clear(){
 		remove(root);
 		root.prev = &root;
 		root.next = &root;
@@ -114,8 +106,7 @@ public:
 		size = 0;
 	}
 
-	T *tail() const
-	{
+	T *tail() const{
 		IntruListLink<T> *node = root.prev;
 		if (node == &root)
 			return 0;
@@ -123,23 +114,19 @@ public:
 		return node->data;
 	}
 
-	IntruListLink<T> *begin()
-	{
+	IntruListLink<T> *begin(){
 		return root.next;
 	}
 
-	IntruListLink<T> *end()
-	{
+	IntruListLink<T> *end(){
 		return &root;
 	}
 
-	bool isEmpty() const
-	{
+	bool isEmpty() const{
 		return root.next == &root;
 	}
 
-	int getSize() const
-	{
+	int getSize() const{
 		return size;
 	}
 };

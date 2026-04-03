@@ -31,8 +31,7 @@ struct SettingsMenuPrivate;
 struct RGSSThreadData;
 union SDL_Event;
 
-class SettingsMenu
-{
+class SettingsMenu{
 public:
 	SettingsMenu(RGSSThreadData &rtData);
 	~SettingsMenu();

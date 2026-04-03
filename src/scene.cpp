@@ -22,30 +22,24 @@
 #include "scene.h"
 #include "sharedstate.h"
 
-Scene::Scene()
-{}
+Scene::Scene() {}
 
-Scene::~Scene()
-{
+Scene::~Scene(){
 	/* Ensure elements don't unlink from a destructed Scene */
 	IntruListLink<SceneElement> *iter;
 
-	for (iter = elements.begin(); iter != elements.end(); iter = iter->next)
-	{
+	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		iter->data->scene = 0;
 	}
 }
 
-void Scene::insert(SceneElement &element)
-{
+void Scene::insert(SceneElement &element){
 	IntruListLink<SceneElement> *iter;
 
-	for (iter = elements.begin(); iter != elements.end(); iter = iter->next)
-	{
+	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		SceneElement *e = iter->data;
 
-		if (element < *e)
-		{
+		if (element < *e){
 			elements.insertBefore(element.link, *iter);
 			return;
 		}
@@ -54,16 +48,13 @@ void Scene::insert(SceneElement &element)
 	elements.append(element.link);
 }
 
-void Scene::insertAfter(SceneElement &element, SceneElement &after)
-{
+void Scene::insertAfter(SceneElement &element, SceneElement &after){
 	IntruListLink<SceneElement> *iter;
 
-	for (iter = &after.link; iter != elements.end(); iter = iter->next)
-	{
+	for (iter = &after.link; iter != elements.end(); iter = iter->next){
 		SceneElement *e = iter->data;
 
-		if (element < *e)
-		{
+		if (element < *e){
 			elements.insertBefore(element.link, *iter);
 			return;
 		}
@@ -72,28 +63,23 @@ void Scene::insertAfter(SceneElement &element, SceneElement &after)
 	elements.append(element.link);
 }
 
-void Scene::reinsert(SceneElement &element)
-{
+void Scene::reinsert(SceneElement &element){
 	elements.remove(element.link);
 	insert(element);
 }
 
-void Scene::notifyGeometryChange()
-{
+void Scene::notifyGeometryChange(){
 	IntruListLink<SceneElement> *iter;
 
-	for (iter = elements.begin(); iter != elements.end(); iter = iter->next)
-	{
+	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		iter->data->onGeometryChange(geometry);
 	}
 }
 
-void Scene::composite()
-{
+void Scene::composite(){
 	IntruListLink<SceneElement> *iter;
 
-	for (iter = elements.begin(); iter != elements.end(); iter = iter->next)
-	{
+	for (iter = elements.begin(); iter != elements.end(); iter = iter->next){
 		SceneElement *e = iter->data;
 
 		if (e->visible)
@@ -113,13 +99,11 @@ SceneElement::SceneElement(Scene &scene, int z, int spriteY)
 	scene.insert(*this);
 }
 
-SceneElement::~SceneElement()
-{
+SceneElement::~SceneElement(){
 	unlink();
 }
 
-void SceneElement::setScene(Scene &scene)
-{
+void SceneElement::setScene(Scene &scene){
 	unlink();
 
 	this->scene = &scene;
@@ -129,15 +113,13 @@ void SceneElement::setScene(Scene &scene)
 	onGeometryChange(scene.getGeometry());
 }
 
-int SceneElement::getZ() const
-{
+int SceneElement::getZ() const{
 	aboutToAccess();
 
 	return z;
 }
 
-void SceneElement::setZ(int value)
-{
+void SceneElement::setZ(int value){
 	aboutToAccess();
 
 	if (z == value)
@@ -147,32 +129,26 @@ void SceneElement::setZ(int value)
 	scene->reinsert(*this);
 }
 
-bool SceneElement::getVisible() const
-{
+bool SceneElement::getVisible() const{
 	aboutToAccess();
 
 	return visible;
 }
 
-void SceneElement::setVisible(bool value)
-{
+void SceneElement::setVisible(bool value){
 	aboutToAccess();
 
 	visible = value;
 }
 
-bool SceneElement::operator<(const SceneElement &o) const
-{
+bool SceneElement::operator<(const SceneElement &o) const{
 	/* Element draw order is decided by their Z value.
 	 * If two Z values are equal, the later created object
 	 * has priority */
 
-	if (z <= o.z)
-	{
-		if (z == o.z)
-		{
-			if (rgssVer >= 2)
-			{
+	if (z <= o.z){
+		if (z == o.z){
+			if (rgssVer >= 2){
 				/* RGSS2: If two sprites' Z values collide,
 				 * their Y coordinates decide draw order. Only
 				 * on equal Y does the creation time take effect */
@@ -189,14 +165,12 @@ bool SceneElement::operator<(const SceneElement &o) const
 	return false;
 }
 
-void SceneElement::setSpriteY(int value)
-{
+void SceneElement::setSpriteY(int value){
 	spriteY = value;
 	scene->reinsert(*this);
 }
 
-void SceneElement::unlink()
-{
+void SceneElement::unlink(){
 	if (scene)
 		scene->elements.remove(link);
 }

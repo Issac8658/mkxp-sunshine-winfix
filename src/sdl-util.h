@@ -8,25 +8,20 @@
 #include <string>
 #include <iostream>
 
-struct AtomicFlag
-{
-	AtomicFlag()
-	{
+struct AtomicFlag{
+	AtomicFlag(){
 		clear();
 	}
 
-	AtomicFlag(bool value)
-	{
+	AtomicFlag(bool value){
 		SDL_SetAtomicInt(&atom, value ? 1 : 0);
 	}
 
-	void set()
-	{
+	void set(){
 		SDL_SetAtomicInt(&atom, 1);
 	}
 
-	void clear()
-	{
+	void clear(){
 		SDL_SetAtomicInt(&atom, 0);
 	}
 
@@ -40,15 +35,13 @@ private:
 };
 
 template<class C, void (C::*func)()>
-int __sdlThreadFun(void *obj)
-{
+int __sdlThreadFun(void *obj){
 	(static_cast<C*>(obj)->*func)();
 	return 0;
 }
 
 template<class C, void (C::*func)()>
-SDL_Thread *createSDLThread(C *obj, const std::string &name = std::string())
-{
+SDL_Thread *createSDLThread(C *obj, const std::string &name = std::string()){
 	return SDL_CreateThread((__sdlThreadFun<C, func>), name.c_str(), obj);
 }
 
@@ -88,8 +81,7 @@ inline bool readFileSDL(const char *path, std::string &out){
 }
 
 template<size_t bufSize = 248, size_t pbSize = 8>
-class SDLRWBuf : public std::streambuf
-{
+class SDLRWBuf : public std::streambuf{
 public:
 	SDLRWBuf(SDL_IOStream *ops)
 	    : ops(ops)
@@ -99,8 +91,7 @@ public:
 	}
 
 private:
-	int_type underflow()
-	{
+	int_type underflow(){
 		if (!ops)
 			return traits_type::eof();
 
@@ -110,8 +101,7 @@ private:
 		char *base = buf;
 		char *start = base;
 
-		if (eback() == base)
-		{
+		if (eback() == base){
 			memmove(base, egptr() - pbSize, pbSize);
 			start += pbSize;
 		}
@@ -129,8 +119,7 @@ private:
 	char buf[bufSize+pbSize];
 };
 
-class SDLRWStream
-{
+class SDLRWStream{
 public:
 	SDLRWStream(const char *filename,
 	            const char *mode)
@@ -139,19 +128,16 @@ public:
 	      s(&buf)
 	{}
 
-	~SDLRWStream()
-	{
+	~SDLRWStream(){
 		if (ops)
 			SDL_CloseIO(ops);
 	}
 
-	operator bool() const
-	{
+	operator bool() const{
 		return ops != 0;
 	}
 
-	std::istream &stream()
-	{
+	std::istream &stream(){
 		return s;
 	}
 

@@ -10,8 +10,7 @@
 #include <unistd.h>
 #endif
 
-class Pipe
-{
+class Pipe{
 public:
 	typedef enum {
 		Write,
@@ -27,21 +26,18 @@ public:
 #endif
 	}
 
-	Pipe(const char *name_, Mode mode_)
-	{
+	Pipe(const char *name_, Mode mode_){
 		open(name_, mode_);
 	}
 
-	~Pipe()
-	{
+	~Pipe(){
 #ifndef _WIN32
 		if (mode == Write)
 			unlink(filename.c_str());
 #endif
 	}
 
-	void open(const char *name_, Mode mode_)
-	{
+	void open(const char *name_, Mode mode_){
 		name = name_;
 		mode = mode_;
 #ifdef _WIN32
@@ -79,8 +75,7 @@ public:
 		}
 	}
 
-	void connect()
-	{
+	void connect(){
 #ifdef _WIN32
 		ConnectNamedPipe(handle, NULL);
 #else
@@ -88,8 +83,7 @@ public:
 #endif
 	}
 
-	void close()
-	{
+	void close(){
 #ifdef _WIN32
 		CloseHandle(handle);
 		handle = NULL;
@@ -116,8 +110,7 @@ public:
 #endif
 	}
 
-	void write(const char *buf, size_t size)
-	{
+	void write(const char *buf, size_t size){
 #ifdef _WIN32
 		WriteFile(handle, buf, size, NULL, NULL);
 #else

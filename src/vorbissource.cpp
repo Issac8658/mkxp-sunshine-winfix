@@ -47,16 +47,14 @@ static ov_callbacks OvCallbacks ={
     vfTell 
 };
 
-struct VorbisSource : ALDataSource
-{
+struct VorbisSource : ALDataSource{
 	SDL_IOStream &src;
 
 	OggVorbis_File vf;
 
 	uint32_t currentFrame;
 
-	struct
-	{
+	struct{
 		uint32_t start;
 		uint32_t length;
 		uint32_t end;
@@ -64,8 +62,7 @@ struct VorbisSource : ALDataSource
 		bool requested;
 	} loop;
 
-	struct
-	{
+	struct{
 		int channels;
 		int rate;
 		int frameSize;
@@ -81,8 +78,7 @@ struct VorbisSource : ALDataSource
 	{
 		int error = ov_open_callbacks(&src, &vf, 0, 0, OvCallbacks);
 
-		if (error)
-		{
+		if (error){
 			SDL_CloseIO(&src);
 			throw Exception(Exception::MKXPError,
 			                "Vorbisfile: Cannot read ogg file");
@@ -92,8 +88,7 @@ struct VorbisSource : ALDataSource
 		info.channels = vf.vi->channels;
 		info.rate = vf.vi->rate;
 
-		if (info.channels > 2)
-		{
+		if (info.channels > 2){
 			ov_clear(&vf);
 			SDL_CloseIO(&src);
 			throw Exception(Exception::MKXPError,
@@ -113,8 +108,7 @@ struct VorbisSource : ALDataSource
 			return;
 
 		/* Try to extract loop info */
-		for (int i = 0; i < vf.vc->comments; ++i)
-		{
+		for (int i = 0; i < vf.vc->comments; ++i){
 			char *comment = vf.vc->user_comments[i];
 			char *sep = strstr(comment, "=");
 
@@ -141,19 +135,16 @@ struct VorbisSource : ALDataSource
 		loop.valid = (loop.start && loop.length);
 	}
 
-	~VorbisSource()
-	{
+	~VorbisSource(){
 		ov_clear(&vf);
 		SDL_CloseIO(&src);
 	}
 
-	int sampleRate()
-	{
+	int sampleRate(){
 		return info.rate;
 	}
 
-	void seekToOffset(float seconds)
-	{
+	void seekToOffset(float seconds){
 		if (seconds <= 0)
 		{
 			ov_raw_seek(&vf, 0);
@@ -170,8 +161,7 @@ struct VorbisSource : ALDataSource
 			ov_raw_seek(&vf, 0);
 	}
 
-	Status fillBuffer(AL::Buffer::ID alBuffer)
-	{
+	Status fillBuffer(AL::Buffer::ID alBuffer){
 		void *bufPtr = sampleBuf.data();
 		int availBuf = sampleBuf.size();
 		int bufUsed  = 0;
@@ -182,8 +172,7 @@ struct VorbisSource : ALDataSource
 
 		bool readAgain = false;
 
-		if (loop.valid)
-		{
+		if (loop.valid){
 			int tilLoopEnd = loop.end * info.frameSize;
 
 			canRead = std::min(availBuf, tilLoopEnd);
@@ -258,28 +247,23 @@ struct VorbisSource : ALDataSource
 		}
 
 		if (retStatus != ALDataSource::Error)
-			AL::Buffer::uploadData(alBuffer, info.alFormat, sampleBuf.data(),
-			                       bufUsed*sizeof(int16_t), info.rate);
+			AL::Buffer::uploadData(alBuffer, info.alFormat, sampleBuf.data(), bufUsed*sizeof(int16_t), info.rate);
 
 		return retStatus;
 	}
 
-	uint32_t loopStartFrames()
-	{
+	uint32_t loopStartFrames(){
 		if (loop.valid)
 			return loop.start;
 		else
 			return 0;
 	}
 
-	bool setPitch(float)
-	{
+	bool setPitch(float){
 		return false;
 	}
 };
 
-ALDataSource *createVorbisSource(SDL_IOStream &ops,
-                                 bool looped)
-{
+ALDataSource *createVorbisSource(SDL_IOStream &ops, bool looped){
 	return new VorbisSource(ops, looped);
 }

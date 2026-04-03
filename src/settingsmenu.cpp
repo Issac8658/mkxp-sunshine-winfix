@@ -47,21 +47,18 @@ const uint8_t cBgDark = 20;
 const uint8_t cLine = 0;
 const uint8_t cText = 255;
 
-static bool pointInRect(const SDL_Rect &r, int x, int y)
-{
+static bool pointInRect(const SDL_Rect &r, int x, int y){
 	return (x >= r.x && x <= r.x+r.w && y >= r.y && y <= r.y+r.h);
 }
 
 typedef SettingsMenuPrivate SMP;
 
 #define BTN_STRING(btn, id) { Input:: btn, id, #btn }
-struct VButton
-{
+struct VButton{
 	Input::ButtonCode code;
 	int trstrId;
 	const char *str;
-} static const vButtons[] =
-{
+} static const vButtons[] = {
 	BTN_STRING(Up, TRSTR_KEYBIND_UP),
 	BTN_STRING(Left, TRSTR_KEYBIND_LEFT),
 	BTN_STRING(Action, TRSTR_KEYBIND_ACTION),
@@ -132,18 +129,15 @@ const char* getButtonName(int buttonId) {
 }
 
 /* Human readable string representation */
-std::string sourceDescString(const SourceDesc &src)
-{
+std::string sourceDescString(const SourceDesc &src){
 	char buf[128];
 	char pos;
 
-	switch (src.type)
-	{
+	switch (src.type){
 	case Invalid:
 		return std::string();
 
-	case Key:
-	{
+	case Key:{
 		if (src.d.scan == SDL_SCANCODE_LSHIFT)
 			return findtext(TRSTR_KEYBIND_SHIFT, "Shift");
 
@@ -197,8 +191,7 @@ std::string sourceDescString(const SourceDesc &src)
 		return buf;
 
 	case JHat:
-		switch(src.d.jh.pos)
-		{
+		switch(src.d.jh.pos){
 		case SDL_HAT_UP:
 			pos = 'U';
 			break;
@@ -232,8 +225,7 @@ std::string sourceDescString(const SourceDesc &src)
 	return "";
 }
 
-struct Widget
-{
+struct Widget{
 	/* Widgets have a static size and position,
 	 * defined at creation */
 	Widget(SMP *p, const IntRect &rect);
@@ -258,8 +250,7 @@ protected:
 	virtual void clickHandler(int x, int y, uint8_t button) = 0;
 };
 
-struct BindingWidget : Widget
-{
+struct BindingWidget : Widget{
 	VButton vb;
 	/* Source slots */
 	SourceDesc src[4];
@@ -288,8 +279,7 @@ protected:
 	void clickHandler(int x, int y, uint8_t button);
 };
 
-struct Button : Widget
-{
+struct Button : Widget{
 	typedef void (SMP::*Callback)();
 
 	const char *str;
@@ -312,8 +302,7 @@ protected:
 	void clickHandler(int, int, uint8_t button);
 };
 
-struct Label : Widget
-{
+struct Label : Widget{
 	const char *str;
 	SDL_Color c;
 
@@ -342,20 +331,17 @@ protected:
 	void clickHandler(int, int, uint8_t) {}
 };
 
-enum State
-{
+enum State{
 	Idle,
 	AwaitingInput
 };
 
-enum Justification
-{
+enum Justification{
 	Left,
 	Center
 };
 
-struct SettingsMenuPrivate
-{
+struct SettingsMenuPrivate{
 	State state;
 
 	/* Necessary to decide which window gets to
@@ -391,8 +377,7 @@ struct SettingsMenuPrivate
 	    : rtData(rtData)
 	{}
 
-	SDL_Surface *createSurface(int w, int h)
-	{
+	SDL_Surface *createSurface(int w, int h){
 		int bpp;
 		Uint32 rMask, gMask, bMask, aMask;
 		//SDL_Surface *surface = SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
@@ -405,46 +390,34 @@ struct SettingsMenuPrivate
 
 	void fillRect(SDL_Surface *surf,
 	              int x, int y, int w, int h,
-	              uint8_t r, uint8_t g, uint8_t b)
-	{
+	              uint8_t r, uint8_t g, uint8_t b){
 		SDL_Rect rect = { drawOff.x+x, drawOff.y+y, w, h };
 		SDL_FillSurfaceRect(surf, &rect, SDL_MapSurfaceRGB(surf, r, g, b));
 	}
 
-	void fillRect(SDL_Surface *surf, uint8_t grey,
-	              int x, int y, int w, int h)
-	{
+	void fillRect(SDL_Surface *surf, uint8_t grey,int x, int y, int w, int h){
 		fillRect(surf, x, y, w, h, grey, grey, grey);
 	}
 
-	void strokeLineH(SDL_Surface *surf, uint8_t grey,
-	                 int x, int y, int length, int width)
-	{
+	void strokeLineH(SDL_Surface *surf, uint8_t grey,int x, int y, int length, int width){
 		fillRect(surf, grey, x, y-width/2, length, width);
 	}
 
-	void strokeLineV(SDL_Surface *surf, uint8_t grey,
-	                 int x, int y, int length, int width)
-	{
+	void strokeLineV(SDL_Surface *surf, uint8_t grey,int x, int y, int length, int width){
 		fillRect(surf, grey, x-width/2, y, width, length);
 	}
 
-	void strokeLineH(SDL_Surface *surf, uint8_t r, uint8_t g, uint8_t b,
-	                 int x, int y, int length, int width)
-	{
+	void strokeLineH(SDL_Surface *surf, uint8_t r, uint8_t g, uint8_t b,int x, int y, int length, int width){
 		fillRect(surf, r, g, b, x, y-width/2, length, width);
 	}
 
-	void strokeLineV(SDL_Surface *surf, uint8_t r, uint8_t g, uint8_t b,
-	                 int x, int y, int length, int width)
-	{
+	void strokeLineV(SDL_Surface *surf, uint8_t r, uint8_t g, uint8_t b,int x, int y, int length, int width){
 		fillRect(surf, r, g, b, x-width/2, y, width, length);
 	}
 
 	void strokeRect(SDL_Surface *surf, uint8_t grey,
 	                int x, int y, int w, int h,
-	                int lineW)
-	{
+	                int lineW){
 		strokeLineH(surf, grey, x, y, w, lineW);
 		strokeLineH(surf, grey, x, y+h, w, lineW);
 
@@ -454,8 +427,7 @@ struct SettingsMenuPrivate
 
 	void strokeRectInner(SDL_Surface *surf,
 	                     int x, int y, int w, int h, int lineW,
-	                     uint8_t r, uint8_t g, uint8_t b)
-	{
+	                     uint8_t r, uint8_t g, uint8_t b){
 		fillRect(surf, x, y, w, lineW, r, g, b);
 		fillRect(surf, x, y+h-lineW, w, lineW, r, g, b);
 		fillRect(surf, x, y, lineW, h, r, g, b);
@@ -464,13 +436,11 @@ struct SettingsMenuPrivate
 
 	void strokeRectInner(SDL_Surface *surf, uint8_t grey,
 	                     int x, int y, int w, int h,
-	                     int lineW)
-	{
+	                     int lineW){
 		strokeRectInner(surf, x, y, w, h, lineW, grey, grey, grey);
 	}
 
-	void applyFontStyle(bool bold)
-	{
+	void applyFontStyle(bool bold){
 		if (bold)
 			TTF_SetFontStyle(font, TTF_STYLE_BOLD);
 		else
@@ -484,8 +454,7 @@ struct SettingsMenuPrivate
 		return TTF_RenderText_Blended(font, str, strlen(str), c);
 	}
 
-	SDL_Surface *createTextSurface(const char *str, SDL_Color c, bool bold)
-	{
+	SDL_Surface *createTextSurface(const char *str, SDL_Color c, bool bold){
 		applyFontStyle(bold);
 		return TTF_RenderText_Blended(font, str, strlen(str), c);
 	}
@@ -501,8 +470,7 @@ struct SettingsMenuPrivate
 		dstRect.w = txtSurf->w;
 		dstRect.h = txtSurf->h;
 
-		switch (just)
-		{
+		switch (just){
 		case Left:
 			dstRect.x += x;
 			break;
@@ -511,12 +479,10 @@ struct SettingsMenuPrivate
 			break;
 		}
 
-		if (txtSurf->w <= alignW)
-		{
+		if (txtSurf->w <= alignW){
 			SDL_BlitSurface(txtSurf, 0, surf, &dstRect);
 		}
-		else
-		{
+		else{
 			dstRect.w = alignW;
 			dstRect.x = drawOff.x + x;
 
@@ -531,8 +497,7 @@ struct SettingsMenuPrivate
 
 	void drawText(SDL_Surface *surf, const char *str,
 	              int x, int y, int alignW,
-	              Justification just, SDL_Color c, bool bold = false)
-	{
+	              Justification just, SDL_Color c, bool bold = false){
 		SDL_Surface *txt = createTextSurface(str, c, bold);
 		if (txt) {
 			blitTextSurf(surf, x, y, alignW, txt, just);
@@ -542,22 +507,19 @@ struct SettingsMenuPrivate
 
 	void drawText(SDL_Surface *surf, const char *str,
 	              int x, int y, int alignW,
-	              Justification just, bool bold = false)
-	{
+	              Justification just, bool bold = false){
 		SDL_Color c = { cText, cText, cText, 255 };
 		drawText(surf, str, x, y, alignW, just, c, bold);
 	}
 
-	void setupBindingData(const BDescVec &d)
-	{
+	void setupBindingData(const BDescVec &d){
 		size_t slotI[vButtonsN] = { 0 };
 
 		for (size_t i = 0; i < bWidgets.size(); ++i)
 			for (size_t j = 0; j < 4; ++j)
 				bWidgets[i].src[j].type = Invalid;
 
-		for (size_t i = 0; i < d.size(); ++i)
-		{
+		for (size_t i = 0; i < d.size(); ++i){
 			const BindingDesc &desc = d[i];
 			const Input::ButtonCode trg = desc.target;
 
@@ -578,30 +540,25 @@ struct SettingsMenuPrivate
 		}
 	}
 
-	void updateDuplicateStatus()
-	{
+	void updateDuplicateStatus(){
 		for (size_t i = 0; i < bWidgets.size(); ++i)
 			for (size_t j = 0; j < 4; ++j)
 				bWidgets[i].dupFlag[j] = false;
 
 		bool haveDup = false;
 
-		for (size_t i = 0; i < bWidgets.size(); ++i)
-		{
-			for (size_t j = 0; j < 4; ++j)
-			{
+		for (size_t i = 0; i < bWidgets.size(); ++i){
+			for (size_t j = 0; j < 4; ++j){
 				const SourceDesc &src = bWidgets[i].src[j];
 
 				if (src.type == Invalid)
 					continue;
 
-				for (size_t k = 0; k < bWidgets.size(); ++k)
-				{
+				for (size_t k = 0; k < bWidgets.size(); ++k){
 					if (k == i)
 						continue;
 
-					for (size_t l = 0; l < 4; ++l)
-					{
+					for (size_t l = 0; l < 4; ++l){
 						if (bWidgets[k].src[l] != src)
 							continue;
 
@@ -616,15 +573,13 @@ struct SettingsMenuPrivate
 		dupWarnLabel.setVisible(haveDup);
 	}
 
-	void redraw()
-	{
+	void redraw(){
 		fillSurface(winSurf, cBgNorm);
 
 		for (size_t i = 0; i < widgets.size(); ++i)
 			widgets[i]->draw(winSurf);
 
-		if (state == AwaitingInput)
-		{
+		if (state == AwaitingInput){
 			char buf[64];
 			snprintf(buf, sizeof(buf), findtext(TRSTR_KEYBIND_KEYPROMPT,
 								"Press key or joystick button for \"%s\""),
@@ -663,8 +618,7 @@ struct SettingsMenuPrivate
 		SDL_UpdateWindowSurface(window);
 	}
 
-	Widget *findWidget(int x, int y)
-	{
+	Widget *findWidget(int x, int y){
 		Widget *w = 0;
 
 		for (size_t i = 0; i < widgets.size(); ++i)
@@ -677,13 +631,11 @@ struct SettingsMenuPrivate
 		return w;
 	}
 
-	void onClick(const SDL_MouseButtonEvent &e)
-	{
+	void onClick(const SDL_MouseButtonEvent &e){
 		if (e.button != SDL_BUTTON_LEFT && e.button != SDL_BUTTON_RIGHT)
 			return;
 
-		if (state == AwaitingInput)
-		{
+		if (state == AwaitingInput){
 			state = Idle;
 			redraw();
 			return;
@@ -695,8 +647,7 @@ struct SettingsMenuPrivate
 			w->click(e.x, e.y, e.button);
 	}
 
-	void onMotion(const SDL_MouseMotionEvent &e)
-	{
+	void onMotion(const SDL_MouseMotionEvent &e){
 		if (state == AwaitingInput)
 			return;
 
@@ -713,13 +664,11 @@ struct SettingsMenuPrivate
 			hovered->motion(e.x, e.y);
 	}
 
-	bool onCaptureInputEvent(const SDL_Event &event)
-	{
+	bool onCaptureInputEvent(const SDL_Event &event){
 		assert(captureDesc);
 		SourceDesc &desc = *captureDesc;
 
-		switch (event.type)
-		{
+		switch (event.type){
 		case SDL_EVENT_KEY_DOWN:
 			desc.type = Key;
 			desc.d.scan = event.key.scancode;
@@ -738,8 +687,7 @@ struct SettingsMenuPrivate
 			desc.d.jb = event.gbutton.button;
 			break;
 
-		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
-		{
+		case SDL_EVENT_GAMEPAD_AXIS_MOTION:{
 			int v = event.gaxis.value;
 
 			/* Only register if pushed halfway through */
@@ -757,8 +705,7 @@ struct SettingsMenuPrivate
 			desc.d.jb = event.gbutton.button;
 			break;
 
-		case SDL_EVENT_JOYSTICK_HAT_MOTION:
-		{
+		case SDL_EVENT_JOYSTICK_HAT_MOTION:{
 			int v = event.jhat.value;
 
 			/* Only register if single directional input */
@@ -772,8 +719,7 @@ struct SettingsMenuPrivate
 			break;
 		}
 
-		case SDL_EVENT_JOYSTICK_AXIS_MOTION:
-		{
+		case SDL_EVENT_JOYSTICK_AXIS_MOTION:{
 			int v = event.jaxis.value;
 
 			/* Only register if pushed halfway through */
@@ -797,19 +743,16 @@ struct SettingsMenuPrivate
 		return true;
 	}
 
-	void onBWidgetCellClicked(SourceDesc &desc, const char *str, uint8_t button)
-	{
+	void onBWidgetCellClicked(SourceDesc &desc, const char *str, uint8_t button){
 		if (state != Idle)
 			return;
 
-		if (button == SDL_BUTTON_LEFT)
-		{
+		if (button == SDL_BUTTON_LEFT){
 			captureDesc = &desc;
 			captureName = str;
 			state = AwaitingInput;
 		}
-		else /* e.button == SDL_BUTTON_RIGHT */
-		{
+		else /* e.button == SDL_BUTTON_RIGHT */{
 			/* Clear binding */
 			desc.type = Invalid;
 		}
@@ -818,15 +761,13 @@ struct SettingsMenuPrivate
 		redraw();
 	}
 
-	void onResetToDefault()
-	{
+	void onResetToDefault(){
 		setupBindingData(genDefaultBindings());
 		updateDuplicateStatus();
 		redraw();
 	}
 
-	void onAccept()
-	{
+	void onAccept(){
 		BDescVec binds;
 
 		for (size_t i = 0; i < bWidgets.size(); ++i)
@@ -840,8 +781,7 @@ struct SettingsMenuPrivate
 		destroyReq = true;
 	}
 
-	void onCancel()
-	{
+	void onCancel(){
 		destroyReq = true;
 	}
 };
@@ -850,53 +790,45 @@ Widget::Widget(SMP *p, const IntRect &rect)
     : p(p), rect(rect)
 {}
 
-bool Widget::hit(int x, int y)
-{
+bool Widget::hit(int x, int y){
 	return pointInRect(rect, x, y);
 }
 
-void Widget::draw(SDL_Surface *surf)
-{
+void Widget::draw(SDL_Surface *surf){
 	Vec2i prev = p->drawOff;
 	p->drawOff = rect.pos();
 	drawHandler(surf);
 	p->drawOff = prev;
 }
 
-void Widget::motion(int x, int y)
-{
+void Widget::motion(int x, int y){
 	motionHandler(x - rect.x, y - rect.y);
 }
 
-void Widget::leave()
-{
+void Widget::leave(){
 	leaveHandler();
 }
 
-void Widget::click(int x, int y, uint8_t button)
-{
+void Widget::click(int x, int y, uint8_t button){
 	clickHandler(x - rect.x, y - rect.y, button);
 }
 
 /* Ratio of cell area to total widget width */
 #define BW_CELL_R 0.75f
 
-void BindingWidget::drawHandler(SDL_Surface *surf)
-{
+void BindingWidget::drawHandler(SDL_Surface *surf){
 	const int cellW = (rect.w*BW_CELL_R) / 2;
 	const int cellH = rect.h / 2;
 	const int cellOffX = (1.0f-BW_CELL_R) * rect.w;
 
-	const int cellOff[] =
-	{
+	const int cellOff[] = {
 	    cellOffX, 1,
 	    cellOffX+cellW, 1,
 	    cellOffX, cellH,
 	    cellOffX+cellW, cellH
 	};
 
-	const int lbOff[] =
-	{
+	const int lbOff[] = {
 	    0, cellH / 2,
 	    cellW, cellH / 2,
 	    0, cellH + cellH / 2,
@@ -921,8 +853,7 @@ void BindingWidget::drawHandler(SDL_Surface *surf)
 	p->strokeLineH(surf, cLine, cellOffX, cellH, cellW*2, 2);
 
 	/* Draw binding labels */
-	for (size_t i = 0; i < 4; ++i)
-	{
+	for (size_t i = 0; i < 4; ++i) {
 		std::string lb = sourceDescString(src[i]);
 		if (lb.empty())
 			continue;
@@ -932,8 +863,7 @@ void BindingWidget::drawHandler(SDL_Surface *surf)
 		p->drawText(surf, lb.c_str(), cellOffX+x+1, y, cellW-2, Center);
 	}
 
-	for (size_t i = 0; i < 4; ++i)
-	{
+	for (size_t i = 0; i < 4; ++i){
 		if (!dupFlag[i])
 			continue;
 
@@ -942,8 +872,7 @@ void BindingWidget::drawHandler(SDL_Surface *surf)
 	}
 }
 
-void BindingWidget::setHoveredCell(int cell)
-{
+void BindingWidget::setHoveredCell(int cell){
 	if (hoveredCell == cell)
 		return;
 
@@ -951,18 +880,15 @@ void BindingWidget::setHoveredCell(int cell)
 	p->redraw();
 }
 
-void BindingWidget::motionHandler(int x, int y)
-{
+void BindingWidget::motionHandler(int x, int y){
 	setHoveredCell(cellIndex(x, y));
 }
 
-void BindingWidget::leaveHandler()
-{
+void BindingWidget::leaveHandler(){
 	setHoveredCell(-1);
 }
 
-void BindingWidget::clickHandler(int x, int y, uint8_t button)
-{
+void BindingWidget::clickHandler(int x, int y, uint8_t button){
 	int cell = cellIndex(x, y);
 
 	if (cell == -1)
@@ -971,8 +897,7 @@ void BindingWidget::clickHandler(int x, int y, uint8_t button)
 	p->onBWidgetCellClicked(src[cell], findtext(vb.trstrId, vb.str), button);
 }
 
-int BindingWidget::cellIndex(int x, int y) const
-{
+int BindingWidget::cellIndex(int x, int y) const{
 	const int cellW = (rect.w*BW_CELL_R) / 2;
 	const int cellH = rect.h / 2;
 	const int cellOff = (1.0f-BW_CELL_R) * rect.w;
@@ -996,10 +921,8 @@ int BindingWidget::cellIndex(int x, int y) const
 	return -1;
 }
 
-void BindingWidget::appendBindings(BDescVec &d) const
-{
-	for (size_t i = 0; i < 4; ++i)
-	{
+void BindingWidget::appendBindings(BDescVec &d) const{
+	for (size_t i = 0; i < 4; ++i){
 		if (src[i].type == Invalid)
 			continue;
 
@@ -1010,8 +933,7 @@ void BindingWidget::appendBindings(BDescVec &d) const
 	}
 }
 
-void Button::setHovered(bool val)
-{
+void Button::setHovered(bool val){
 	if (hovered == val)
 		return;
 
@@ -1019,8 +941,7 @@ void Button::setHovered(bool val)
 	p->redraw();
 }
 
-void Button::drawHandler(SDL_Surface *surf)
-{
+void Button::drawHandler(SDL_Surface *surf){
 	if (hovered)
 		p->fillRect(surf, cBgDark, 0, 0, rect.w, rect.h);
 
@@ -1028,26 +949,22 @@ void Button::drawHandler(SDL_Surface *surf)
 	p->drawText(surf, str, 0, rect.h/2, rect.w, Center);
 }
 
-void Button::motionHandler(int, int)
-{
+void Button::motionHandler(int, int){
 	setHovered(true);
 }
 
-void Button::leaveHandler()
-{
+void Button::leaveHandler(){
 	setHovered(false);
 }
 
-void Button::clickHandler(int, int, uint8_t button)
-{
+void Button::clickHandler(int, int, uint8_t button){
 	if (button != SDL_BUTTON_LEFT)
 		return;
 
 	(p->*cb)();
 }
 
-void Label::setVisible(bool val)
-{
+void Label::setVisible(bool val){
 	if (visible == val)
 		return;
 
@@ -1055,14 +972,12 @@ void Label::setVisible(bool val)
 	p->redraw();
 }
 
-void Label::drawHandler(SDL_Surface *surf)
-{
+void Label::drawHandler(SDL_Surface *surf){
 	if (visible)
 		p->drawText(surf, str, 0, rect.h/2, rect.w, Left, c);
 }
 
-SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
-{
+SettingsMenu::SettingsMenu(RGSSThreadData &rtData){
 	p = new SettingsMenuPrivate(rtData);
 	p->state = Idle;
 
@@ -1107,8 +1022,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	const int buttonH = 32;
 	const int buttonY = winSize.y - buttonH - 8;
 
-	IntRect btRects[] =
-	{
+	IntRect btRects[] = {
 	    IntRect(16, buttonY, 220, buttonH),
 	    IntRect(winSize.x-16-80*2-8, buttonY, 80, buttonH),
 	    IntRect(winSize.x-16-80, buttonY, 80, buttonH)
@@ -1140,8 +1054,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData)
 	p->redraw();
 }
 
-SettingsMenu::~SettingsMenu()
-{
+SettingsMenu::~SettingsMenu() {
 	SDL_DestroyWindow(p->window);
 
 	delete p;
@@ -1150,8 +1063,7 @@ SettingsMenu::~SettingsMenu()
 bool SettingsMenu::onEvent(const SDL_Event &event,
                            const std::map<int, SDL_Joystick*> &joysticks)
 {
-	switch (event.window.type)
-	{
+	switch (event.window.type) {
 		case SDL_EVENT_WINDOW_SHOWN : // SDL is bugged and doesn't give us a first FOCUS_GAINED event
 		case SDL_EVENT_WINDOW_FOCUS_GAINED :
 			p->hasFocus = true;
@@ -1166,8 +1078,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 			break;
 
 		case SDL_EVENT_WINDOW_MOUSE_LEAVE:
-			if (p->hovered)
-			{
+			if (p->hovered) {
 				p->hovered->leave();
 				p->hovered = 0;
 			}
@@ -1177,8 +1088,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 			p->onCancel();
 	}
 
-	switch (event.type)
-	{
+	switch (event.type){
 	case SDL_EVENT_MOUSE_BUTTON_DOWN :
 	case SDL_EVENT_MOUSE_BUTTON_UP :
 	case SDL_EVENT_MOUSE_MOTION :
@@ -1207,8 +1117,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 	}
 
 	/* Now process it.. */
-	switch (event.type)
-	{
+	switch (event.type){
 	/* Ignore these event */
 	case SDL_EVENT_MOUSE_BUTTON_UP :
 	case SDL_EVENT_KEY_UP :
@@ -1218,8 +1127,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 		return true;
 
 	case SDL_EVENT_KEY_DOWN:
-		if (p->state != AwaitingInput)
-		{
+		if (p->state != AwaitingInput){
 			if (event.key.key == SDLK_RETURN)
 				p->onAccept();
 			else if (event.key.key == SDLK_ESCAPE)
@@ -1229,8 +1137,7 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 
 		/* Don't let the user bind keys that trigger
 		 * mkxp functions */
-		switch(event.key.scancode)
-		{
+		switch(event.key.scancode){
 		case SDL_SCANCODE_F1:
 		case SDL_SCANCODE_F2:
 		case SDL_SCANCODE_F12:
@@ -1278,12 +1185,10 @@ bool SettingsMenu::onEvent(const SDL_Event &event,
 	return true;
 }
 
-void SettingsMenu::raise()
-{
+void SettingsMenu::raise(){
 	SDL_RaiseWindow(p->window);
 }
 
-bool SettingsMenu::destroyReq() const
-{
+bool SettingsMenu::destroyReq() const{
 	return p->destroyReq;
 }

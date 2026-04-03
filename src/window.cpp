@@ -37,14 +37,12 @@
 #include <sigc++/connection.h>
 
 template<typename T>
-struct Sides
-{
+struct Sides{
 	T l, r, t, b;
 };
 
 template<typename T>
-struct Corners
-{
+struct Corners{
 	T tl, tr, bl, br;
 };
 
@@ -52,32 +50,28 @@ static const IntRect backgroundSrc(0, 0, 128, 128);
 
 static const IntRect cursorSrc(128, 64, 32, 32);
 
-static const IntRect pauseAniSrc[] =
-{
+static const IntRect pauseAniSrc[] = {
 	IntRect(160, 64, 16, 16),
 	IntRect(176, 64, 16, 16),
 	IntRect(160, 80, 16, 16),
 	IntRect(176, 80, 16, 16)
 };
 
-static const Sides<IntRect> bordersSrc =
-{
+static const Sides<IntRect> bordersSrc = {
 	IntRect(128, 16, 16, 32),
 	IntRect(176, 16, 16, 32),
 	IntRect(144,  0, 32, 16),
 	IntRect(144, 48, 32, 16)
 };
 
-static const Corners<IntRect> cornersSrc =
-{
+static const Corners<IntRect> cornersSrc = {
 	IntRect(128,  0, 16, 16),
 	IntRect(176,  0, 16, 16),
 	IntRect(128, 48, 16, 16),
 	IntRect(176, 48, 16, 16)
 };
 
-static const Sides<IntRect> scrollArrowSrc =
-{
+static const Sides<IntRect> scrollArrowSrc = {
 	IntRect(144, 24,  8, 16),
 	IntRect(168, 24,  8, 16),
 	IntRect(152, 16, 16,  8),
@@ -85,8 +79,7 @@ static const Sides<IntRect> scrollArrowSrc =
 };
 
 /* Cycling */
-static const uint8_t cursorAniAlpha[] =
-{
+static const uint8_t cursorAniAlpha[] = {
 	/* Fade out */
 	0xFF, 0xF7, 0xEF, 0xE7, 0xDF, 0xD7, 0xCF, 0xC7,
 	0xBF, 0xB7, 0xAF, 0xA7, 0x9F, 0x97, 0x8F, 0x87,
@@ -98,8 +91,7 @@ static const uint8_t cursorAniAlpha[] =
 static elementsN(cursorAniAlpha);
 
 /* Cycling */
-static const uint8_t pauseAniQuad[] =
-{
+static const uint8_t pauseAniQuad[] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 1, 1, 1, 1, 1, 1,
 	2, 2, 2, 2, 2, 2, 2, 2,
@@ -109,8 +101,7 @@ static const uint8_t pauseAniQuad[] =
 static elementsN(pauseAniQuad);
 
 /* No cycle */
-static const uint8_t pauseAniAlpha[] =
-{
+static const uint8_t pauseAniAlpha[] = {
 	0x00, 0x20, 0x40, 0x60,
 	0x80, 0xA0, 0xC0, 0xE0,
 	0xFF
@@ -121,8 +112,7 @@ static elementsN(pauseAniAlpha);
 /* Points to an array of quads which it doesn't own.
  * Useful for setting alpha of quads stored inside
  * bigger arrays */
-struct QuadChunk
-{
+struct QuadChunk {
 	Vertex *vert;
 	int count; /* In quads */
 
@@ -166,8 +156,7 @@ struct QuadChunk
  *   quad array directly to the screen.
  */
 
-struct WindowPrivate
-{
+struct WindowPrivate {
 	Bitmap *windowskin;
 
 	Bitmap *contents;
@@ -215,13 +204,11 @@ struct WindowPrivate
 			setZ(2);
 		}
 
-		void draw()
-		{
+		void draw(){
 			p->drawControls();
 		}
 
-		void release()
-		{
+		void release(){
 			unlink();
 		}
 
@@ -277,27 +264,23 @@ struct WindowPrivate
 		        (sigc::mem_fun(this, &WindowPrivate::prepare));
 	}
 
-	~WindowPrivate()
-	{
+	~WindowPrivate(){
 		shState->texPool().release(baseTex);
 		cursorRectCon.disconnect();
 		prepareCon.disconnect();
 	}
 
-	void markControlVertDirty()
-	{
+	void markControlVertDirty(){
 		controlsVertDirty = true;
 	}
 
-	void refreshCursorRectCon()
-	{
+	void refreshCursorRectCon(){
 		cursorRectCon.disconnect();
 		cursorRectCon = cursorRect->valueChanged.connect
 		        (sigc::mem_fun(this, &WindowPrivate::markControlVertDirty));
 	}
 
-	void buildBaseVert()
-	{
+	void buildBaseVert(){
 		int w = size.x;
 		int h = size.y;
 
@@ -376,8 +359,7 @@ struct WindowPrivate
 		baseTexDirty = true;
 	}
 
-	void updateBaseAlpha()
-	{
+	void updateBaseAlpha(){
 		/* This is always applied unconditionally */
 		backgroundVert.setAlpha(backOpacity.norm);
 
@@ -386,8 +368,7 @@ struct WindowPrivate
 		baseTexDirty = true;
 	}
 
-	void ensureBaseTexReady()
-	{
+	void ensureBaseTexReady(){
 		/* Make sure texture is big enough */
 		int newW = baseTex.width;
 		int newH = baseTex.height;
@@ -413,8 +394,7 @@ struct WindowPrivate
 		baseTexDirty = true;
 	}
 
-	void redrawBaseTex()
-	{
+	void redrawBaseTex(){
 		/* Discard old buffer */
 		TEX::bind(baseTex.tex);
 		TEX::allocEmpty(baseTex.width, baseTex.height);
@@ -455,8 +435,7 @@ struct WindowPrivate
 		TEX::setSmooth(false);
 	}
 
-	void buildControlsVert()
-	{
+	void buildControlsVert(){
 		int i = 0;
 		Vertex *vert = controlsQuadArray.vertices.data();
 
@@ -508,8 +487,7 @@ struct WindowPrivate
 		controlsQuadCount = i;
 	}
 
-	void prepare()
-	{
+	void prepare(){
 		if (size.x <= 0 || size.y <= 0)
 			return;
 
@@ -548,8 +526,7 @@ struct WindowPrivate
 		}
 	}
 
-	void drawBase()
-	{
+	void drawBase(){
 		if (nullOrDisposed(windowskin))
 			return;
 
@@ -579,8 +556,7 @@ struct WindowPrivate
 		}
 	}
 
-	void drawControls()
-	{
+	void drawControls(){
 		if (nullOrDisposed(windowskin) && nullOrDisposed(contents))
 			return;
 
@@ -636,8 +612,7 @@ struct WindowPrivate
 		glState.scissorTest.pop();
 	}
 
-	void updateControls()
-	{
+	void updateControls(){
 		bool updateArray = false;
 
 		if (active && cursorVert.vert)
@@ -664,8 +639,7 @@ struct WindowPrivate
 			controlsQuadArray.commit();
 	}
 
-	void stepAnimations()
-	{
+	void stepAnimations(){
 		if (++cursorAniAlphaIdx == cursorAniAlphaN)
 			cursorAniAlphaIdx = 0;
 
@@ -678,19 +652,16 @@ struct WindowPrivate
 };
 
 Window::Window(Viewport *viewport)
-	: ViewportElement(viewport)
-{
+	: ViewportElement(viewport){
 	p = new WindowPrivate(viewport);
 	onGeometryChange(scene->getGeometry());
 }
 
-Window::~Window()
-{
+Window::~Window(){
 	dispose();
 }
 
-void Window::update()
-{
+void Window::update(){
 	guardDisposed();
 
 	p->updateControls();
@@ -714,8 +685,7 @@ DEF_ATTR_RD_SIMPLE(Window, Opacity,         int,     p->opacity)
 DEF_ATTR_RD_SIMPLE(Window, BackOpacity,     int,     p->backOpacity)
 DEF_ATTR_RD_SIMPLE(Window, ContentsOpacity, int,     p->contentsOpacity)
 
-void Window::setWindowskin(Bitmap *value)
-{
+void Window::setWindowskin(Bitmap *value){
 	guardDisposed();
 
 	p->windowskin = value;
@@ -726,8 +696,7 @@ void Window::setWindowskin(Bitmap *value)
 	value->ensureNonMega();
 }
 
-void Window::setContents(Bitmap *value)
-{
+void Window::setContents(Bitmap *value){
 	guardDisposed();
 
 	if (p->contents == value)
@@ -743,8 +712,7 @@ void Window::setContents(Bitmap *value)
 	p->contentsQuad.setTexPosRect(value->rect(), value->rect());
 }
 
-void Window::setStretch(bool value)
-{
+void Window::setStretch(bool value){
 	guardDisposed();
 
 	if (value == p->bgStretch)
@@ -754,8 +722,7 @@ void Window::setStretch(bool value)
 	p->baseVertDirty = true;
 }
 
-void Window::setActive(bool value)
-{
+void Window::setActive(bool value){
 	guardDisposed();
 
 	if (p->active == value)
@@ -765,8 +732,7 @@ void Window::setActive(bool value)
 	p->cursorAniAlphaIdx = 0;
 }
 
-void Window::setPause(bool value)
-{
+void Window::setPause(bool value){
 	guardDisposed();
 
 	if (p->pause == value)
@@ -778,8 +744,7 @@ void Window::setPause(bool value)
 	p->controlsVertDirty = true;
 }
 
-void Window::setWidth(int value)
-{
+void Window::setWidth(int value){
 	guardDisposed();
 
 	if (p->size.x == value)
@@ -789,8 +754,7 @@ void Window::setWidth(int value)
 	p->baseVertDirty = true;
 }
 
-void Window::setHeight(int value)
-{
+void Window::setHeight(int value){
 	guardDisposed();
 
 	if (p->size.y == value)
@@ -800,8 +764,7 @@ void Window::setHeight(int value)
 	p->baseVertDirty = true;
 }
 
-void Window::setOX(int value)
-{
+void Window::setOX(int value){
 	guardDisposed();
 
 	if (p->contentsOffset.x == value)
@@ -811,8 +774,7 @@ void Window::setOX(int value)
 	p->controlsVertDirty = true;
 }
 
-void Window::setOY(int value)
-{
+void Window::setOY(int value){
 	guardDisposed();
 
 	if (p->contentsOffset.y == value)
@@ -822,8 +784,7 @@ void Window::setOY(int value)
 	p->controlsVertDirty = true;
 }
 
-void Window::setOpacity(int value)
-{
+void Window::setOpacity(int value){
 	guardDisposed();
 
 	if (p->opacity == value)
@@ -833,8 +794,7 @@ void Window::setOpacity(int value)
 	p->opacityDirty = true;
 }
 
-void Window::setBackOpacity(int value)
-{
+void Window::setBackOpacity(int value){
 	guardDisposed();
 
 	if (p->backOpacity == value)
@@ -844,8 +804,7 @@ void Window::setBackOpacity(int value)
 	p->opacityDirty = true;
 }
 
-void Window::setContentsOpacity(int value)
-{
+void Window::setContentsOpacity(int value){
 	guardDisposed();
 
 	if (p->contentsOpacity == value)
@@ -855,44 +814,37 @@ void Window::setContentsOpacity(int value)
 	p->contentsQuad.setColor(Vec4(1, 1, 1, p->contentsOpacity.norm));
 }
 
-void Window::initDynAttribs()
-{
+void Window::initDynAttribs(){
 	p->cursorRect = new Rect;
 
 	p->refreshCursorRectCon();
 }
 
-void Window::draw()
-{
+void Window::draw(){
 	p->drawBase();
 }
 
-void Window::onGeometryChange(const Scene::Geometry &geo)
-{
+void Window::onGeometryChange(const Scene::Geometry &geo){
 	p->sceneOffset = geo.offset();
 }
 
-void Window::setZ(int value)
-{
+void Window::setZ(int value){
 	ViewportElement::setZ(value);
 
 	p->controlsElement.setZ(value + 2);
 }
 
-void Window::setVisible(bool value)
-{
+void Window::setVisible(bool value){
 	ViewportElement::setVisible(value);
 
 	p->controlsElement.setVisible(value);
 }
 
-void Window::onViewportChange()
-{
+void Window::onViewportChange(){
 	p->controlsElement.setScene(*this->scene);
 }
 
-void Window::releaseResources()
-{
+void Window::releaseResources(){
 	p->controlsElement.release();
 
 	unlink();

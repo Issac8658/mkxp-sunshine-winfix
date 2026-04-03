@@ -33,8 +33,7 @@
 #include <stdint.h>
 
 template<class VertexType>
-struct QuadArray
-{
+struct QuadArray{
 	std::vector<VertexType> vertices;
 
 	VBO::ID vbo;
@@ -56,34 +55,29 @@ struct QuadArray
 		GLMeta::vaoInit(vao);
 	}
 
-	~QuadArray()
-	{
+	~QuadArray(){
 		GLMeta::vaoFini(vao);
 		VBO::del(vbo);
 	}
 
-	void resize(size_t size)
-	{
+	void resize(size_t size){
 		vertices.resize(size * 4);
 		quadCount = size;
 	}
 
-	void clear()
-	{
+	void clear(){
 		vertices.clear();
 		quadCount = 0;
 	}
 
 	/* This needs to be called after the final 'append()' call
 	 * and previous to the first 'draw()' call. */
-	void commit()
-	{
+	void commit(){
 		VBO::bind(vbo);
 
 		GLsizeiptr size = vertices.size() * sizeof(VertexType);
 
-		if (size > vboSize)
-		{
+		if (size > vboSize){
 			/* New data exceeds already allocated size.
 			 * Reallocate VBO. */
 			VBO::uploadData(size, dataPtr(vertices), GL_DYNAMIC_DRAW);
@@ -91,8 +85,7 @@ struct QuadArray
 
 			shState->ensureQuadIBO(quadCount);
 		}
-		else
-		{
+		else{
 			/* New data fits in allocated size */
 			VBO::uploadSubData(0, size, dataPtr(vertices));
 		}
@@ -100,8 +93,7 @@ struct QuadArray
 		VBO::unbind();
 	}
 
-	void draw(size_t offset, size_t count)
-	{
+	void draw(size_t offset, size_t count){
 		GLMeta::vaoBind(vao);
 
 		const char *_offset = (const char*) 0 + offset * 6 * sizeof(index_t);
@@ -110,13 +102,11 @@ struct QuadArray
 		GLMeta::vaoUnbind(vao);
 	}
 
-	void draw()
-	{
+	void draw(){
 		draw(0, quadCount);
 	}
 
-	size_t count() const
-	{
+	size_t count() const{
 		return quadCount;
 	}
 };

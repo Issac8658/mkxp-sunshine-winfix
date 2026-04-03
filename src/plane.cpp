@@ -37,14 +37,12 @@
 
 #include <sigc++/connection.h>
 
-static float fwrap(float value, float range)
-{
+static float fwrap(float value, float range){
 	float res = fmod(value, range);
 	return res < 0 ? res + range : res;
 }
 
-struct PlanePrivate
-{
+struct PlanePrivate{
 	Bitmap *bitmap;
 
 	Rect *srcRect;
@@ -86,19 +84,16 @@ struct PlanePrivate
 		qArray.resize(1);
 	}
 
-	~PlanePrivate()
-	{
+	~PlanePrivate(){
 		srcRectCon.disconnect();
 		prepareCon.disconnect();
 	}
 
-	void onSrcRectChange()
-	{
+	void onSrcRectChange(){
 		quadSourceDirty = true;
 	}
 
-	void updateSrcRectCon()
-	{
+	void updateSrcRectCon(){
 		/* Cut old connection */
 		srcRectCon.disconnect();
 		/* Create new one */
@@ -106,13 +101,11 @@ struct PlanePrivate
 				(sigc::mem_fun(this, &PlanePrivate::onSrcRectChange));
 	}
 
-	void updateQuadSource()
-	{
+	void updateQuadSource(){
 		if (nullOrDisposed(bitmap))
 			return;
 
-		if (gl.npot_repeat && srcRect->toIntRect() == bitmap->rect())
-		{
+		if (gl.npot_repeat && srcRect->toIntRect() == bitmap->rect()){
 			FloatRect srcRect;
 			srcRect.x = (sceneGeo.orig.x + ox) / zoomX;
 			srcRect.y = (sceneGeo.orig.y + oy) / zoomY;
@@ -146,8 +139,7 @@ struct PlanePrivate
 		qArray.resize(tilesX * tilesY);
 
 		for (size_t y = 0; y < tilesY; ++y)
-			for (size_t x = 0; x < tilesX; ++x)
-			{
+			for (size_t x = 0; x < tilesX; ++x){
 				SVertex *vert = &qArray.vertices[(y*tilesX + x) * 4];
 				FloatRect pos(x*sw - wox, y*sh - woy, sw, sh);
 
@@ -157,10 +149,8 @@ struct PlanePrivate
 		qArray.commit();
 	}
 
-	void prepare()
-	{
-		if (quadSourceDirty)
-		{
+	void prepare(){
+		if (quadSourceDirty){
 			updateQuadSource();
 			quadSourceDirty = false;
 		}
@@ -187,13 +177,11 @@ DEF_ATTR_SIMPLE(Plane, Opacity,   int,     p->opacity)
 DEF_ATTR_SIMPLE(Plane, Color,     Color&, *p->color)
 DEF_ATTR_SIMPLE(Plane, Tone,      Tone&,  *p->tone)
 
-Plane::~Plane()
-{
+Plane::~Plane(){
 	dispose();
 }
 
-void Plane::setBitmap(Bitmap *value)
-{
+void Plane::setBitmap(Bitmap *value){
 	guardDisposed();
 
 	p->bitmap = value;
@@ -207,8 +195,7 @@ void Plane::setBitmap(Bitmap *value)
 	p->onSrcRectChange();
 }
 
-void Plane::setOX(int value)
-{
+void Plane::setOX(int value){
 	guardDisposed();
 
 	if (p->ox == value)
@@ -218,8 +205,7 @@ void Plane::setOX(int value)
 	p->quadSourceDirty = true;
 }
 
-void Plane::setOY(int value)
-{
+void Plane::setOY(int value){
 	guardDisposed();
 
 	if (p->oy == value)
@@ -229,8 +215,7 @@ void Plane::setOY(int value)
 	p->quadSourceDirty = true;
 }
 
-void Plane::setZoomX(float value)
-{
+void Plane::setZoomX(float value){
 	guardDisposed();
 
 	if (p->zoomX == value)
@@ -240,8 +225,7 @@ void Plane::setZoomX(float value)
 	p->quadSourceDirty = true;
 }
 
-void Plane::setZoomY(float value)
-{
+void Plane::setZoomY(float value){
 	guardDisposed();
 
 	if (p->zoomY == value)
@@ -251,12 +235,10 @@ void Plane::setZoomY(float value)
 	p->quadSourceDirty = true;
 }
 
-void Plane::setBlendType(int value)
-{
+void Plane::setBlendType(int value){
 	guardDisposed();
 
-	switch (value)
-	{
+	switch (value){
 	default :
 	case BlendNormal :
 		p->blendType = BlendNormal;
@@ -270,8 +252,7 @@ void Plane::setBlendType(int value)
 	}
 }
 
-void Plane::initDynAttribs()
-{
+void Plane::initDynAttribs(){
 	p->srcRect = new Rect;
 	p->color = new Color;
 	p->tone = new Tone;
@@ -279,8 +260,7 @@ void Plane::initDynAttribs()
 	p->updateSrcRectCon();
 }
 
-void Plane::draw()
-{
+void Plane::draw(){
 	if (nullOrDisposed(p->bitmap))
 		return;
 
@@ -289,8 +269,7 @@ void Plane::draw()
 
 	ShaderBase *base;
 
-	if (p->color->hasEffect() || p->tone->hasEffect() || p->opacity != 255)
-	{
+	if (p->color->hasEffect() || p->tone->hasEffect() || p->opacity != 255){
 		PlaneShader &shader = shState->shaders().plane;
 
 		shader.bind();
@@ -301,9 +280,7 @@ void Plane::draw()
 		shader.setOpacity(p->opacity.norm);
 
 		base = &shader;
-	}
-	else
-	{
+	}else{
 		SimpleShader &shader = shState->shaders().simple;
 
 		shader.bind();
@@ -328,8 +305,7 @@ void Plane::draw()
 	glState.blendMode.pop();
 }
 
-void Plane::onGeometryChange(const Scene::Geometry &geo)
-{
+void Plane::onGeometryChange(const Scene::Geometry &geo){
 	if (gl.npot_repeat)
 		Quad::setPosRect(&p->qArray.vertices[0], FloatRect(geo.rect));
 
@@ -337,8 +313,7 @@ void Plane::onGeometryChange(const Scene::Geometry &geo)
 	p->quadSourceDirty = true;
 }
 
-void Plane::releaseResources()
-{
+void Plane::releaseResources(){
 	unlink();
 
 	delete p;

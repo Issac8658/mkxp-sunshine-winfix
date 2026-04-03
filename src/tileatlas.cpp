@@ -49,13 +49,11 @@ static const int atArea = atAreaW * atAreaH;
 static const int tilesetW = 256;
 static const int tsLaneW = tilesetW / 2;
 
-static int freeArea(int width, int height)
-{
+static int freeArea(int width, int height){
 	return width * height - atArea;
 }
 
-Vec2i minSize(int tilesetH, int maxAtlasSize)
-{
+Vec2i minSize(int tilesetH, int maxAtlasSize){
 	int width = atAreaW;
 	int height = atAreaH;
 
@@ -78,8 +76,7 @@ Vec2i minSize(int tilesetH, int maxAtlasSize)
 	return Vec2i(-1, -1);
 }
 
-static ColumnVec calcSrcCols(int tilesetH)
-{
+static ColumnVec calcSrcCols(int tilesetH){
 	ColumnVec cols;
 	cols.reserve(2);
 
@@ -89,8 +86,7 @@ static ColumnVec calcSrcCols(int tilesetH)
 	return cols;
 }
 
-static ColumnVec calcDstCols(int atlasW, int atlasH)
-{
+static ColumnVec calcDstCols(int atlasW, int atlasH){
 	ColumnVec cols;
 	cols.reserve(3);
 
@@ -111,24 +107,20 @@ static ColumnVec calcDstCols(int atlasW, int atlasH)
 	return cols;
 }
 
-static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols)
-{
+static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols){
 	BlitVec blits;
 
 	/* Using signed indices here is safer, as we
 	 * might decrement dstI while it is zero. */
 	int dstI = 0;
 
-	for (size_t srcI = 0; srcI < srcCols.size(); ++srcI)
-	{
+	for (size_t srcI = 0; srcI < srcCols.size(); ++srcI){
 		Column &srcCol = srcCols[srcI];
 
-		for (; dstI < (int) dstCols.size() && srcCol.h > 0; ++dstI)
-		{
+		for (; dstI < (int) dstCols.size() && srcCol.h > 0; ++dstI){
 			Column &dstCol = dstCols[dstI];
 
-			if (srcCol.h > dstCol.h)
-			{
+			if (srcCol.h > dstCol.h){
 				/* srcCol doesn't fully fit into dstCol */
 				blits.push_back(Blit(srcCol.x, srcCol.y,
 				                     dstCol.x, dstCol.y, dstCol.h));
@@ -136,8 +128,7 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols)
 				srcCol.y += dstCol.h;
 				srcCol.h -= dstCol.h;
 			}
-			else if (srcCol.h < dstCol.h)
-			{
+			else if (srcCol.h < dstCol.h){
 				/* srcCol fits into dstCol with space remaining */
 				blits.push_back(Blit(srcCol.x, srcCol.y,
 				                     dstCol.x, dstCol.y, srcCol.h));
@@ -150,8 +141,7 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols)
 
 				srcCol.h = 0;
 			}
-			else
-			{
+			else{
 				/* srcCol fits perfectly into dstCol */
 				blits.push_back(Blit(srcCol.x, srcCol.y,
 				                     dstCol.x, dstCol.y, dstCol.h));
@@ -162,16 +152,14 @@ static BlitVec calcBlitsInt(ColumnVec &srcCols, ColumnVec &dstCols)
 	return blits;
 }
 
-BlitVec calcBlits(int tilesetH, const Vec2i &atlasSize)
-{
+BlitVec calcBlits(int tilesetH, const Vec2i &atlasSize){
 	ColumnVec srcCols = calcSrcCols(tilesetH);
 	ColumnVec dstCols = calcDstCols(atlasSize.x, atlasSize.y);
 
 	return calcBlitsInt(srcCols, dstCols);
 }
 
-Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH)
-{
+Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH){
 	int laneX = tileX*32;
 	int laneY = tileY*32;
 
@@ -184,20 +172,17 @@ Vec2i tileToAtlasCoor(int tileX, int tileY, int tilesetH, int atlasH)
 	int atlasY = 0;
 
 	/* Check if we're inside the 2nd lane */
-	if (laneX >= tsLaneW)
-	{
+	if (laneX >= tsLaneW){
 		laneY += tilesetH;
 		laneX -= tsLaneW;
 	}
 
-	if (laneY < longlaneOffset)
-	{
+	if (laneY < longlaneOffset){
 		/* Below autotile area */
 		laneIdx = laneY / shortlaneH;
 		atlasY  = laneY % shortlaneH + atAreaH;
 	}
-	else
-	{
+	else{
 		/* Right of autotile area */
 		int _y = laneY - longlaneOffset;
 		laneIdx = 3 + _y / longlaneH;

@@ -155,8 +155,7 @@ static const size_t zlayersMax = viewpH + 5;
  */
 
 /* Autotile animation */
-static const uint8_t atAnimation[16*4] =
-{
+static const uint8_t atAnimation[16*4] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -166,8 +165,7 @@ static const uint8_t atAnimation[16*4] =
 static elementsN(atAnimation);
 
 /* Flash tiles pulsing opacity */
-static const uint8_t flashAlpha[] =
-{
+static const uint8_t flashAlpha[] = {
 	/* Fade in */
 	0x3C, 0x3C, 0x3C, 0x3C, 0x4B, 0x4B, 0x4B, 0x4B,
 	0x5A, 0x5A, 0x5A, 0x5A, 0x69, 0x69, 0x69, 0x69,
@@ -178,8 +176,7 @@ static const uint8_t flashAlpha[] =
 
 static elementsN(flashAlpha);
 
-struct GroundLayer : public ViewportElement
-{
+struct GroundLayer : public ViewportElement {
 	GLsizei vboCount;
 	TilemapPrivate *p;
 
@@ -195,8 +192,7 @@ struct GroundLayer : public ViewportElement
 	ABOUT_TO_ACCESS_NOOP
 };
 
-struct ZLayer : public ViewportElement
-{
+struct ZLayer : public ViewportElement {
 	size_t index;
 	GLintptr vboOffset;
 	GLsizei vboCount;
@@ -225,8 +221,7 @@ struct ZLayer : public ViewportElement
 	ABOUT_TO_ACCESS_NOOP
 };
 
-struct TilemapPrivate
-{
+struct TilemapPrivate {
 	Viewport *viewport;
 
 	Bitmap *autotiles[autotileCount];
@@ -273,8 +268,7 @@ struct TilemapPrivate
 	size_t zlayerBases[zlayersMax+1];
 
 	/* Shared buffers for all tiles */
-	struct
-	{
+	struct{
 		GLMeta::VAO vao;
 		VBO::ID vbo;
 		bool animated;
@@ -288,8 +282,7 @@ struct TilemapPrivate
 	uint8_t flashAlphaIdx;
 
 	/* Scene elements */
-	struct
-	{
+	struct{
 		GroundLayer *ground;
 		ZLayer* zlayers[zlayersMax];
 		/* Used layers out of 'zlayers' (rest is hidden) */
@@ -367,8 +360,7 @@ struct TilemapPrivate
 		updateFlashMapViewport();
 	}
 
-	~TilemapPrivate()
-	{
+	~TilemapPrivate(){
 		/* Destroy elements */
 		delete elem.ground;
 		for (size_t i = 0; i < zlayersMax; ++i)
@@ -382,8 +374,7 @@ struct TilemapPrivate
 
 		/* Disconnect signal handlers */
 		tilesetCon.disconnect();
-		for (int i = 0; i < autotileCount; ++i)
-		{
+		for (int i = 0; i < autotileCount; ++i){
 			autotilesCon[i].disconnect();
 			autotilesDispCon[i].disconnect();
 		}
@@ -393,15 +384,12 @@ struct TilemapPrivate
 		prepareCon.disconnect();
 	}
 
-	void updateFlashMapViewport()
-	{
+	void updateFlashMapViewport(){
 		flashMap.setViewport(IntRect(viewpPos, Vec2i(viewpW, viewpH)));
 	}
 
-	void updateAtlasInfo()
-	{
-		if (nullOrDisposed(tileset))
-		{
+	void updateAtlasInfo(){
+		if (nullOrDisposed(tileset)){
 			atlas.size = Vec2i();
 			return;
 		}
@@ -416,16 +404,14 @@ struct TilemapPrivate
 		                    "Cannot allocate big enough texture for tileset atlas");
 	}
 
-	void updateAutotileInfo()
-	{
+	void updateAutotileInfo(){
 		/* Check if and which autotiles are animated */
 		std::vector<uint8_t> &usableATs = atlas.usableATs;
 		std::vector<uint8_t> &animatedATs = atlas.animatedATs;
 
 		usableATs.clear();
 
-		for (int i = 0; i < autotileCount; ++i)
-		{
+		for (int i = 0; i < autotileCount; ++i){
 			if (nullOrDisposed(autotiles[i]))
 				continue;
 
@@ -441,30 +427,25 @@ struct TilemapPrivate
 		tiles.animated = !animatedATs.empty();
 	}
 
-	void updateSceneGeometry(const Scene::Geometry &geo)
-	{
+	void updateSceneGeometry(const Scene::Geometry &geo){
 		elem.sceneGeo = geo;
 		mapViewportDirty = true;
 	}
 
-	void invalidateAtlasSize()
-	{
+	void invalidateAtlasSize(){
 		atlasSizeDirty = true;
 	}
 
-	void invalidateAtlasContents()
-	{
+	void invalidateAtlasContents(){
 		atlasDirty = true;
 	}
 
-	void invalidateBuffers()
-	{
+	void invalidateBuffers(){
 		buffersDirty = true;
 	}
 
 	/* Checks for the minimum amount of data needed to display */
-	bool verifyResources()
-	{
+	bool verifyResources(){
 		if (nullOrDisposed(tileset))
 			return false;
 
@@ -475,8 +456,7 @@ struct TilemapPrivate
 	}
 
 	/* Allocates correctly sized TexFBO for atlas */
-	void allocateAtlas()
-	{
+	void allocateAtlas(){
 		updateAtlasInfo();
 
 		/* Aquire atlas tex */
@@ -487,8 +467,7 @@ struct TilemapPrivate
 	}
 
 	/* Assembles atlas from tileset and autotile bitmaps */
-	void buildAtlas()
-	{
+	void buildAtlas(){
 		updateAutotileInfo();
 
 		TileAtlas::BlitVec blits = TileAtlas::calcBlits(atlas.efTilesetH, atlas.size);
@@ -506,8 +485,7 @@ struct TilemapPrivate
 		GLMeta::blitBegin(atlas.gl);
 
 		/* Blit autotiles */
-		for (size_t i = 0; i < atlas.usableATs.size(); ++i)
-		{
+		for (size_t i = 0; i < atlas.usableATs.size(); ++i){
 			const uint8_t atInd = atlas.usableATs[i];
 			Bitmap *autotile = autotiles[atInd];
 
@@ -516,15 +494,13 @@ struct TilemapPrivate
 
 			GLMeta::blitSource(autotile->getGLTypes());
 
-			if (blitW <= autotileW && tiles.animated)
-			{
+			if (blitW <= autotileW && tiles.animated){
 				/* Static autotile */
 				for (int j = 0; j < 4; ++j)
 					GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH),
 					                      Vec2i(autotileW*j, atInd*autotileH));
 			}
-			else
-			{
+			else{
 				/* Animated autotile */
 				GLMeta::blitRectangle(IntRect(0, 0, blitW, blitH),
 				                      Vec2i(0, atInd*autotileH));
@@ -534,13 +510,11 @@ struct TilemapPrivate
 		GLMeta::blitEnd();
 
 		/* Blit tileset */
-		if (tileset->megaSurface())
-		{
+		if (tileset->megaSurface()){
 			/* Mega surface tileset */
 			SDL_Surface *tsSurf = tileset->megaSurface();
 
-			if (shState->config().subImageFix)
-			{
+			if (shState->config().subImageFix){
 				/* Implementation for broken GL drivers */
 				FBO::bind(atlas.gl.fbo);
 				glState.blend.pushSet(false);
@@ -553,8 +527,7 @@ struct TilemapPrivate
 
 				Quad &quad = shState->gpQuad();
 
-				for (size_t i = 0; i < blits.size(); ++i)
-				{
+				for (size_t i = 0; i < blits.size(); ++i){
 					const TileAtlas::Blit &blitOp = blits[i];
 
 					Vec2i texSize;
@@ -574,13 +547,11 @@ struct TilemapPrivate
 				glState.viewport.pop();
 				glState.blend.pop();
 			}
-			else
-			{
+			else{
 				/* Clean implementation */
 				TEX::bind(atlas.gl.tex);
 
-				for (size_t i = 0; i < blits.size(); ++i)
-				{
+				for (size_t i = 0; i < blits.size(); ++i){
 					const TileAtlas::Blit &blitOp = blits[i];
 
 					GLMeta::subRectImageUpload(tsSurf->w, blitOp.src.x, blitOp.src.y,
@@ -591,14 +562,12 @@ struct TilemapPrivate
 			}
 
 		}
-		else
-		{
+		else{
 			/* Regular tileset */
 			GLMeta::blitBegin(atlas.gl);
 			GLMeta::blitSource(tileset->getGLTypes());
 
-			for (size_t i = 0; i < blits.size(); ++i)
-			{
+			for (size_t i = 0; i < blits.size(); ++i){
 				const TileAtlas::Blit &blitOp = blits[i];
 
 				GLMeta::blitRectangle(IntRect(blitOp.src.x, blitOp.src.y, tsLaneW, blitOp.h),
@@ -609,8 +578,7 @@ struct TilemapPrivate
 		}
 	}
 
-	int samplePriority(int tileInd)
-	{
+	int samplePriority(int tileInd){
 		if (!priorities)
 			return 0;
 
@@ -625,8 +593,7 @@ struct TilemapPrivate
 		return value;
 	}
 
-	void handleAutotile(int x, int y, int tileInd, SVVector *array)
-	{
+	void handleAutotile(int x, int y, int tileInd, SVVector *array){
 		/* Which autotile [0-7] */
 		int atInd = tileInd / 48 - 1;
 		/* Which tile pattern of the autotile [0-47] */
@@ -635,8 +602,7 @@ struct TilemapPrivate
 		const StaticRect *pieceRect = &autotileRects[subInd*4];
 
 		/* Iterate over the 4 tile pieces */
-		for (int i = 0; i < 4; ++i)
-		{
+		for (int i = 0; i < 4; ++i){
 			FloatRect posRect(x*32, y*32, 16, 16);
 			atSelectSubPos(posRect, i);
 
@@ -654,8 +620,7 @@ struct TilemapPrivate
 		}
 	}
 
-	void handleTile(int x, int y, int z)
-	{
+	void handleTile(int x, int y, int z){
 		int ox = x + viewpPos.x;
 		int oy = y + viewpPos.y;
 		if (!wrapping && (ox < 0 || oy < 0 || ox >= mapData->xSize() || oy >= mapData->ySize()))
@@ -677,19 +642,16 @@ struct TilemapPrivate
 		SVVector *targetArray;
 
 		/* Prio 0 tiles are all part of the same ground layer */
-		if (prio == 0)
-		{
+		if (prio == 0){
 			targetArray = &groundVert;
 		}
-		else
-		{
+		else{
 			int layerInd = y + prio;
 			targetArray = &zlayerVert[layerInd];
 		}
 
 		/* Check for autotile */
-		if (tileInd < 48*8)
-		{
+		if (tileInd < 48*8){
 			handleAutotile(x, y, tileInd, targetArray);
 			return;
 		}
@@ -709,16 +671,14 @@ struct TilemapPrivate
 			targetArray->push_back(v[i]);
 	}
 
-	void clearQuadArrays()
-	{
+	void clearQuadArrays(){
 		groundVert.clear();
 
 		for (size_t i = 0; i < zlayersMax; ++i)
 			zlayerVert[i].clear();
 	}
 
-	void buildQuadArray()
-	{
+	void buildQuadArray(){
 		clearQuadArrays();
 
 		for (int x = 0; x < viewpW; ++x)
@@ -727,24 +687,20 @@ struct TilemapPrivate
 					handleTile(x, y, z);
 	}
 
-	static size_t quadDataSize(size_t quadCount)
-	{
+	static size_t quadDataSize(size_t quadCount){
 		return quadCount * sizeof(SVertex) * 4;
 	}
 
-	size_t zlayerSize(size_t index)
-	{
+	size_t zlayerSize(size_t index){
 		return zlayerBases[index+1] - zlayerBases[index];
 	}
 
-	void uploadBuffers()
-	{
+	void uploadBuffers(){
 		/* Calculate total quad count */
 		size_t groundQuadCount = groundVert.size() / 4;
 		size_t quadCount = groundQuadCount;
 
-		for (size_t i = 0; i < zlayersMax; ++i)
-		{
+		for (size_t i = 0; i < zlayersMax; ++i){
 			zlayerBases[i] = quadCount;
 			quadCount += zlayerVert[i].size() / 4;
 		}
@@ -756,8 +712,7 @@ struct TilemapPrivate
 
 		VBO::uploadSubData(0, quadDataSize(groundQuadCount), dataPtr(groundVert));
 
-		for (size_t i = 0; i < zlayersMax; ++i)
-		{
+		for (size_t i = 0; i < zlayersMax; ++i){
 			if (zlayerVert[i].empty())
 				continue;
 
@@ -771,17 +726,14 @@ struct TilemapPrivate
 		shState->ensureQuadIBO(quadCount);
 	}
 
-	void bindShader(ShaderBase *&shaderVar)
-	{
-		if (tiles.animated)
-		{
+	void bindShader(ShaderBase *&shaderVar){
+		if (tiles.animated){
 			TilemapShader &tilemapShader = shState->shaders().tilemap;
 			tilemapShader.bind();
 			tilemapShader.setAniIndex(tiles.frameIdx);
 			shaderVar = &tilemapShader;
 		}
-		else
-		{
+		else{
 			shaderVar = &shState->shaders().simple;
 			shaderVar->bind();
 		}
@@ -789,34 +741,28 @@ struct TilemapPrivate
 		shaderVar->applyViewportProj();
 	}
 
-	void bindAtlas(ShaderBase &shader)
-	{
+	void bindAtlas(ShaderBase &shader){
 		TEX::bind(atlas.gl.tex);
 		shader.setTexSize(atlas.size);
 	}
 
-	void updateActiveElements(std::vector<int> &zlayerInd)
-	{
+	void updateActiveElements(std::vector<int> &zlayerInd){
 		elem.ground->updateVboCount();
 
-		for (size_t i = 0; i < zlayersMax; ++i)
-		{
-			if (i < zlayerInd.size())
-			{
+		for (size_t i = 0; i < zlayersMax; ++i){
+			if (i < zlayerInd.size()){
 				int index = zlayerInd[i];
 				elem.zlayers[i]->setVisible(visible);
 				elem.zlayers[i]->setIndex(index);
 			}
-			else
-			{
+			else{
 				/* Hide unused layers */
 				elem.zlayers[i]->setVisible(false);
 			}
 		}
 	}
 
-	void updateSceneElements()
-	{
+	void updateSceneElements(){
 		/* Only allocate elements for non-emtpy zlayers */
 		std::vector<int> zlayerInd;
 
@@ -829,16 +775,14 @@ struct TilemapPrivate
 		zOrderDirty = false;
 	}
 
-	void hideElements()
-	{
+	void hideElements(){
 		elem.ground->setVisible(false);
 
 		for (size_t i = 0; i < zlayersMax; ++i)
 			elem.zlayers[i]->setVisible(false);
 	}
 
-	void updateZOrder()
-	{
+	void updateZOrder(){
 		if (elem.activeLayers == 0)
 			return;
 
@@ -865,8 +809,7 @@ struct TilemapPrivate
 	 * (the "batch head") executes the draw call, all others
 	 * are muted via the 'batchedFlag'. For simplicity,
 	 * single sized batches are possible. */
-	void prepareZLayerBatches()
-	{
+	void prepareZLayerBatches(){
 		ZLayer *const *zlayers = elem.zlayers;
 
 		for (size_t i = 0; i < elem.activeLayers; ++i)
@@ -897,8 +840,7 @@ struct TilemapPrivate
 		}
 	}
 
-	void updateMapViewport()
-	{
+	void updateMapViewport(){
 		const Vec2i combOrigin = origin + elem.sceneGeo.orig;
 		const Vec2i mvpPos = getTilePos(combOrigin);
 
@@ -912,10 +854,8 @@ struct TilemapPrivate
 		dispPos = elem.sceneGeo.rect.pos() - wrap(combOrigin, 32);
 	}
 
-	void prepare()
-	{
-		if (!verifyResources())
-		{
+	void prepare(){
+		if (!verifyResources()){
 			if (tilemapReady)
 				hideElements();
 			tilemapReady = false;
@@ -923,26 +863,22 @@ struct TilemapPrivate
 			return;
 		}
 
-		if (atlasSizeDirty)
-		{
+		if (atlasSizeDirty){
 			allocateAtlas();
 			atlasSizeDirty = false;
 		}
 
-		if (atlasDirty)
-		{
+		if (atlasDirty){
 			buildAtlas();
 			atlasDirty = false;
 		}
 
-		if (mapViewportDirty)
-		{
+		if (mapViewportDirty){
 			updateMapViewport();
 			mapViewportDirty = false;
 		}
 
-		if (buffersDirty)
-		{
+		if (buffersDirty){
 			buildQuadArray();
 			uploadBuffers();
 			updateSceneElements();
@@ -951,8 +887,7 @@ struct TilemapPrivate
 
 		flashMap.prepare();
 
-		if (zOrderDirty)
-		{
+		if (zOrderDirty){
 			updateZOrder();
 			zOrderDirty = false;
 		}
@@ -971,13 +906,11 @@ GroundLayer::GroundLayer(TilemapPrivate *p, Viewport *viewport)
 	onGeometryChange(scene->getGeometry());
 }
 
-void GroundLayer::updateVboCount()
-{
+void GroundLayer::updateVboCount(){
 	vboCount = p->zlayerBases[0] * 6;
 }
 
-void GroundLayer::draw()
-{
+void GroundLayer::draw(){
 	if (p->groundVert.size() == 0)
 		return;
 
@@ -996,13 +929,11 @@ void GroundLayer::draw()
 	p->flashMap.draw(flashAlpha[p->flashAlphaIdx] / 255.f, p->dispPos);
 }
 
-void GroundLayer::drawInt()
-{
+void GroundLayer::drawInt(){
 	gl.DrawElements(GL_TRIANGLES, vboCount, _GL_INDEX_TYPE, (GLvoid*) 0);
 }
 
-void GroundLayer::onGeometryChange(const Scene::Geometry &geo)
-{
+void GroundLayer::onGeometryChange(const Scene::Geometry &geo){
 	p->updateSceneGeometry(geo);
 }
 
@@ -1015,8 +946,7 @@ ZLayer::ZLayer(TilemapPrivate *p, Viewport *viewport)
       vboBatchCount(0)
 {}
 
-void ZLayer::setIndex(int value)
-{
+void ZLayer::setIndex(int value){
 	index = value;
 
 	z = calculateZ(p, index);
@@ -1026,8 +956,7 @@ void ZLayer::setIndex(int value)
 	vboCount = p->zlayerSize(index) * 6;
 }
 
-void ZLayer::draw()
-{
+void ZLayer::draw(){
 	if (batchedFlag)
 		return;
 
@@ -1044,23 +973,19 @@ void ZLayer::draw()
 	GLMeta::vaoUnbind(p->tiles.vao);
 }
 
-void ZLayer::drawInt()
-{
+void ZLayer::drawInt(){
 	gl.DrawElements(GL_TRIANGLES, vboBatchCount, _GL_INDEX_TYPE, (GLvoid*) vboOffset);
 }
 
-int ZLayer::calculateZ(TilemapPrivate *p, int index)
-{
+int ZLayer::calculateZ(TilemapPrivate *p, int index){
 	return 32 * (index + p->viewpPos.y + 1) - p->origin.y;
 }
 
-void ZLayer::initUpdateZ()
-{
+void ZLayer::initUpdateZ(){
 	unlink();
 }
 
-void ZLayer::finiUpdateZ(ZLayer *prev)
-{
+void ZLayer::finiUpdateZ(ZLayer *prev){
 	z = calculateZ(p, index);
 
 	if (prev)
@@ -1069,8 +994,7 @@ void ZLayer::finiUpdateZ(ZLayer *prev)
 		scene->insert(*this);
 }
 
-void Tilemap::Autotiles::set(int i, Bitmap *bitmap)
-{
+void Tilemap::Autotiles::set(int i, Bitmap *bitmap){
 	if (!p)
 		return;
 
@@ -1095,8 +1019,7 @@ void Tilemap::Autotiles::set(int i, Bitmap *bitmap)
 	p->updateAutotileInfo();
 }
 
-Bitmap *Tilemap::Autotiles::get(int i) const
-{
+Bitmap *Tilemap::Autotiles::get(int i) const{
 	if (!p)
 		return 0;
 
@@ -1106,19 +1029,16 @@ Bitmap *Tilemap::Autotiles::get(int i) const
 	return p->autotiles[i];
 }
 
-Tilemap::Tilemap(Viewport *viewport)
-{
+Tilemap::Tilemap(Viewport *viewport){
 	p = new TilemapPrivate(viewport);
 	atProxy.p = p;
 }
 
-Tilemap::~Tilemap()
-{
+Tilemap::~Tilemap(){
 	dispose();
 }
 
-void Tilemap::update()
-{
+void Tilemap::update(){
 	guardDisposed();
 
 	if (!p->tilemapReady)
@@ -1138,8 +1058,7 @@ void Tilemap::update()
 		p->tiles.aniIdx = 0;
 }
 
-Tilemap::Autotiles &Tilemap::getAutotiles()
-{
+Tilemap::Autotiles &Tilemap::getAutotiles(){
 	guardDisposed();
 
 	return atProxy;
@@ -1155,8 +1074,7 @@ DEF_ATTR_SIMPLE(Tilemap, Wrapping, bool, p->wrapping)
 DEF_ATTR_RD_SIMPLE(Tilemap, OX, int, p->origin.x)
 DEF_ATTR_RD_SIMPLE(Tilemap, OY, int, p->origin.y)
 
-void Tilemap::setTileset(Bitmap *value)
-{
+void Tilemap::setTileset(Bitmap *value){
 	guardDisposed();
 
 	if (p->tileset == value)
@@ -1175,8 +1093,7 @@ void Tilemap::setTileset(Bitmap *value)
 	p->updateAtlasInfo();
 }
 
-void Tilemap::setMapData(Table *value)
-{
+void Tilemap::setMapData(Table *value){
 	guardDisposed();
 
 	if (p->mapData == value)
@@ -1193,15 +1110,13 @@ void Tilemap::setMapData(Table *value)
 	        (sigc::mem_fun(p, &TilemapPrivate::invalidateBuffers));
 }
 
-void Tilemap::setFlashData(Table *value)
-{
+void Tilemap::setFlashData(Table *value){
 	guardDisposed();
 
 	p->flashMap.setData(value);
 }
 
-void Tilemap::setPriorities(Table *value)
-{
+void Tilemap::setPriorities(Table *value){
 	guardDisposed();
 
 	if (p->priorities == value)
@@ -1218,8 +1133,7 @@ void Tilemap::setPriorities(Table *value)
 	        (sigc::mem_fun(p, &TilemapPrivate::invalidateBuffers));
 }
 
-void Tilemap::setVisible(bool value)
-{
+void Tilemap::setVisible(bool value){
 	guardDisposed();
 
 	if (p->visible == value)
@@ -1235,8 +1149,7 @@ void Tilemap::setVisible(bool value)
 		p->elem.zlayers[i]->setVisible(value);
 }
 
-void Tilemap::setOX(int value)
-{
+void Tilemap::setOX(int value){
 	guardDisposed();
 
 	if (p->origin.x == value)
@@ -1246,8 +1159,7 @@ void Tilemap::setOX(int value)
 	p->mapViewportDirty = true;
 }
 
-void Tilemap::setOY(int value)
-{
+void Tilemap::setOY(int value){
 	guardDisposed();
 
 	if (p->origin.y == value)
@@ -1258,8 +1170,7 @@ void Tilemap::setOY(int value)
 	p->mapViewportDirty = true;
 }
 
-void Tilemap::releaseResources()
-{
+void Tilemap::releaseResources(){
 	delete p;
 	atProxy.p = 0;
 }

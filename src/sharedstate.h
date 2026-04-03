@@ -56,8 +56,7 @@ struct Config;
 struct Vec2i;
 struct SharedMidiState;
 
-struct SharedState
-{
+struct SharedState{
 	void *bindingData() const;
 	void setBindingData(void *data);
 

@@ -62,8 +62,7 @@
 	#define OS_LINUX
 #endif
 
-struct PingPong
-{
+struct PingPong{
 	TEXFBO rt[2];
 	uint8_t srcInd, dstInd;
 	int screenW, screenH;
@@ -72,8 +71,7 @@ struct PingPong
 	    : srcInd(0), dstInd(1),
 	      screenW(screenW), screenH(screenH)
 	{
-		for (int i = 0; i < 2; ++i)
-		{
+		for (int i = 0; i < 2; ++i){
 			TEXFBO::init(rt[i]);
 			TEXFBO::allocEmpty(rt[i], screenW, screenH);
 			TEXFBO::linkFBO(rt[i]);
@@ -82,25 +80,21 @@ struct PingPong
 		}
 	}
 
-	~PingPong()
-	{
+	~PingPong(){
 		for (int i = 0; i < 2; ++i)
 			TEXFBO::fini(rt[i]);
 	}
 
-	TEXFBO &backBuffer()
-	{
+	TEXFBO &backBuffer(){
 		return rt[srcInd];
 	}
 
-	TEXFBO &frontBuffer()
-	{
+	TEXFBO &frontBuffer(){
 		return rt[dstInd];
 	}
 
 	/* Better not call this during render cycles */
-	void resize(int width, int height)
-	{
+	void resize(int width, int height){
 		screenW = width;
 		screenH = height;
 
@@ -108,24 +102,20 @@ struct PingPong
 			TEXFBO::allocEmpty(rt[i], width, height);
 	}
 
-	void startRender()
-	{
+	void startRender(){
 		bind();
 	}
 
-	void swapRender()
-	{
+	void swapRender(){
 		std::swap(srcInd, dstInd);
 
 		bind();
 	}
 
-	void clearBuffers()
-	{
+	void clearBuffers(){
 		glState.clearColor.pushSet(Vec4(0, 0, 0, 1));
 
-		for (int i = 0; i < 2; ++i)
-		{
+		for (int i = 0; i < 2; ++i){
 			FBO::bind(rt[i].fbo);
 			FBO::clear();
 		}
@@ -134,8 +124,7 @@ struct PingPong
 	}
 
 private:
-	void bind()
-	{
+	void bind(){
 		FBO::bind(rt[dstInd].fbo);
 	}
 };
@@ -152,8 +141,7 @@ public:
 		brightnessQuad.setColor(Vec4());
 	}
 
-	void composite()
-	{
+	void composite(){
 		const int w = geometry.rect.w;
 		const int h = geometry.rect.h;
 
@@ -167,8 +155,7 @@ public:
 
 		Scene::composite();
 
-		if (brightEffect)
-		{
+		if (brightEffect){
 			SimpleColorShader &shader = shState->shaders().simpleColor;
 			shader.bind();
 			shader.applyViewportProj();
@@ -178,8 +165,7 @@ public:
 		}
 	}
 
-	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t)
-	{
+	void requestViewportRender(const Vec4 &c, const Vec4 &f, const Vec4 &t){
 		const IntRect &viewpRect = glState.scissorBox.get();
 		const IntRect &screenRect = geometry.rect;
 
@@ -188,12 +174,10 @@ public:
 		const bool colorEffect    = c.w > 0;
 		const bool flashEffect    = f.w > 0;
 
-		if (toneGrayEffect)
-		{
+		if (toneGrayEffect){
 			pp.swapRender();
 
-			if (!viewpRect.encloses(screenRect))
-			{
+			if (!viewpRect.encloses(screenRect)){
 				/* Scissor test _does_ affect FBO blit operations,
 				 * and since we're inside the draw cycle, it will
 				 * be turned on, so turn it off temporarily */
@@ -227,8 +211,7 @@ public:
 		shader.bind();
 		shader.applyViewportProj();
 
-		if (toneRGBEffect)
-		{
+		if (toneRGBEffect){
 			/* First split up additive / substractive components */
 			Vec4 add, sub;
 
@@ -249,16 +232,14 @@ public:
 			/* Then apply them using hardware blending */
 			gl.BlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
 
-			if (add.xyzNotNull())
-			{
+			if (add.xyzNotNull()){
 				gl.BlendEquation(GL_FUNC_ADD);
 				shader.setColor(add);
 
 				screenQuad.draw();
 			}
 
-			if (sub.xyzNotNull())
-			{
+			if (sub.xyzNotNull()){
 				gl.BlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 				shader.setColor(sub);
 
@@ -266,15 +247,13 @@ public:
 			}
 		}
 
-		if (colorEffect || flashEffect)
-		{
+		if (colorEffect || flashEffect){
 			gl.BlendEquation(GL_FUNC_ADD);
 			gl.BlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
 			                     GL_ZERO, GL_ONE);
 		}
 
-		if (colorEffect)
-		{
+		if (colorEffect){
 			shader.setColor(c);
 			screenQuad.draw();
 		}
@@ -288,15 +267,13 @@ public:
 		glState.blendMode.refresh();
 	}
 
-	void setBrightness(float norm)
-	{
+	void setBrightness(float norm){
 		brightnessQuad.setColor(Vec4(0, 0, 0, 1.0f - norm));
 
 		brightEffect = norm < 1.0f;
 	}
 
-	void updateReso(int width, int height)
-	{
+	void updateReso(int width, int height){
 		geometry.rect.w = width;
 		geometry.rect.h = height;
 
@@ -306,14 +283,12 @@ public:
 		notifyGeometryChange();
 	}
 
-	void setResolution(int width, int height)
-	{
+	void setResolution(int width, int height){
 		pp.resize(width, height);
 		updateReso(width, height);
 	}
 
-	PingPong &getPP()
-	{
+	PingPong &getPP(){
 		return pp;
 	}
 
@@ -328,8 +303,7 @@ private:
 /* Nanoseconds per second */
 #define NS_PER_S 1000000000
 
-struct FPSLimiter
-{
+struct FPSLimiter{
 	uint64_t lastTickCount;
 
 	/* ticks per frame */
@@ -347,8 +321,7 @@ struct FPSLimiter
 	bool disabled;
 
 	/* Data for frame timing adjustment */
-	struct
-	{
+	struct{
 		/* Last tick count */
 		uint64_t last;
 
@@ -372,13 +345,11 @@ struct FPSLimiter
 		adj.resetFlag = false;
 	}
 
-	void setDesiredFPS(uint16_t value)
-	{
+	void setDesiredFPS(uint16_t value){
 		tpf = tickFreq / value;
 	}
 
-	void delay()
-	{
+	void delay(){
 		if (disabled)
 			return;
 
@@ -409,8 +380,7 @@ struct FPSLimiter
 		}
 	}
 
-	void resetFrameAdjust()
-	{
+	void resetFrameAdjust(){
 		adj.resetFlag = true;
 	}
 
@@ -427,8 +397,7 @@ struct FPSLimiter
 	}
 
 private:
-	void delayTicks(uint64_t ticks)
-	{
+	void delayTicks(uint64_t ticks){
 #if defined(HAVE_NANOSLEEP)
 		struct timespec req;
 		uint64_t nsec = ticks / tickFreqNS;
@@ -454,8 +423,7 @@ private:
 	}
 };
 
-struct GraphicsPrivate
-{
+struct GraphicsPrivate{
 	/* Screen resolution, ie. the resolution at which
 	 * RGSS renders at (settable with Graphics.resize_screen).
 	 * Can only be changed from within RGSS */
@@ -526,13 +494,11 @@ struct GraphicsPrivate
 		gl.TexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE8, 640, 480, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, 0);
 	}
 
-	~GraphicsPrivate()
-	{
+	~GraphicsPrivate(){
 		TEXFBO::fini(frozenScene);
 	}
 
-	void updateScreenResoRatio(RGSSThreadData *rtData)
-	{
+	void updateScreenResoRatio(RGSSThreadData *rtData){
 		Vec2 &ratio = rtData->sizeResoRatio;
 		ratio.x = (float) scRes.x / scSize.x;
 		ratio.y = (float) scRes.y / scSize.y;
@@ -541,12 +507,10 @@ struct GraphicsPrivate
 	}
 
 	/* Enforces fixed aspect ratio, if desired */
-	void recalculateScreenSize(RGSSThreadData *rtData)
-	{
+	void recalculateScreenSize(RGSSThreadData *rtData){
 		scSize = winSize;
 
-		if (!rtData->config.fixedAspectRatio)
-		{
+		if (!rtData->config.fixedAspectRatio){
 			scOffset = Vec2i(0, 0);
 			return;
 		}
@@ -563,10 +527,8 @@ struct GraphicsPrivate
 		scOffset.y = (winSize.y - scSize.y) / 2.f;
 	}
 
-	void checkResize()
-	{
-		if (threadData->windowSizeMsg.poll(winSize))
-		{
+	void checkResize(){
+		if (threadData->windowSizeMsg.poll(winSize)){
 			/* some GL drivers change the viewport on window resize */
 			glState.viewport.refresh();
 			recalculateScreenSize(threadData);
@@ -577,22 +539,19 @@ struct GraphicsPrivate
 		}
 	}
 
-	void checkShutDownReset()
-	{
+	void checkShutDownReset(){
 		shState->checkShutdown();
 		shState->checkReset();
 	}
 
-	void shutdown()
-	{
+	void shutdown(){
 		threadData->rqTermAck.set();
 		shState->texPool().disable();
 
 		scriptBinding->terminate();
 	}
 
-	void swapGLBuffer()
-	{
+	void swapGLBuffer(){
 		fpsLimiter.delay();
 		FBO::unbind();
 		SDL_GL_SwapWindow(threadData->window);
@@ -602,8 +561,7 @@ struct GraphicsPrivate
 		threadData->ethread->notifyFrame();
 	}
 
-	void compositeToBuffer(TEXFBO &buffer)
-	{
+	void compositeToBuffer(TEXFBO &buffer){
 		screen.composite();
 
 		GLMeta::blitBegin(buffer);
@@ -612,15 +570,13 @@ struct GraphicsPrivate
 		GLMeta::blitEnd();
 	}
 
-	void metaBlitBufferFlippedScaled()
-	{
+	void metaBlitBufferFlippedScaled(){
 		GLMeta::blitRectangle(IntRect(0, 0, scRes.x, scRes.y),
 		                      IntRect(scOffset.x, scSize.y+scOffset.y, scSize.x, -scSize.y),
 		                      threadData->config.smoothScaling);
 	}
 
-	void redrawScreen()
-	{
+	void redrawScreen(){
 		if (shState->oneshot().obscuredDirty)
 		{
 			TEX::bind(obscuredTex);
@@ -640,8 +596,7 @@ struct GraphicsPrivate
 		swapGLBuffer();
 	}
 
-	void checkSyncLock()
-	{
+	void checkSyncLock(){
 		if (!threadData->syncPoint.mainSyncLocked())
 			return;
 
@@ -656,40 +611,33 @@ struct GraphicsPrivate
 	}
 };
 
-Graphics::Graphics(RGSSThreadData *data)
-{
+Graphics::Graphics(RGSSThreadData *data){
 	p = new GraphicsPrivate(data);
 
-	if (data->config.syncToRefreshrate)
-	{
+	if (data->config.syncToRefreshrate){
 		p->frameRate = data->refreshRate;
 		p->fpsLimiter.disabled = true;
 	}
-	else if (data->config.fixedFramerate > 0)
-	{
+	else if (data->config.fixedFramerate > 0){
 		p->fpsLimiter.setDesiredFPS(data->config.fixedFramerate);
 	}
-	else if (data->config.fixedFramerate < 0)
-	{
+	else if (data->config.fixedFramerate < 0){
 		p->fpsLimiter.disabled = true;
 	}
 }
 
-Graphics::~Graphics()
-{
+Graphics::~Graphics(){
 	delete p;
 }
 
-void Graphics::update(bool limitFps)
-{
+void Graphics::update(bool limitFps){
 	p->checkShutDownReset();
 	p->checkSyncLock();
 
 	if (p->frozen)
 		return;
 
-	if (limitFps)
-	{
+	if (limitFps){
 		if (p->fpsLimiter.frameSkipRequired())
 		{
 			if (p->threadData->config.frameSkip)
@@ -707,9 +655,7 @@ void Graphics::update(bool limitFps)
 				p->fpsLimiter.resetFrameAdjust();
 			}
 		}
-	}
-	else
-	{
+	}else{
 		if (!p->fpsLimiter.frameSkipRequired())
 			return;
 	}
@@ -720,8 +666,7 @@ void Graphics::update(bool limitFps)
 	p->redrawScreen();
 }
 
-void Graphics::freeze()
-{
+void Graphics::freeze(){
 	p->frozen = true;
 
 	p->checkShutDownReset();
@@ -760,8 +705,7 @@ void Graphics::transition(int duration,
 	TransShader &transShader = shState->shaders().trans;
 	SimpleTransShader &simpleShader = shState->shaders().simpleTrans;
 
-	if (transMap)
-	{
+	if (transMap){
 		TransShader &shader = transShader;
 		shader.bind();
 		shader.applyViewportProj();
@@ -770,9 +714,7 @@ void Graphics::transition(int duration,
 		shader.setTransMap(transMap->getGLTypes().tex);
 		shader.setVague(vague / 256.0f);
 		shader.setTexSize(p->scRes);
-	}
-	else
-	{
+	}else{
 		SimpleTransShader &shader = simpleShader;
 		shader.bind();
 		shader.applyViewportProj();
@@ -783,23 +725,18 @@ void Graphics::transition(int duration,
 
 	glState.blend.pushSet(false);
 
-	for (int i = 0; i < duration; ++i)
-	{
+	for (int i = 0; i < duration; ++i){
 		shState->input().update();
 
 		/* We need to clean up transMap properly before
 		 * a possible longjmp, so we manually test for
 		 * shutdown/reset here */
-		if (p->threadData->rqTerm)
-		{
+		if (p->threadData->rqTerm){
 			glState.blend.pop();
 			delete transMap;
 			p->shutdown();
 			return;
-		}
-
-		if (p->threadData->rqReset)
-		{
+		}if (p->threadData->rqReset){
 			glState.blend.pop();
 			delete transMap;
 			scriptBinding->reset();
@@ -810,13 +747,10 @@ void Graphics::transition(int duration,
 
 		const float prog = i * (1.0f / duration);
 
-		if (transMap)
-		{
+		if (transMap){
 			transShader.bind();
 			transShader.setProg(prog);
-		}
-		else
-		{
+		}else{
 			simpleShader.bind();
 			simpleShader.setProg(prog);
 		}
@@ -852,8 +786,7 @@ void Graphics::transition(int duration,
 	p->frozen = false;
 }
 
-void Graphics::frameReset()
-{
+void Graphics::frameReset(){
 	p->fpsLimiter.resetFrameAdjust();
 }
 
@@ -863,8 +796,7 @@ DEF_ATTR_RD_SIMPLE(Graphics, FrameRate, int, p->frameRate)
 
 DEF_ATTR_SIMPLE(Graphics, FrameCount, int, p->frameCount)
 
-void Graphics::setFrameRate(int value)
-{
+void Graphics::setFrameRate(int value){
 	p->frameRate = clamp(value, 10, 120);
 
 	if (p->threadData->config.syncToRefreshrate)
@@ -876,24 +808,20 @@ void Graphics::setFrameRate(int value)
 	p->fpsLimiter.setDesiredFPS(p->frameRate);
 }
 
-void Graphics::wait(int duration)
-{
-	for (int i = 0; i < duration; ++i)
-	{
+void Graphics::wait(int duration){
+	for (int i = 0; i < duration; ++i){
 		p->checkShutDownReset();
 		p->redrawScreen();
 	}
 }
 
-void Graphics::fadeout(int duration)
-{
+void Graphics::fadeout(int duration){
 	FBO::unbind();
 
 	float curr = p->brightness;
 	float diff = 255.0f - curr;
 
-	for (int i = duration-1; i > -1; --i)
-	{
+	for (int i = duration-1; i > -1; --i){
 		setBrightness(diff + (curr / duration) * i);
 
 		if (p->frozen)
@@ -915,15 +843,13 @@ void Graphics::fadeout(int duration)
 	}
 }
 
-void Graphics::fadein(int duration)
-{
+void Graphics::fadein(int duration){
 	FBO::unbind();
 
 	float curr = p->brightness;
 	float diff = 255.0f - curr;
 
-	for (int i = 1; i <= duration; ++i)
-	{
+	for (int i = 1; i <= duration; ++i){
 		setBrightness(curr + (diff / duration) * i);
 
 		if (p->frozen)
@@ -945,8 +871,7 @@ void Graphics::fadein(int duration)
 	}
 }
 
-Bitmap *Graphics::snapToBitmap()
-{
+Bitmap *Graphics::snapToBitmap(){
 	Bitmap *bitmap = new Bitmap(width(), height());
 
 	p->compositeToBuffer(bitmap->getGLTypes());
@@ -957,18 +882,15 @@ Bitmap *Graphics::snapToBitmap()
 	return bitmap;
 }
 
-int Graphics::width() const
-{
+int Graphics::width() const{
 	return p->scRes.x;
 }
 
-int Graphics::height() const
-{
+int Graphics::height() const{
 	return p->scRes.y;
 }
 
-void Graphics::resizeScreen(int width, int height)
-{
+void Graphics::resizeScreen(int width, int height){
 	width = clamp(width, 1, 640);
 	height = clamp(height, 1, 480);
 
@@ -989,15 +911,13 @@ void Graphics::resizeScreen(int width, int height)
 	shState->eThread().requestWindowResize(width, height);
 }
 
-void Graphics::playMovie(const char *filename)
-{
+void Graphics::playMovie(const char *filename){
 	Debug() << "Graphics.playMovie(" << filename << ") not implemented";
 }
 
 DEF_ATTR_RD_SIMPLE(Graphics, Brightness, int, p->brightness)
 
-void Graphics::setBrightness(int value)
-{
+void Graphics::setBrightness(int value){
 	value = clamp(value, 0, 255);
 
 	if (p->brightness == value)
@@ -1007,8 +927,7 @@ void Graphics::setBrightness(int value)
 	p->screen.setBrightness(value / 255.0);
 }
 
-void Graphics::reset()
-{
+void Graphics::reset(){
 	/* Dispose all live Disposables */
 	IntruListLink<Disposable> *iter;
 
@@ -1030,53 +949,43 @@ void Graphics::reset()
 	setBrightness(255);
 }
 
-bool Graphics::getFullscreen() const
-{
+bool Graphics::getFullscreen() const{
 	return p->threadData->ethread->getFullscreen();
 }
 
-void Graphics::setFullscreen(bool value)
-{
+void Graphics::setFullscreen(bool value){
 	p->threadData->ethread->requestFullscreenMode(value);
 }
 
-bool Graphics::getSmooth() const
-{
+bool Graphics::getSmooth() const{
 	return p->threadData->config.smoothScaling;
 }
 
-void Graphics::setSmooth(bool value)
-{
+void Graphics::setSmooth(bool value){
 	p->threadData->config.smoothScaling = value;
 }
 
-bool Graphics::getFrameskip() const
-{
+bool Graphics::getFrameskip() const{
 	return p->threadData->config.frameSkip;
 }
 
-void Graphics::setFrameskip(bool value)
-{
+void Graphics::setFrameskip(bool value){
 	p->threadData->config.frameSkip = value;
 }
 
-bool Graphics::getShowCursor() const
-{
+bool Graphics::getShowCursor() const{
 	return p->threadData->ethread->getShowCursor();
 }
 
-void Graphics::setShowCursor(bool value)
-{
+void Graphics::setShowCursor(bool value){
 	p->threadData->ethread->requestShowCursor(value);
 }
 
-Scene *Graphics::getScreen() const
-{
+Scene *Graphics::getScreen() const{
 	return &p->screen;
 }
 
-void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset)
-{
+void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset){
 	if (exitCond)
 		return;
 
@@ -1085,8 +994,7 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset)
 	GLMeta::blitBeginScreen(p->winSize);
 	GLMeta::blitSource(lastFrame);
 
-	while (!exitCond)
-	{
+	while (!exitCond){
 		shState->checkShutdown();
 
 		if (checkReset)
@@ -1103,17 +1011,14 @@ void Graphics::repaintWait(const AtomicFlag &exitCond, bool checkReset)
 	GLMeta::blitEnd();
 }
 
-void Graphics::addDisposable(Disposable *d)
-{
+void Graphics::addDisposable(Disposable *d){
 	p->dispList.append(d->link);
 }
 
-void Graphics::remDisposable(Disposable *d)
-{
+void Graphics::remDisposable(Disposable *d){
 	p->dispList.remove(d->link);
 }
 
-const TEX::ID &Graphics::obscuredTex() const
-{
+const TEX::ID &Graphics::obscuredTex() const{
 	return p->obscuredTex;
 }

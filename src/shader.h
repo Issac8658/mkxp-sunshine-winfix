@@ -26,14 +26,12 @@
 #include "gl-util.h"
 #include "glstate.h"
 
-class Shader
-{
+class Shader{
 public:
 	void bind();
 	static void unbind();
 
-	enum Attribute
-	{
+	enum Attribute{
 		Position = 0,
 		TexCoord = 1,
 		Color = 2
@@ -57,12 +55,10 @@ protected:
 	GLuint program;
 };
 
-class ShaderBase : public Shader
-{
+class ShaderBase : public Shader{
 public:
 
-	struct GLProjMat : public GLProperty<Vec2i>
-	{
+	struct GLProjMat : public GLProperty<Vec2i>{
 	private:
 		void apply(const Vec2i &value);
 		GLint u_mat;
@@ -87,8 +83,7 @@ protected:
 	GLint u_texSizeInv, u_translation;
 };
 
-class FlatColorShader : public ShaderBase
-{
+class FlatColorShader : public ShaderBase{
 public:
 	FlatColorShader();
 
@@ -98,8 +93,7 @@ private:
 	GLint u_color;
 };
 
-class SimpleShader : public ShaderBase
-{
+class SimpleShader : public ShaderBase{
 public:
 	SimpleShader();
 
@@ -109,20 +103,17 @@ private:
 	GLint u_texOffsetX;
 };
 
-class SimpleColorShader : public ShaderBase
-{
+class SimpleColorShader : public ShaderBase{
 public:
 	SimpleColorShader();
 };
 
-class SimpleAlphaShader : public ShaderBase
-{
+class SimpleAlphaShader : public ShaderBase{
 public:
 	SimpleAlphaShader();
 };
 
-class SimpleSpriteShader : public ShaderBase
-{
+class SimpleSpriteShader : public ShaderBase{
 public:
 	SimpleSpriteShader();
 
@@ -132,8 +123,7 @@ private:
 	GLint u_spriteMat;
 };
 
-class AlphaSpriteShader : public ShaderBase
-{
+class AlphaSpriteShader : public ShaderBase{
 public:
 	AlphaSpriteShader();
 
@@ -144,8 +134,7 @@ private:
 	GLint u_spriteMat, u_alpha;
 };
 
-class TransShader : public ShaderBase
-{
+class TransShader : public ShaderBase{
 public:
 	TransShader();
 
@@ -159,8 +148,7 @@ private:
 	GLint u_currentScene, u_frozenScene, u_transMap, u_prog, u_vague;
 };
 
-class SimpleTransShader : public ShaderBase
-{
+class SimpleTransShader : public ShaderBase{
 public:
 	SimpleTransShader();
 
@@ -172,8 +160,7 @@ private:
 	GLint u_currentScene, u_frozenScene, u_prog;
 };
 
-class SpriteShader : public ShaderBase
-{
+class SpriteShader : public ShaderBase{
 public:
 	SpriteShader();
 
@@ -188,8 +175,7 @@ private:
 	GLint u_spriteMat, u_tone, u_opacity, u_color, u_bushDepth, u_bushOpacity;
 };
 
-class PlaneShader : public ShaderBase
-{
+class PlaneShader : public ShaderBase{
 public:
 	PlaneShader();
 
@@ -202,8 +188,7 @@ private:
 	GLint u_tone, u_color, u_flash, u_opacity;
 };
 
-class GrayShader : public ShaderBase
-{
+class GrayShader : public ShaderBase{
 public:
 	GrayShader();
 
@@ -213,8 +198,7 @@ private:
 	GLint u_gray;
 };
 
-class TilemapShader : public ShaderBase
-{
+class TilemapShader : public ShaderBase{
 public:
 	TilemapShader();
 
@@ -224,8 +208,7 @@ private:
 	GLint u_aniIndex;
 };
 
-class FlashMapShader : public ShaderBase
-{
+class FlashMapShader : public ShaderBase{
 public:
 	FlashMapShader();
 
@@ -235,8 +218,7 @@ private:
 	GLint u_alpha;
 };
 
-class HueShader : public ShaderBase
-{
+class HueShader : public ShaderBase{
 public:
 	HueShader();
 
@@ -246,8 +228,7 @@ private:
 	GLint u_hueAdjust;
 };
 
-class SimpleMatrixShader : public ShaderBase
-{
+class SimpleMatrixShader : public ShaderBase{
 public:
 	SimpleMatrixShader();
 
@@ -258,8 +239,7 @@ private:
 };
 
 /* Gaussian blur */
-struct BlurShader
-{
+struct BlurShader{
 	class HPass : public ShaderBase
 	{
 	public:
@@ -276,8 +256,7 @@ struct BlurShader
 	VPass pass2;
 };
 
-class TilemapVXShader : public ShaderBase
-{
+class TilemapVXShader : public ShaderBase{
 public:
 	TilemapVXShader();
 
@@ -288,8 +267,7 @@ private:
 };
 
 /* Bitmap blit */
-class BltShader : public ShaderBase
-{
+class BltShader : public ShaderBase{
 public:
 	BltShader();
 
@@ -304,8 +282,7 @@ private:
 };
 
 /* Obscured graphic */
-class ObscuredShader : public ShaderBase
-{
+class ObscuredShader : public ShaderBase{
 public:
 	ObscuredShader();
 
@@ -316,8 +293,7 @@ private:
 };
 
 /* Global object containing all available shaders */
-struct ShaderSet
-{
+struct ShaderSet{
 	FlatColorShader flatColor;
 	SimpleShader simple;
 	SimpleColorShader simpleColor;

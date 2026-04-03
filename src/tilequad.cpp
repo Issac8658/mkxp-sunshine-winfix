@@ -24,12 +24,9 @@
 #include "gl-util.h"
 #include "quad.h"
 
-namespace TileQuads
-{
+namespace TileQuads{
 
-int oneDimCount(int tileDimension,
-                int destDimension)
-{
+int oneDimCount(int tileDimension, int destDimension){
 	if (tileDimension <= 0)
 		return 0;
 
@@ -39,17 +36,12 @@ int oneDimCount(int tileDimension,
 	return fullCount + (partSize ? 1 : 0);
 }
 
-int twoDimCount(int tileW, int tileH,
-                int destW, int destH)
-{
+int twoDimCount(int tileW, int tileH, int destW, int destH) {
 	return oneDimCount(tileW, destW) *
 	       oneDimCount(tileH, destH);
 }
 
-int buildH(const IntRect &sourceRect,
-           int width, int x, int y,
-           Vertex *verts)
-{
+int buildH(const IntRect &sourceRect, int width, int x, int y, Vertex *verts){
 	if (width <= 0)
 		return 0;
 
@@ -84,10 +76,7 @@ int buildH(const IntRect &sourceRect,
 	return fullCount + (partSize ? 1 : 0);
 }
 
-int buildV(const IntRect &sourceRect,
-           int height, int ox, int oy,
-           Vertex *verts)
-{
+int buildV(const IntRect &sourceRect, int height, int ox, int oy, Vertex *verts) {
 	if (height <= 0)
 		return 0;
 
@@ -122,10 +111,7 @@ int buildV(const IntRect &sourceRect,
 	return fullCount + (partSize ? 1 : 0);
 }
 
-int build(const IntRect &sourceRect,
-          const IntRect &destRect,
-          Vertex *verts)
-{
+int build(const IntRect &sourceRect, const IntRect &destRect, Vertex *verts) {
 	int ox = destRect.x;
 	int oy = destRect.y;
 	int width = destRect.w;
@@ -161,9 +147,7 @@ int build(const IntRect &sourceRect,
 	return qCount;
 }
 
-static void buildFrameInt(const IntRect &rect,
-                          FloatRect quadRects[9])
-{
+static void buildFrameInt(const IntRect &rect, FloatRect quadRects[9]) {
 	int w  = rect.w; int h  = rect.h;
 	int x1 = rect.x; int x2 = x1 + w;
 	int y1 = rect.y; int y2 = y1 + h;
@@ -185,9 +169,7 @@ static void buildFrameInt(const IntRect &rect,
 	quadRects[i++] = FloatRect(x1+2, y1+2, w-4, h-4);
 }
 
-int buildFrameSource(const IntRect &rect,
-                     Vertex vert[36])
-{
+int buildFrameSource(const IntRect &rect, Vertex vert[36]) {
 	FloatRect quadRects[9];
 
 	buildFrameInt(rect, quadRects);
@@ -198,9 +180,7 @@ int buildFrameSource(const IntRect &rect,
 	return 9;
 }
 
-int buildFrame(const IntRect &rect,
-               Vertex vert[36])
-{
+int buildFrame(const IntRect &rect, Vertex vert[36]){
 	FloatRect quadRects[9];
 
 	buildFrameInt(rect, quadRects);

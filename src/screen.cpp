@@ -12,29 +12,24 @@
 
 // #include "oldimpls/include.h"
 
-static void showInitError(const std::string &msg)
-{
+static void showInitError(const std::string &msg){
 	Debug() << msg;
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot: sunshine", msg.c_str(), 0);
 }
 
-static bool readMessage(Pipe &ipc, char *buf, size_t size)
-{
+static bool readMessage(Pipe &ipc, char *buf, size_t size){
 	size_t index = 0;
 	while (index < size - 1) {
 		if (ipc.read(buf + index)) {
 			++index;
-		} else {
-			break;
-		}
+		} else { break; }
 	}
 	buf[index] = 0;
 
 	return index > 0;
 }
 
-int screenMain(Config &conf)
-{
+int screenMain(Config &conf){
 	const SDL_Color colorKey = {0x00, 0xFF, 0x00, 0xFF};
 	const SDL_Color black = {0x00, 0x00, 0x00, 0xFF};
 
@@ -53,8 +48,7 @@ int screenMain(Config &conf)
 	win = SDL_CreateWindow("The Journal", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SDL_WINDOW_RESIZABLE | SDL_WINDOW_TRANSPARENT);
 	//SDL_SetWindowShape(win, );
 
-	if (!win)
-	{
+	if (!win){
 		showInitError(std::string("Error creating window: ") + SDL_GetError());
 		return 0;
 	}

@@ -11,15 +11,13 @@
 struct OneshotPrivate;
 struct RGSSThreadData;
 
-class Oneshot
-{
+class Oneshot{
 public:
 	Oneshot(RGSSThreadData &threadData);
 	~Oneshot();
 
 	//msgbox type codes
-	enum
-	{
+	enum{
 		MSG_INFO,
 		MSG_YESNO,
 		MSG_WARN,
@@ -27,8 +25,7 @@ public:
 	};
 
 	//Wallpaper style
-	enum
-	{
+	enum{
 		STYLE_NONE,
 		STYLE_TILE,
 		STYLE_CENTER,
@@ -39,8 +36,7 @@ public:
 	};
 
 	//Wallpaper gradient
-	enum
-	{
+	enum{
 		GRADIENT_NONE,
 		GRADIENT_HORIZONTAL,
 		GRADIENT_VERTICAL,

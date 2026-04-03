@@ -26,13 +26,11 @@
 
 #include <vector>
 
-namespace TileAtlas
-{
+namespace TileAtlas{
 
 /* Abstract definition of a blit
  * operation with undefined rect width */
-struct Blit
-{
+struct Blit{
 	Vec2i src;
 	Vec2i dst;
 	int h;

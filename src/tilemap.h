@@ -32,11 +32,9 @@ class Table;
 
 struct TilemapPrivate;
 
-class Tilemap : public Disposable
-{
+class Tilemap : public Disposable{
 public:
-	class Autotiles
-	{
+	class Autotiles{
 	public:
 		void set(int i, Bitmap *bitmap);
 		Bitmap *get(int i) const;

@@ -33,8 +33,7 @@
 
 #include "quadarray.h"
 
-namespace TileQuads
-{
+namespace TileQuads{
 	/* Calculate needed quad counts */
 	int oneDimCount(int tileDimension,
 	                int destDimension);

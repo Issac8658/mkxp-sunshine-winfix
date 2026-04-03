@@ -71,50 +71,41 @@ public:
 	Vec2 &getScale()    { return scale;    }
 	float getRotation() { return rotation; }
 
-	Vec2i getPositionI() const
-	{
+	Vec2i getPositionI() const{
 		return Vec2i(position.x, position.y);
 	}
 
-	Vec2i getOriginI() const
-	{
+	Vec2i getOriginI() const{
 		return Vec2i(origin.x, origin.y);
 	}
 
-	void setPosition(const Vec2 &value)
-	{
+	void setPosition(const Vec2 &value){
 		position = value;
 		dirty = true;
 	}
 
-	void setOrigin(const Vec2 &value)
-	{
+	void setOrigin(const Vec2 &value){
 		origin = value;
 		dirty = true;
 	}
 
-	void setScale(const Vec2 &value)
-	{
+	void setScale(const Vec2 &value){
 		scale = value;
 		dirty = true;
 	}
 
-	void setRotation(float value)
-	{
+	void setRotation(float value){
 		rotation = value;
 		dirty = true;
 	}
 
-	void setGlobalOffset(const Vec2i &value)
-	{
+	void setGlobalOffset(const Vec2i &value){
 		offset = value;
 		dirty = true;
 	}
 
-	const float *getMatrix()
-	{
-		if (dirty)
-		{
+	const float *getMatrix(){
+		if (dirty){
 			updateMatrix();
 			dirty = false;
 		}
@@ -123,8 +114,7 @@ public:
 	}
 
 private:
-	void updateMatrix()
-	{
+	void updateMatrix(){
 		if (rotation >= 360 || rotation < -360)
 			rotation = (float) fmod(rotation, 360);
 		if (rotation < 0)

@@ -28,8 +28,7 @@
 #include <vector>
 
 static inline int
-wrapRange(int value, int min, int max)
-{
+wrapRange(int value, int min, int max){
 	if (value >= min && value <= max)
 		return value;
 
@@ -40,8 +39,7 @@ wrapRange(int value, int min, int max)
 }
 
 template<typename T>
-static inline T clamp(T value, T min, T max)
-{
+static inline T clamp(T value, T min, T max){
 	if (value < min)
 		return min;
 
@@ -52,8 +50,7 @@ static inline T clamp(T value, T min, T max)
 }
 
 static inline int
-findNextPow2(int start)
-{
+findNextPow2(int start){
 	int i = 1;
 	while (i < start)
 		i <<= 1;
@@ -63,9 +60,7 @@ findNextPow2(int start)
 
 /* Reads the contents of the file at 'path' and
  * appends them to 'out'. Returns false on failure */
-inline bool readFile(const char *path,
-                     std::string &out)
-{
+inline bool readFile(const char *path, std::string &out){
 	FILE *f = fopen(path, "rb");
 
 	if (!f)
@@ -87,9 +82,7 @@ inline bool readFile(const char *path,
 	return true;
 }
 
-inline void strReplace(std::string &str,
-                       char before, char after)
-{
+inline void strReplace(std::string &str, char before, char after){
 	for (size_t i = 0; i < str.size(); ++i)
 		if (str[i] == before)
 			str[i] = after;
@@ -97,20 +90,17 @@ inline void strReplace(std::string &str,
 
 /* Check if [C]ontainer contains [V]alue */
 template<typename C, typename V>
-inline bool contains(const C &c, const V &v)
-{
+inline bool contains(const C &c, const V &v) {
 	return std::find(c.begin(), c.end(), v) != c.end();
 }
 
 template<typename C>
-inline const C *dataPtr(const std::vector<C> &v)
-{
+inline const C *dataPtr(const std::vector<C> &v) {
 	return v.empty() ? (C*)0 : &v[0];
 }
 
 template<typename C>
-inline C *dataPtr(std::vector<C> &v)
-{
+inline C *dataPtr(std::vector<C> &v){
 	return v.empty() ? (C*)0 : &v[0];
 }
 

@@ -26,13 +26,11 @@
 
 #include <stdio.h>
 
-struct KbBindingData
-{
+struct KbBindingData{
 	SDL_Scancode source;
 	Input::ButtonCode target;
 
-	void add(BDescVec &d) const
-	{
+	void add(BDescVec &d) const{
 		SourceDesc src;
 		src.type = Key;
 		src.d.scan = source;
@@ -45,13 +43,11 @@ struct KbBindingData
 	}
 };
 
-struct JsBindingData
-{
+struct JsBindingData{
 	int source;
 	Input::ButtonCode target;
 
-	void add(BDescVec &d) const
-	{
+	void add(BDescVec &d) const{
 		SourceDesc src;
 		src.type = JButton;
 		src.d.jb = source;
@@ -64,13 +60,11 @@ struct JsBindingData
 	}
 };
 
-struct GcBindingData
-{
+struct GcBindingData{
 	int source;
 	Input::ButtonCode target;
 
-	void add(BDescVec &d) const
-	{
+	void add(BDescVec &d) const{
 		SourceDesc src;
 		src.type = CButton;
 		src.d.jb = source;
@@ -84,8 +78,7 @@ struct GcBindingData
 };
 
 /* Common */
-static const KbBindingData defaultKbBindings[] =
-{
+static const KbBindingData defaultKbBindings[] ={
 	{ SDL_SCANCODE_LEFT,   Input::Left       },
 	{ SDL_SCANCODE_RIGHT,  Input::Right      },
 	{ SDL_SCANCODE_UP,     Input::Up         },
@@ -105,8 +98,7 @@ static const KbBindingData defaultKbBindings[] =
 
 static elementsN(defaultKbBindings);
 
-static const GcBindingData defaultGcBindings[] =
-{
+static const GcBindingData defaultGcBindings[] ={
     { SDL_GAMEPAD_BUTTON_DPAD_LEFT,     Input::Left       },
     { SDL_GAMEPAD_BUTTON_DPAD_RIGHT,    Input::Right      },
     { SDL_GAMEPAD_BUTTON_DPAD_UP,       Input::Up         },
@@ -123,8 +115,7 @@ static const GcBindingData defaultGcBindings[] =
 
 static elementsN(defaultGcBindings);
 
-static void addGcAxisBinding(BDescVec &d, uint8_t axis, AxisDir dir, Input::ButtonCode target)
-{
+static void addGcAxisBinding(BDescVec &d, uint8_t axis, AxisDir dir, Input::ButtonCode target){
 	SourceDesc src;
 	src.type = CAxis;
 	src.d.ja.axis = axis;
@@ -137,8 +128,7 @@ static void addGcAxisBinding(BDescVec &d, uint8_t axis, AxisDir dir, Input::Butt
 	d.push_back(desc);
 }
 
-BDescVec genDefaultBindings()
-{
+BDescVec genDefaultBindings(){
 	BDescVec d;
 
 	for (size_t i = 0; i < defaultKbBindingsN; ++i)
@@ -159,19 +149,16 @@ BDescVec genDefaultBindings()
 
 #define FORMAT_VER 0
 
-struct Header
-{
+struct Header{
 	uint32_t formVer;
 	uint32_t count;
 };
 
-static void buildPath(const std::string &dir, char *out, size_t outSize)
-{
+static void buildPath(const std::string &dir, char *out, size_t outSize){
 	snprintf(out, outSize, "%skeybindings.dat", dir.c_str());
 }
 
-static bool writeBindings(const BDescVec &d, const std::string &dir)
-{
+static bool writeBindings(const BDescVec &d, const std::string &dir){
 	if (dir.empty())
 		return false;
 
@@ -187,14 +174,12 @@ static bool writeBindings(const BDescVec &d, const std::string &dir)
 	hd.formVer = FORMAT_VER;
 	hd.count = d.size();
 
-	if (fwrite(&hd, sizeof(hd), 1, f) < 1)
-	{
+	if (fwrite(&hd, sizeof(hd), 1, f) < 1){
 		fclose(f);
 		return false;
 	}
 
-	if (fwrite(&d[0], sizeof(d[0]), hd.count, f) < hd.count)
-	{
+	if (fwrite(&d[0], sizeof(d[0]), hd.count, f) < hd.count){
 		fclose(f);
 		return false;
 	}
@@ -203,8 +188,7 @@ static bool writeBindings(const BDescVec &d, const std::string &dir)
 	return true;
 }
 
-void storeBindings(const BDescVec &d, const Config &conf)
-{
+void storeBindings(const BDescVec &d, const Config &conf){
 	if (writeBindings(d, conf.customDataPath))
 		return;
 
@@ -213,10 +197,8 @@ void storeBindings(const BDescVec &d, const Config &conf)
 
 #define READ(ptr, size, n, f) if (fread(ptr, size, n, f) < n) return false
 
-static bool verifyDesc(const BindingDesc &desc)
-{
-	const Input::ButtonCode codes[] =
-	{
+static bool verifyDesc(const BindingDesc &desc){
+	const Input::ButtonCode codes[] ={
 	    Input::None,
 	    Input::Down, Input::Left, Input::Right, Input::Up,
 	    Input::Action,
@@ -241,8 +223,7 @@ static bool verifyDesc(const BindingDesc &desc)
 
 	const SourceDesc &src = desc.src;
 
-	switch (src.type)
-	{
+	switch (src.type){
 	case Invalid:
 		return true;
 	case Key:
@@ -262,8 +243,7 @@ static bool verifyDesc(const BindingDesc &desc)
 	}
 }
 
-static bool readBindings(BDescVec &out, const std::string &dir)
-{
+static bool readBindings(BDescVec &out, const std::string &dir){
 	if (dir.empty())
 		return false;
 
@@ -276,8 +256,7 @@ static bool readBindings(BDescVec &out, const std::string &dir)
 		return false;
 
 	Header hd;
-	if (fread(&hd, sizeof(hd), 1, f) < 1)
-	{
+	if (fread(&hd, sizeof(hd), 1, f) < 1){
 		fclose(f);
 		return false;
 	}
@@ -289,8 +268,7 @@ static bool readBindings(BDescVec &out, const std::string &dir)
 		return false;
 
 	out.resize(hd.count);
-	if (fread(&out[0], sizeof(out[0]), hd.count, f) < hd.count)
-	{
+	if (fread(&out[0], sizeof(out[0]), hd.count, f) < hd.count){
 		fclose(f);
 		return false;
 	}
@@ -302,8 +280,7 @@ static bool readBindings(BDescVec &out, const std::string &dir)
 	return true;
 }
 
-BDescVec loadBindings(const Config &conf)
-{
+BDescVec loadBindings(const Config &conf){
 	BDescVec d;
 
 	if (readBindings(d, conf.customDataPath))

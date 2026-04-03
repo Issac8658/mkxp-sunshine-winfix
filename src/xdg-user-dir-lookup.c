@@ -47,9 +47,7 @@
  * free(). The return value is never NULL if @fallback != NULL, unless
  * out of memory.
  **/
-char *
-xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback)
-{
+char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback) {
   FILE *file;
   char *home_dir, *config_home, *config_file;
   char buffer[512];
@@ -217,18 +215,3 @@ xdg_user_dir_lookup (const char *type)
   
   return strdup (home_dir);
 }
-
-#ifdef STANDALONE_XDG_USER_DIR_LOOKUP
-int
-main (int argc, char *argv[])
-{
-  if (argc != 2)
-    {
-      fprintf (stderr, "Usage %s <dir-type>\n", argv[0]);
-      exit (1);
-    }
-  
-  printf ("%s\n", xdg_user_dir_lookup (argv[1]));
-  return 0;
-}
-#endif

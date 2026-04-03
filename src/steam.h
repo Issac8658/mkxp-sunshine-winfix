@@ -5,8 +5,7 @@
 
 struct SteamPrivate;
 
-class Steam
-{
+class Steam{
 public:
 	void unlock(const char *name);
 	void lock(const char *name);

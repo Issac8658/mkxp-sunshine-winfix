@@ -27,23 +27,20 @@
 #include "shader.h"
 
 /* Simple Vertex */
-struct SVertex
-{
+struct SVertex{
 	Vec2 pos;
 	Vec2 texPos;
 };
 
 /* Color Vertex */
-struct CVertex
-{
+struct CVertex{
 	Vec2 pos;
 	Vec4 color;
 
 	CVertex();
 };
 
-struct Vertex
-{
+struct Vertex{
 	Vec2 pos;
 	Vec2 texPos;
 	Vec4 color;
@@ -51,8 +48,7 @@ struct Vertex
 	Vertex();
 };
 
-struct VertexAttribute
-{
+struct VertexAttribute{
 	Shader::Attribute index;
 	GLint size;
 	GLenum type;
@@ -60,8 +56,7 @@ struct VertexAttribute
 };
 
 template<class VertType>
-struct VertexTraits
-{
+struct VertexTraits{
 	static const VertexAttribute *attr;
 	static const GLsizei attrCount;
 };

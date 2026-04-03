@@ -25,11 +25,9 @@
 struct InputPrivate;
 struct RGSSThreadData;
 
-class Input
-{
+class Input{
 public:
-	enum ButtonCode
-	{
+	enum ButtonCode{
 		None = 0,
 
 		Down = 2, Left = 4, Right = 6, Up = 8,

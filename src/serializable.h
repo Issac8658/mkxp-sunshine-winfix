@@ -22,15 +22,13 @@
 #ifndef SERIALIZABLE_H
 #define SERIALIZABLE_H
 
-struct Serializable
-{
+struct Serializable{
 	virtual int serialSize() const = 0;
 	virtual void serialize(char *buffer) const = 0;
 };
 
 template<class C>
-C *deserialize(const char *data)
-{
+C *deserialize(const char *data){
 	return C::deserialize(data);
 }
 

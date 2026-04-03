@@ -32,8 +32,7 @@
 
 #include <sigc++/connection.h>
 
-struct ViewportPrivate
-{
+struct ViewportPrivate{
 	/* Needed for geometry changes */
 	Viewport *self;
 
@@ -59,27 +58,23 @@ struct ViewportPrivate
 		updateRectCon();
 	}
 
-	~ViewportPrivate()
-	{
+	~ViewportPrivate(){
 		rectCon.disconnect();
 	}
 
-	void onRectChange()
-	{
+	void onRectChange(){
 		self->geometry.rect = rect->toIntRect();
 		self->notifyGeometryChange();
 		recomputeOnScreen();
 	}
 
-	void updateRectCon()
-	{
+	void updateRectCon(){
 		rectCon.disconnect();
 		rectCon = rect->valueChanged.connect
 		        (sigc::mem_fun(this, &ViewportPrivate::onRectChange));
 	}
 
-	void recomputeOnScreen()
-	{
+	void recomputeOnScreen(){
 		SDL_Rect r1 = { screenRect.x, screenRect.y,
 		                screenRect.w, screenRect.h };
 
@@ -90,8 +85,7 @@ struct ViewportPrivate
 		isOnScreen = SDL_GetRectIntersection(&r1, &r2, &result);
 	}
 
-	bool needsEffectRender(bool flashing)
-	{
+	bool needsEffectRender(bool flashing){
 		bool rectEffective = !rect->isEmpty();
 		bool colorToneEffective = color->hasEffect() || tone->hasEffect() || flashing;
 
@@ -121,8 +115,7 @@ Viewport::Viewport()
 	initViewport(0, 0, graphics.width(), graphics.height());
 }
 
-void Viewport::initViewport(int x, int y, int width, int height)
-{
+void Viewport::initViewport(int x, int y, int width, int height){
 	p = new ViewportPrivate(x, y, width, height, this);
 
 	/* Set our own geometry */
@@ -132,13 +125,11 @@ void Viewport::initViewport(int x, int y, int width, int height)
 	onGeometryChange(scene->getGeometry());
 }
 
-Viewport::~Viewport()
-{
+Viewport::~Viewport(){
 	dispose();
 }
 
-void Viewport::update()
-{
+void Viewport::update(){
 	guardDisposed();
 
 	Flashable::update();
@@ -151,8 +142,7 @@ DEF_ATTR_SIMPLE(Viewport, Rect,  Rect&,  *p->rect)
 DEF_ATTR_SIMPLE(Viewport, Color, Color&, *p->color)
 DEF_ATTR_SIMPLE(Viewport, Tone,  Tone&,  *p->tone)
 
-void Viewport::setOX(int value)
-{
+void Viewport::setOX(int value){
 	guardDisposed();
 
 	if (geometry.orig.x == value)
@@ -162,8 +152,7 @@ void Viewport::setOX(int value)
 	notifyGeometryChange();
 }
 
-void Viewport::setOY(int value)
-{
+void Viewport::setOY(int value){
 	guardDisposed();
 
 	if (geometry.orig.y == value)
@@ -173,8 +162,7 @@ void Viewport::setOY(int value)
 	notifyGeometryChange();
 }
 
-void Viewport::initDynAttribs()
-{
+void Viewport::initDynAttribs(){
 	p->rect = new Rect(*p->rect);
 	p->color = new Color;
 	p->tone = new Tone;
@@ -183,8 +171,7 @@ void Viewport::initDynAttribs()
 }
 
 /* Scene */
-void Viewport::composite()
-{
+void Viewport::composite(){
 	if (emptyFlashFlag)
 		return;
 
@@ -210,19 +197,16 @@ void Viewport::composite()
 }
 
 /* SceneElement */
-void Viewport::draw()
-{
+void Viewport::draw(){
 	composite();
 }
 
-void Viewport::onGeometryChange(const Geometry &geo)
-{
+void Viewport::onGeometryChange(const Geometry &geo){
 	p->screenRect = geo.rect;
 	p->recomputeOnScreen();
 }
 
-void Viewport::releaseResources()
-{
+void Viewport::releaseResources(){
 	unlink();
 
 	delete p;
@@ -234,13 +218,11 @@ ViewportElement::ViewportElement(Viewport *viewport, int z, int spriteY)
       m_viewport(viewport)
 {}
 
-Viewport *ViewportElement::getViewport() const
-{
+Viewport *ViewportElement::getViewport() const{
 	return m_viewport;
 }
 
-void ViewportElement::setViewport(Viewport *viewport)
-{
+void ViewportElement::setViewport(Viewport *viewport){
 	m_viewport = viewport;
 	setScene(viewport ? *viewport : *shState->screen());
 	onViewportChange();

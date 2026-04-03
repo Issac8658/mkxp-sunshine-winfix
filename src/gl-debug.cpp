@@ -21,7 +21,7 @@
 
 #include "gl-debug.h"
 #include "debugwriter.h"
-
+#include <ctime>
 #include <iostream>
 
 #include "gl-fun.h"
@@ -29,7 +29,7 @@
 struct GLDebugLoggerPrivate
 {
 	std::ostream *stream;
-
+	time_t timestamp;
 	GLDebugLoggerPrivate(const char *logFilename)
 	{
 		(void) logFilename;
@@ -41,10 +41,9 @@ struct GLDebugLoggerPrivate
 	{
 	}
 
-	void writeTimestamp()
-	{
-		// FIXME reintroduce proper time stamps (is this even necessary??)
-		*stream << "[GLDEBUG] ";
+	void writeTimestamp(){
+		time(&timestamp);
+		*stream << "[GLDEBUG " << ctime(&timestamp) << "]";
 	}
 
 	void writeLine(const char *line)
