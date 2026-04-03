@@ -443,7 +443,7 @@ void Bitmap::stretchBlt(const IntRect &destRect,
 		SDL_GetMasksForPixelFormat(SDL_PIXELFORMAT_ABGR8888,
 		                           &bpp, &rMask, &gMask, &bMask, &aMask);
 		SDL_Surface *blitTemp =
-			SDL_CreateRGBSurface(0, destRect.w, destRect.h, bpp, rMask, gMask, bMask, aMask);
+			SDL_CreateSurface(destRect.w, destRect.h, SDL_GetPixelFormatForMasks(bpp, rMask, gMask, bMask, aMask));
 
 		SDL_BlitSurfaceScaled(srcSurf, &srcRect, blitTemp, NULL, SDL_ScaleMode::SDL_SCALEMODE_NEAREST);
 
@@ -899,11 +899,8 @@ static std::string fixupString(const char *str)
 	return s;
 }
 
-static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, const SDL_Color &c)
-{
-	//SDL_CreateSurface(32, 32, SDL_PIXELFORMAT_INDEX8);
-	SDL_Surface *out = SDL_CreateRGBSurface(0, in->w+1, in->h+1, fm->bits_per_pixel, fm->Rmask, fm->Gmask, fm->Bmask, fm->Amask);
-	//SDL_Surface *out = SDL_CreateRGBSurface(in->w+1, in->h+1, fm->Rmask, fm->Gmask, fm->Bmask, fm->Amask);
+static void applyShadow(SDL_Surface *&in, const SDL_PixelFormatDetails* fm, const SDL_Color &c){
+	SDL_Surface *out = SDL_CreateSurface(in->w+1, in->h+1, SDL_GetPixelFormatForMasks(fm->bits_per_pixel, fm->Rmask, fm->Gmask, fm->Bmask, fm->Amask));
 
 	float fr = c.r / 255.0f;
 	float fg = c.g / 255.0f;
