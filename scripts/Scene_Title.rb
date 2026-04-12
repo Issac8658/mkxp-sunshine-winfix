@@ -34,12 +34,12 @@ class Scene_Title
     $game_system = Game_System.new
 
     # Skip title screen if debug mode (or demo, but not GDC)
-    if $debug || ($demo && !$GDC) || save_exists
-      $game_map.update
-      $game_map.autoplay
-      $scene = Scene_Map.new
-      return
-    end
+    #if $debug || ($demo && !$GDC) || save_exists
+    #  $game_map.update
+    #  $game_map.autoplay
+    #  $scene = Scene_Map.new
+    #  return
+    #end
     load_perma_flags
 	Window_Settings.load_settings
     Oneshot.allow_exit true
@@ -53,7 +53,11 @@ class Scene_Title
     if File.exists?("Graphics/Titles/#{translation_name}.png")
        @sprite.bitmap = RPG::Cache.title(translation_name)
  	else
-       @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+       if File.exist?("badend.lock")
+          @sprite.bitmap = RPG::Cache.title("badend")
+       else
+          @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+       end
  	end
 	
 	# check for debug file to add debug items
@@ -72,9 +76,7 @@ class Scene_Title
     @menu.bitmap = Bitmap.new(640, 480)
     @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
-    if !$GDC
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
-    end
+    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
 	if $game_switches[160] && $game_switches[152]
       @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
@@ -90,7 +92,12 @@ class Scene_Title
     # Initialize cursor position
     @cursor_pos = 0
     # Play title BGM
-    $game_system.bgm_play($data_system.title_bgm)
+    if File.exist?("badend.lock")
+      #TODO: fix
+      Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", 100, 100)
+    else
+      $game_system.bgm_play($data_system.title_bgm)
+    end
     # Stop playing ME and BGS
     Audio.me_stop
     Audio.bgs_stop
@@ -130,11 +137,9 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def update
 	@menu.bitmap.clear
-	@menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
+    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
     @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
-    if !$GDC
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
-    end
+    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
 	if $game_switches[160] && $game_switches[152]
       @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
@@ -178,17 +183,28 @@ class Scene_Title
     if !@window_settings_title.visible
       # Handle confirmation
       if Input.trigger?(Input::ACTION)
-        case @cursor_pos
-        when 0  # Continue
-	      $game_switches[157] = false
-          command_continue
-	    when 1  # Settings
-	      command_settings
-        when 2  # Shutdown
-          command_shutdown
-        when 3  # memory
-	      $game_switches[157] = true
-          command_continue
+        if File.exist?("badend.lock")
+          case @cursor_pos
+          when 0  # Continue
+            EdText.info(tr("Savior not found"))
+          when 1  # Settings
+            command_settings
+          when 2  # Shutdown
+            command_shutdown
+          end
+        else
+          case @cursor_pos
+          when 0  # Continue
+            $game_switches[157] = false
+            command_continue
+          when 1  # Settings
+            command_settings
+          when 2  # Shutdown
+            command_shutdown
+          when 3  # memory
+            $game_switches[157] = true
+            command_continue
+          end
         end
       end
 	end

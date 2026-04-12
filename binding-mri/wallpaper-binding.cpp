@@ -57,8 +57,7 @@
 #endif
 
 #ifdef __linux__
-	void desktopEnvironmentInit()
-	{
+	void desktopEnvironmentInit(){
 		if (desktop != "uninitialized") {
 			return;
 		}

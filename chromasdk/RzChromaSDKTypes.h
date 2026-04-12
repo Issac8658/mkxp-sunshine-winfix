@@ -15,14 +15,12 @@ typedef void*           PRZPARAM;           //!< Context sensitive pointer.
 typedef DWORD           RZID;               //!< Generic data type for Identifier.
 typedef DWORD           RZCOLOR;            //!< Color data. 1st byte = Red; 2nd byte = Green; 3rd byte = Blue; 4th byte = Alpha (if applicable)
 
-namespace ChromaSDK
-{
+namespace ChromaSDK{
     //! Event notification Window message
     const UINT WM_CHROMA_EVENT = WM_APP+0x2000;
 
     //! Chroma generic effects. Note: Not all devices supported the listed effects.
-    typedef enum EFFECT_TYPE
-    {
+    typedef enum EFFECT_TYPE{
         CHROMA_NONE = 0,            //!< No effect.
         CHROMA_WAVE,                //!< Wave effect (This effect type has deprecated and should not be used).
         CHROMA_SPECTRUMCYCLING,     //!< Spectrum cycling effect (This effect type has deprecated and should not be used).
@@ -36,11 +34,9 @@ namespace ChromaSDK
     } EFFECT_TYPE;
 
     //! Device info.
-    typedef struct DEVICE_INFO_TYPE
-    {
+    typedef struct DEVICE_INFO_TYPE{
         //! Device types.
-        enum DeviceType
-        {
+        enum DeviceType{
             DEVICE_KEYBOARD    = 1, //!< Keyboard device.
             DEVICE_MOUSE       = 2, //!< Mouse device.
             DEVICE_HEADSET     = 3, //!< Headset device.
@@ -57,8 +53,7 @@ namespace ChromaSDK
     const RZSIZE MAX_COLUMN = 30;   //!< Maximum columns for custom effects.
 
     //! Blinking effect (This effect type has deprecated and should not be used).
-    typedef struct BLINKING_EFFECT_TYPE
-    {
+    typedef struct BLINKING_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(BLINKING_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
@@ -66,14 +61,12 @@ namespace ChromaSDK
     } BLINKING_EFFECT_TYPE;
 
     //! Breathing effect (This effect type has deprecated and should not be used).
-    typedef struct BREATHING_EFFECT_TYPE
-    {
+    typedef struct BREATHING_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of ths structure. Size = sizeof(BREATHING_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
         //! Breathing effect types.
-        enum _Type
-        {
+        enum _Type{
             ONE_COLOR = 1,  //!< 1 color (Only fill Color1).
             TWO_COLORS,     //!< 2 colors.
             RANDOM_COLORS   //!< Random colors
@@ -84,8 +77,7 @@ namespace ChromaSDK
     } BREATHING_EFFECT_TYPE;
 
     //! Custom effect (This effect type has deprecated and should not be used).
-    typedef struct CUSTOM_EFFECT_TYPE
-    {
+    typedef struct CUSTOM_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(CUSTOM_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
@@ -93,21 +85,18 @@ namespace ChromaSDK
     } CUSTOM_EFFECT_TYPE;
 
     //! No effect.
-    typedef struct NO_EFFECT_TYPE
-    {
+    typedef struct NO_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(NO_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
     } NO_EFFECT_TYPE;
 
     //! Reactive effect (This effect type has deprecated and should not be used).
-    typedef struct REACTIVE_EFFECT_TYPE
-    {
+    typedef struct REACTIVE_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(REACTIVE_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
         //! Duration of the effect.
-        enum _Duration
-        {
+        enum _Duration{
             DURATION_SHORT = 1, //!< Short duration.
             DURATION_MEDIUM,    //!< Medium duration.
             DURATION_LONG       //!< Long duration.
@@ -117,21 +106,18 @@ namespace ChromaSDK
     } REACTIVE_EFFECT_TYPE;
 
     //! Spectrum cycling effect (This effect type has deprecated and should not be used).
-    typedef struct SPECTRUMCYCLING_EFFECT_TYPE
-    {
+    typedef struct SPECTRUMCYCLING_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(SPECTRUMCYCLING_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
     } SPECTRUMCYCLING_EFFECT_TYPE;
 
     //! Starlight effect (This effect type has deprecated and should not be used).
-    typedef struct STARLIGHT_EFFECT_TYPE
-    {
+    typedef struct STARLIGHT_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(SPECTRUMCYCLING_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
         //! Starlight effect types.
-        enum _Type
-        {
+        enum _Type{
             TWO_COLORS = 1, //!< 2 colors.
             RANDOM_COLORS   //!< Random colors
         } Type;
@@ -140,8 +126,7 @@ namespace ChromaSDK
         COLORREF Color2;    //!< Second color.
 
         //! Duration of the effect.
-        enum _Duration
-        {
+        enum _Duration{
             DURATION_SHORT = 1, //!< Short duration.
             DURATION_MEDIUM,    //!< Medium duration.
             DURATION_LONG       //!< Long duration.
@@ -150,8 +135,7 @@ namespace ChromaSDK
     } STARLIGHT_EFFECT_TYPE;
 
     //! Static effect (This effect type has deprecated and should not be used).
-    typedef struct STATIC_EFFECT_TYPE
-    {
+    typedef struct STATIC_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(STATIC_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
@@ -159,8 +143,7 @@ namespace ChromaSDK
     } STATIC_EFFECT_TYPE;
 
     //! Wave effect (This effect type has deprecated and should not be used).
-    typedef struct WAVE_EFFECT_TYPE
-    {
+    typedef struct WAVE_EFFECT_TYPE{
         RZSIZE Size;        //!< Size of the structure. Size = sizeof(WAVE_EFFECT_TYPE)
         DWORD Param;        //!< Extra parameters.
 
@@ -175,8 +158,7 @@ namespace ChromaSDK
     } WAVE_EFFECT_TYPE;
 
     //! Keyboards
-    namespace Keyboard
-    {
+    namespace Keyboard{
         //! Definitions of keys.
         typedef enum RZKEY
         {

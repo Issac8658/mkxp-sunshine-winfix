@@ -30,23 +30,17 @@
 
 static void fileIntFreeInstance(void *inst){
 	SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
-
 	SDL_CloseIO(ops);
 }
 
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
-static VALUE
-fileIntForPath(const char *path, bool rubyExc)
-{
+static VALUE fileIntForPath(const char *path, bool rubyExc){
 	SDL_IOStream* ops;
-
-	try
-	{
+	try{
 		shState->fileSystem().openReadRaw(ops, path);
 	}
-	catch (const Exception &e)
-	{
+	catch (const Exception &e){
 		SDL_CloseIO(ops);
 
 		if (rubyExc)
@@ -64,16 +58,14 @@ fileIntForPath(const char *path, bool rubyExc)
 	return obj;
 }
 
-RB_METHOD(fileIntRead)
-{
+RB_METHOD(fileIntRead){
 
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length RB_ARG_END);
 
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 
-	if (length == -1)
-	{
+	if (length == -1){
 		Sint64 cur = SDL_TellIO(ops);
 		Sint64 end = SDL_SeekIO(ops, 0, SDL_IO_SEEK_END);
 		length = end - cur;
@@ -90,8 +82,7 @@ RB_METHOD(fileIntRead)
 	return data;
 }
 
-RB_METHOD(fileIntClose)
-{
+RB_METHOD(fileIntClose){
 	RB_UNUSED_PARAM;
 
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
@@ -100,28 +91,21 @@ RB_METHOD(fileIntClose)
 	return Qnil;
 }
 
-RB_METHOD(fileIntGetByte)
-{
+RB_METHOD(fileIntGetByte){
 	RB_UNUSED_PARAM;
-
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 
 	unsigned char byte;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
-
 	return (result == 1) ? rb_fix_new(byte) : Qnil;
 }
 
-RB_METHOD(fileIntBinmode)
-{
+RB_METHOD(fileIntBinmode){
 	RB_UNUSED_PARAM;
-
 	return Qnil;
 }
 
-VALUE
-kernelLoadDataInt(const char *filename, bool rubyExc)
-{
+VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
 	rb_gc_start();
 
 	VALUE port = fileIntForPath(filename, rubyExc);
@@ -136,8 +120,7 @@ kernelLoadDataInt(const char *filename, bool rubyExc)
 	return result;
 }
 
-RB_METHOD(kernelLoadData)
-{
+RB_METHOD(kernelLoadData){
 	RB_UNUSED_PARAM;
 
 	const char *filename;
@@ -146,8 +129,7 @@ RB_METHOD(kernelLoadData)
 	return kernelLoadDataInt(filename, true);
 }
 
-RB_METHOD(kernelSaveData)
-{
+RB_METHOD(kernelSaveData){
 	RB_UNUSED_PARAM;
 
 	VALUE obj;
@@ -167,48 +149,36 @@ RB_METHOD(kernelSaveData)
 	return Qnil;
 }
 
-static VALUE stringForceUTF8(VALUE arg)
-{
+static VALUE stringForceUTF8(VALUE arg){
 	if (RB_TYPE_P(arg, RUBY_T_STRING) && ENCODING_IS_ASCII8BIT(arg))
 		rb_enc_associate_index(arg, rb_utf8_encindex());
 
 	return arg;
 }
 
-static VALUE customProc(VALUE arg, VALUE proc)
-{
+static VALUE customProc(VALUE arg, VALUE proc){
 	VALUE obj = stringForceUTF8(arg);
 	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
-
 	return obj;
 }
 
 RB_METHOD(_marshalLoad){
-	printf("test\n");
 	RB_UNUSED_PARAM;
-	printf("test2\n");
 	VALUE port, proc = Qnil;
-	printf("test3\n");
 	rb_scan_args(argc, argv, "01", &port, &proc);
 	//rb_get_args(argc, argv, "o|o", &port, &proc RB_ARG_END);
-	printf("test4\n");
 	VALUE utf8Proc;
 	if (NIL_P(proc))
 		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
 	else
 		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(customProc), proc);
-	printf("test5\n");
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-	//if (!rb_obj_is_kind_of(marsh, rb_cModule)) rb_raise(rb_eRuntimeError, "Marshal not found");
-	printf("test6\n");
+
 	VALUE v[] = { port, utf8Proc };
-	printf("test7\n");
 	return rb_funcall2(marsh, rb_intern("_mkxp_load_alias"), ARRAY_SIZE(v), v);
 }
 
-void
-fileIntBindingInit()
-{
+void fileIntBindingInit(){
 	VALUE klass = rb_define_class("FileInt", rb_cIO);
 	rb_define_alloc_func(klass, classAllocate<&FileIntType>);
 
@@ -223,11 +193,11 @@ fileIntBindingInit()
 	/* We overload the built-in 'Marshal::load()' function to silently
 	 * insert our utf8proc that ensures all read strings will be
 	 * UTF-8 encoded */
-	printf("test8\n");
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-	printf("test9\n");
+	if(marsh = Qnil){
+		printf("BrUh: cant get Marshal\n");
+		exit(1);
+	}
 	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
-	printf("test10\n");
 	_rb_define_module_function(marsh, "load", _marshalLoad);
-	printf("test11\n");
 }

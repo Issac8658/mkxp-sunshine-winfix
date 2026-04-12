@@ -28,13 +28,10 @@
 /* 'Children' are disposables that are disposed together
  * with their parent. Currently this is only used by Viewport
  * in RGSS1. */
-inline void
-disposableAddChild(VALUE disp, VALUE child)
-{
+inline void disposableAddChild(VALUE disp, VALUE child){
 	VALUE children = rb_iv_get(disp, "children");
 
-	if (NIL_P(children))
-	{
+	if (NIL_P(children)){
 		children = rb_ary_new();
 		rb_iv_set(disp, "children", children);
 	}
@@ -43,9 +40,7 @@ disposableAddChild(VALUE disp, VALUE child)
 	rb_ary_push(children, child);
 }
 
-inline void
-disposableDisposeChildren(VALUE disp)
-{
+inline void disposableDisposeChildren(VALUE disp){
 	VALUE children = rb_iv_get(disp, "children");
 
 	if (NIL_P(children))
@@ -58,8 +53,7 @@ disposableDisposeChildren(VALUE disp)
 }
 
 template<class C>
-RB_METHOD(disposableDispose)
-{
+RB_METHOD(disposableDispose){
 	RB_UNUSED_PARAM;
 
 	C *d = getPrivateData<C>(self);
@@ -80,8 +74,7 @@ RB_METHOD(disposableDispose)
 }
 
 template<class C>
-RB_METHOD(disposableIsDisposed)
-{
+RB_METHOD(disposableIsDisposed){
 	RB_UNUSED_PARAM;
 
 	C *d = getPrivateData<C>(self);
@@ -93,8 +86,7 @@ RB_METHOD(disposableIsDisposed)
 }
 
 template<class C>
-static void disposableBindingInit(VALUE klass)
-{
+static void disposableBindingInit(VALUE klass){
 	_rb_define_method(klass, "dispose", disposableDispose<C>);
 	_rb_define_method(klass, "disposed?", disposableIsDisposed<C>);
 
@@ -105,9 +97,7 @@ static void disposableBindingInit(VALUE klass)
 }
 
 template<class C>
-inline void
-checkDisposed(VALUE self)
-{
+inline void checkDisposed(VALUE self){
 	if (disposableIsDisposed<C>(0, 0, self) == Qtrue)
 		raiseDisposedAccess(self);
 }

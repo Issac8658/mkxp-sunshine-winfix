@@ -26,8 +26,7 @@
 
 DEF_TYPE(Window);
 
-RB_METHOD(windowInitialize)
-{
+RB_METHOD(windowInitialize){
 	Window *w = viewportElementInitialize<Window>(argc, argv, self);
 
 	setPrivateData(self, w);
@@ -39,8 +38,7 @@ RB_METHOD(windowInitialize)
 	return self;
 }
 
-RB_METHOD(windowUpdate)
-{
+RB_METHOD(windowUpdate){
 	RB_UNUSED_PARAM;
 
 	Window *w = getPrivateData<Window>(self);
@@ -70,8 +68,7 @@ DEF_PROP_I(Window, ContentsOpacity)
 
 
 void
-windowBindingInit()
-{
+windowBindingInit(){
 	VALUE klass = rb_define_class("Window", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&WindowType>);
 

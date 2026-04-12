@@ -8,8 +8,11 @@ class Window_Settings
   SETTINGS_FILE_NAME = Oneshot::SAVE_PATH + '/settings.conf'
   class << self
     attr_accessor :DebugIsEnabled
+    attr_accessor :OneShotMode
   end
   @DebugIsEnabled = false
+  #You have only ONE shot!
+  @OneShotMode = false
   def save_settings
     $persistent.save
     File.open(SETTINGS_FILE_NAME, 'w') do |file|
@@ -22,6 +25,7 @@ class Window_Settings
       file.puts('frameskip=' + Graphics.frameskip.to_s)
       file.puts('in_game_timer=' + $game_temp.igt_timer_visible.to_s)
       file.puts('debug=' + Window_Settings.DebugIsEnabled.to_s)
+      file.puts('oneshotmode=' + Window_Settings.OneShotMode.to_s)
     end
   end
 
@@ -84,9 +88,15 @@ class Window_Settings
           Window_Settings.DebugIsEnabled = true
         elsif vals[1] == "false"
           Window_Settings.DebugIsEnabled = false
+        end
+      when "oneshotmode"
+        if vals[1] == "true"
+          Window_Settings.OneShotMode = true
+        elsif vals[1] == "false"
+          Window_Settings.OneShotMode = false
+        end
 	  end
     end
-  end
   end
   def initialize
     @viewport = Viewport.new(0, 0, 640, 480)
@@ -145,7 +155,7 @@ class Window_Settings
              tr('In-Game Timer'),
 			 tr('Language'),
              tr('Debug mode(DEVS ONLY!)'),
-			 tr('Configure Controls (Press F1)'),
+             tr('One Shot Mode(!)'),
 			]
 
     @index = 0
@@ -227,6 +237,13 @@ class Window_Settings
           spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
         when 9
           if(Window_Settings.DebugIsEnabled == true)
+            spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
+          else
+            spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
+          end
+        when 10
+          if(Window_Settings.OneShotMode == true)
+            #EdText.info(tr("WARNING: In this mode, if you close the game NOT through the bed, you will get a bad ending(Like in the Freeware Oneshot version)!"))
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
           else
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
@@ -475,6 +492,11 @@ class Window_Settings
         if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
           Window_Settings.DebugIsEnabled = !Window_Settings.DebugIsEnabled
           redraw_setting_index(9)
+        end
+      when 10
+        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
+          Window_Settings.OneShotMode = !Window_Settings.OneShotMode
+          redraw_setting_index(10)
         end
 	end
 

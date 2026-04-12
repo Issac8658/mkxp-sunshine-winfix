@@ -125,16 +125,14 @@ SET_FUN(Color, double, "fff|f", 255)
 SET_FUN(Tone, double, "fff|f", 0)
 SET_FUN(Rect, int, "iiii", 0)
 
-RB_METHOD(rectEmpty)
-{
+RB_METHOD(rectEmpty){
 	RB_UNUSED_PARAM;
 	Rect *r = getPrivateData<Rect>(self);
 	r->empty();
 	return self;
 }
 
-RB_METHOD(ColorStringify)
-{
+RB_METHOD(ColorStringify){
 	RB_UNUSED_PARAM;
 
 	Color *c = getPrivateData<Color>(self);
@@ -143,8 +141,7 @@ RB_METHOD(ColorStringify)
 	                  c->red, c->green, c->blue, c->alpha);
 }
 
-RB_METHOD(ToneStringify)
-{
+RB_METHOD(ToneStringify){
 	RB_UNUSED_PARAM;
 
 	Tone *t = getPrivateData<Tone>(self);
@@ -153,8 +150,7 @@ RB_METHOD(ToneStringify)
 	                  t->red, t->green, t->blue, t->gray);
 }
 
-RB_METHOD(RectStringify)
-{
+RB_METHOD(RectStringify){
 	RB_UNUSED_PARAM;
 
 	Rect *r = getPrivateData<Rect>(self);
@@ -196,9 +192,7 @@ INITCOPY_FUN(Rect)
 #define RB_ATTR_RW(Klass, Attr, attr) \
 	{ RB_ATTR_R(Klass, Attr, attr); RB_ATTR_W(Klass, Attr, attr); }
 
-void
-etcBindingInit()
-{
+void etcBindingInit(){
 	VALUE klass;
 
 	INIT_BIND(Color);

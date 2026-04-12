@@ -29,13 +29,11 @@
 #include <string.h>
 #include <assert.h>
 
-RbData *getRbData()
-{
+RbData *getRbData(){
 	return static_cast<RbData*>(shState->bindingData());
 }
 
-struct
-{
+struct{
 	RbException id;
 	const char *name;
 } static customExc[] =
@@ -45,8 +43,7 @@ struct
 	{ SDL,    "SDLError"    }
 };
 
-RbData::RbData()
-{
+RbData::RbData(){
 	for (size_t i = 0; i < ARRAY_SIZE(customExc); ++i)
 		exc[customExc[i].id] = rb_define_class(customExc[i].name, rb_eException);
 
@@ -59,14 +56,12 @@ RbData::RbData()
 	exc[ArgumentError] = rb_eArgError;
 }
 
-RbData::~RbData()
-{
+RbData::~RbData(){
 
 }
 
 /* Indexed with Exception::Type */
-static const RbException excToRbExc[] =
-{
+static const RbException excToRbExc[] = {
     RGSS,        /* RGSSError   */
     ErrnoENOENT, /* NoFileError */
     IOError,
@@ -85,9 +80,7 @@ void raiseRbExc(const Exception &exc){
 	rb_raise(excClass, "%s", exc.msg.c_str());
 }
 
-void
-raiseDisposedAccess(VALUE self)
-{
+void raiseDisposedAccess(VALUE self){
 	const char *klassName = RTYPEDDATA_TYPE(self)->wrap_struct_name;
 	char buf[32];
 
@@ -97,9 +90,7 @@ raiseDisposedAccess(VALUE self)
 	rb_raise(getRbData()->exc[RGSS], "disposed %s", buf);
 }
 
-int
-rb_get_args(int argc, VALUE *argv, const char *format, ...)
-{
+int rb_get_args(int argc, VALUE *argv, const char *format, ...){
 	char c;
 	VALUE *arg = argv;
 	va_list ap;
@@ -108,8 +99,7 @@ rb_get_args(int argc, VALUE *argv, const char *format, ...)
 
 	va_start(ap, format);
 
-	while ((c = *format++))
-	{
+	while ((c = *format++)){
 		switch (c)
 		{
 	    case '|' :
@@ -117,7 +107,7 @@ rb_get_args(int argc, VALUE *argv, const char *format, ...)
 	    default:
 		// FIXME print num of needed args vs provided
 			if (argc <= argI && !opt)
-				rb_raise(rb_eArgError, "wrong number of arguments");
+				rb_raise(rb_eArgError, "wrong number of arguments ");
 
 			break;
 	    }

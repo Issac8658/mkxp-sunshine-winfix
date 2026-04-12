@@ -32,7 +32,10 @@
 		int volume = 100; \
 		int pitch = 100; \
 		double pos = 0.0; \
-		rb_get_args(argc, argv, "z|iif", &filename, &volume, &pitch, &pos RB_ARG_END); \
+		if (rgssVer >= 3) \
+			rb_get_args(argc, argv, "z|iif", &filename, &volume, &pitch, &pos RB_ARG_END); \
+		else \
+			rb_get_args(argc, argv, "z|ii", &filename, &volume, &pitch RB_ARG_END); \
 		GUARD_EXC( shState->audio().entity##Play(filename, volume, pitch, pos); ) \
 		return Qnil; \
 	} \
@@ -112,8 +115,7 @@ DEF_PLAY_STOP( se )
 DEF_AUD_PROP_I(BGM_Volume)
 DEF_AUD_PROP_I(SFX_Volume)
 
-RB_METHOD(audioReset)
-{
+RB_METHOD(audioReset){
 	RB_UNUSED_PARAM;
 
 	shState->audio().reset();
@@ -143,18 +145,16 @@ RB_METHOD(audioReset)
 }
 
 void
-audioBindingInit()
-{
+audioBindingInit(){
 	VALUE module = rb_define_module("Audio");
 
 	BIND_PLAY_STOP_FADE( bgm );
 	BIND_PLAY_STOP_FADE( bgs );
 	BIND_PLAY_STOP_FADE( me  );
 
-	if (rgssVer >= 3)
-	{
-	BIND_POS( bgm );
-	BIND_POS( bgs );
+	if (rgssVer >= 3){
+		BIND_POS( bgm );
+		BIND_POS( bgs );
 	}
 
 	BIND_PLAY_STOP( se )

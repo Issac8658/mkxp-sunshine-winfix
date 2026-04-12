@@ -10,8 +10,7 @@
 #include <guiddef.h>
 #endif
 
-namespace ChromaSDK
-{
+namespace ChromaSDK{
     // Keyboards
     //! Razer Blackwidow Chroma device.
     // {2EA1BB63-CA28-428D-9F06-196B88330BBB}
@@ -165,7 +164,6 @@ namespace ChromaSDK
     // {0201203B-62F3-4C50-83DD-598BABD208E0}
     static const GUID CORE_CHROMA =
     { 0x201203b, 0x62f3, 0x4c50, { 0x83, 0xdd, 0x59, 0x8b, 0xab, 0xd2, 0x8, 0xe0 } };
-
 
 }
 

@@ -24,24 +24,15 @@
 #include "eventthread.h"
 #include "debugwriter.h"
 
-static void nullBindingExecute()
-{
+static void nullBindingExecute(){
 	Debug() << "The null binding doesn't do anything, so we're done!";
 	shState->rtData().rqTermAck.set();
 }
 
-static void nullBindingTerminate()
-{
+static void nullBindingTerminate() {}
+static void nullBindingReset() {}
 
-}
-
-static void nullBindingReset()
-{
-
-}
-
-ScriptBinding scriptBindingImpl =
-{
+ScriptBinding scriptBindingImpl ={
     nullBindingExecute,
     nullBindingTerminate,
     nullBindingReset

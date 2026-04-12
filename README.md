@@ -1,6 +1,6 @@
 # mkxp-sunshine
 
-This is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) designed for OneShot: sunshine.
+This is a specialized fork of [mkxp-oneshot](https://github.com/elizagamedev/mkxp-oneshot) designed for OneShot: sunshine mod
 
 # xScripts.rxdata
 ./rpgscript.rb scripts/ [GameDir]
@@ -23,4 +23,4 @@ n - count of threads for compilation
 * Extend API with usefull thinks idk...
 * Fix bugs
 * Upgrade linux support
-* MAKE THIS WORK 
+* MAKE THIS WORK

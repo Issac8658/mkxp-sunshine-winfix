@@ -55,15 +55,13 @@
 #include "gamecontrollerdb.txt.xxd"
 #endif
 
-static void
-rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
+static void rgssThreadError(RGSSThreadData *rtData, const std::string &msg){
 	rtData->rgssErrorMsg = msg;
 	rtData->ethread->requestTerminate();
 	rtData->rqTermAck.set();
 }
 
-static inline const char*
-glGetStringInt(GLenum name){
+static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 

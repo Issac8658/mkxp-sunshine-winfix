@@ -28,8 +28,7 @@
 #include <cstring>
 #endif
 
-struct ALDataSource
-{
+struct ALDataSource{
 	enum Status
 	{
 		NoError,
