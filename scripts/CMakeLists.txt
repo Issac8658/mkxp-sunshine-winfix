@@ -4,8 +4,6 @@ set(scripts
   Data_Footsteps.rb
   Data_Item.rb
   Data_SpecialEventData.rb
-  Data_TileText.rb
-  Demo.rb
   Desktop_Message.rb
   Doc_Message.rb
   EdText.rb

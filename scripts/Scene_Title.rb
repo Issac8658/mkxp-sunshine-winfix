@@ -33,13 +33,6 @@ class Scene_Title
     # Make system object
     $game_system = Game_System.new
 
-    # Skip title screen if debug mode (or demo, but not GDC)
-    #if $debug || ($demo && !$GDC) || save_exists
-    #  $game_map.update
-    #  $game_map.autoplay
-    #  $scene = Scene_Map.new
-    #  return
-    #end
     load_perma_flags
 	Window_Settings.load_settings
     Oneshot.allow_exit true

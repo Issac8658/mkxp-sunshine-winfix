@@ -127,7 +127,6 @@ Desktop_Message
 Credits_Message
 Particles
 
-Demo
 EdText
 
 Main

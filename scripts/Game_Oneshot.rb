@@ -9,11 +9,7 @@ class Game_Oneshot
   attr_accessor :wallpaper_color          # the wallpaper color
 
   def initialize
-    if $GDC
-      @player_name = ''
-    else
-      @player_name = Game_Oneshot.get_user_name.force_encoding("utf-8")
-    end
+    @player_name = Game_Oneshot.get_user_name.force_encoding("utf-8")
     @lights = {}
     @plight_timer = nil
     @wallpaper = nil
