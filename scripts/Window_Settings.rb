@@ -1,8 +1,8 @@
 class Window_Settings
-  MARGIN = 30
-  TITLE_TOP_MARGIN = 32
-  TITLE_MARGIN = 100
-  ITEM_SPACING = 28
+  MARGIN = 15
+  TITLE_TOP_MARGIN = 16
+  TITLE_MARGIN = 40
+  ITEM_SPACING = 20
   VALUE_MARGIN = 270
   ACTIVE_MARGIN = MARGIN * 2 + 20
   SETTINGS_FILE_NAME = Oneshot::SAVE_PATH + '/settings.conf'
@@ -150,6 +150,7 @@ class Window_Settings
 			 tr('Fullscreen'),
 			 tr('Default movement'),
 			 tr('Colorblind mode'),
+             tr('Configure controls(Press F1)'),
 			 tr('Skip Text (R)'),
 			 tr('Frameskip'),
              tr('In-Game Timer'),
@@ -217,31 +218,31 @@ class Window_Settings
 		  else
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-		when 5 #automash
+		when 6 #automash
 		  if($game_switches[253] == true)
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
 		  else
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-		when 6 #frameskip
+		when 7 #frameskip
 		  if(Graphics.frameskip == true)
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
 		  else
 		    spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
 		  end
-        when 7 # In-game timer
+        when 8 # In-game timer
           text = tr($game_temp.igt_timer_visible ? "ON" : "OFF")
           spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, text)
-        when 8 # Language
+        when 9 # Language
           l = Language::LANGUAGES[@lang_index] rescue Language::LANGUAGES[0]
           spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr(l))
-        when 9
+        when 10
           if(Window_Settings.DebugIsEnabled == true)
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
           else
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))
           end
-        when 10
+        when 11
           if(Window_Settings.OneShotMode == true)
             #EdText.info(tr("WARNING: In this mode, if you close the game NOT through the bed, you will get a bad ending(Like in the Freeware Oneshot version)!"))
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
@@ -373,14 +374,14 @@ class Window_Settings
 		  Audio.bgm_volume -= 1
 		  if old_vol > 1
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.bgm_volume/2) + 75)
-		    redraw_setting_index(0)
+		    redraw_all_settings()
 		  end
 		elsif Input.trigger?(Input::RIGHT) || (Input.press?(Input::RIGHT) && (@right_hold_timer >= 15))
 		  @right_hold_timer -= 2
 		  Audio.bgm_volume += 1
 		  if old_vol < 100
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.bgm_volume/2) + 75)
-		    redraw_setting_index(0)
+		    redraw_all_settings()
 		  end
 		end
 
@@ -391,14 +392,14 @@ class Window_Settings
 		  Audio.sfx_volume -= 1
 		  if old_vol > 1
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.sfx_volume/2) + 75)
-		    redraw_setting_index(1)
+		    redraw_all_settings()
 		  end
 		elsif Input.trigger?(Input::RIGHT) || (Input.press?(Input::RIGHT) && (@right_hold_timer >= 15))
 		  @right_hold_timer -= 2
 		  Audio.sfx_volume += 1
 		  if old_vol < 100
             Audio.se_play("Audio/SE/text_robot.wav", 70, (Audio.sfx_volume/2) + 75)
-		    redraw_setting_index(1)
+		    redraw_all_settings()
 		  end
 		end
 
@@ -414,7 +415,7 @@ class Window_Settings
 		    $console = true
 	      end
 	      sleep(0.500)
-		  redraw_setting_index(2)
+		  redraw_all_settings()
 	      sleep(0.500)
 		end
 
@@ -427,7 +428,7 @@ class Window_Settings
 	      else
 	        $game_switches[251] = true
 	      end
-		  redraw_setting_index(3)
+		  redraw_all_settings()
 		end
 
 	  when 4 #colorblind mode
@@ -439,10 +440,10 @@ class Window_Settings
 	      else
 	        $game_switches[252] = true
 	      end
-		  redraw_setting_index(4)
+		  redraw_all_settings()
 		end
 
-	  when 5 #automash
+	  when 6 #automash
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
 
 		  $game_system.se_play($data_system.decision_se)
@@ -451,10 +452,10 @@ class Window_Settings
 	      else
 	        $game_switches[253] = true
 	      end
-		  redraw_setting_index(5)
+		  redraw_all_settings()
 		end
 
-	  when 6 #frameskip
+	  when 7 #frameskip
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
 
 		  $game_system.se_play($data_system.decision_se)
@@ -463,16 +464,18 @@ class Window_Settings
 	      else
 	        Graphics.frameskip = true
 	      end
-		  redraw_setting_index(6)
+		  redraw_all_settings()
 		end
-      when 7 # In-game timer
+      when 8 # In-game timer
         if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
+          $game_system.se_play($data_system.decision_se)
           $game_temp.igt_timer_visible = !$game_temp.igt_timer_visible
           $scene.in_game_timer.visible = $game_temp.igt_timer_visible if $scene.is_a?(Scene_Map)
-          redraw_setting_index(7)
+          redraw_all_settings()
         end
-	  when 8 #language
+	  when 9 #language
 	    if Input.trigger?(Input::ACTION) || Input.trigger?(Input::RIGHT)
+          $game_system.se_play($data_system.decision_se)
           @lang_index += 1
           if @lang_index >= Language::LANGUAGES.length
             @lang_index = 0
@@ -481,6 +484,7 @@ class Window_Settings
           redraw_all_settings()
 		end
 		if Input.trigger?(Input::LEFT)
+          $game_system.se_play($data_system.decision_se)
 		  @lang_index -= 1
 		  if @lang_index < 0
 		    @lang_index = Language::LANGUAGES.length - 1
@@ -488,15 +492,17 @@ class Window_Settings
           $persistent.lang = Language::LANGUAGES[@lang_index]
           redraw_all_settings()
 		end
-      when 9
-        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
-          Window_Settings.DebugIsEnabled = !Window_Settings.DebugIsEnabled
-          redraw_setting_index(9)
-        end
       when 10
         if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
+          $game_system.se_play($data_system.decision_se)
+          Window_Settings.DebugIsEnabled = !Window_Settings.DebugIsEnabled
+          redraw_all_settings()
+        end
+      when 11
+        if Input.trigger?(Input::ACTION) || Input.trigger?(Input::LEFT) || Input.trigger?(Input::RIGHT)
+          $game_system.se_play($data_system.decision_se)
           Window_Settings.OneShotMode = !Window_Settings.OneShotMode
-          redraw_setting_index(10)
+          redraw_all_settings()
         end
 	end
 
