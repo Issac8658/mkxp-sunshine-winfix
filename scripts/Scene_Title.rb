@@ -60,6 +60,9 @@ class Scene_Title
 		$game_party.gain_item(54, 1)
 		# plight skip
 		$game_party.gain_item(82, 1)
+        #George reroler
+		$game_party.gain_item(81, 1)
+        #George reroler        
 	end
 	
     @sprite.zoom_x = 2.0

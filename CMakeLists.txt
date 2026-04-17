@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0)
+cmake_minimum_required(VERSION 3.28.3)
 project(oneshot)
 ## Setup options ##
 
@@ -311,7 +311,7 @@ find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(PhysFS CONFIG)
 find_path(PIXMAN_INCLUDE_DIR NAMES pixman.h PATH_SUFFIXES pixman-1)
 find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman-1_static pixman-1_staticd)
-find_package(Ruby 3.3 REQUIRED)
+find_package(Ruby 3.0 REQUIRED)
 pkg_check_modules(SIGC2 REQUIRED sigc++-2.0)
 pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 find_package_handle_standard_args(pixman-1 DEFAULT_MSG PIXMAN_LIBRARY PIXMAN_INCLUDE_DIR)

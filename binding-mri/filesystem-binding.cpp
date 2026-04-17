@@ -27,6 +27,7 @@
 
 #include "ruby/encoding.h"
 #include "ruby/intern.h"
+#include <ruby.h>
 
 static void fileIntFreeInstance(void *inst){
 	SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
