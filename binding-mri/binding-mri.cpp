@@ -79,6 +79,7 @@ void wallpaperBindingTerminate();
 #endif
 void nikoBindingInit();
 void oneshotBindingInit();
+void SunshineBindingInit();
 void steamBindingInit();
 void chromaBindingInit();
 
@@ -114,6 +115,7 @@ static void mriBindingInit(){
 	wallpaperBindingInit();
 	nikoBindingInit();
 	oneshotBindingInit();
+    SunshineBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
 

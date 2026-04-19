@@ -359,8 +359,7 @@ end:
 	return Qnil;
 }
 
-RB_METHOD(wallpaperReset)
-{
+RB_METHOD(wallpaperReset){
 	RB_UNUSED_PARAM;
 #ifdef _WIN32
 	if (isCached) {

@@ -67,8 +67,7 @@ DEF_PROP_I(Window, BackOpacity)
 DEF_PROP_I(Window, ContentsOpacity)
 
 
-void
-windowBindingInit(){
+void windowBindingInit(){
 	VALUE klass = rb_define_class("Window", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&WindowType>);
 

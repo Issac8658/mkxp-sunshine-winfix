@@ -8,8 +8,7 @@
 #include <SDL3/SDL.h>
 #include <boost/crc.hpp>
 
-RB_METHOD(oneshotSetYesNo)
-{
+RB_METHOD(oneshotSetYesNo){
 	RB_UNUSED_PARAM;
 	const char *yes;
 	const char *no;
@@ -18,8 +17,7 @@ RB_METHOD(oneshotSetYesNo)
 	return Qnil;
 }
 
-RB_METHOD(oneshotMsgBox)
-{
+RB_METHOD(oneshotMsgBox){
 	RB_UNUSED_PARAM;
 	int type;
 	VALUE body;
@@ -30,8 +28,7 @@ RB_METHOD(oneshotMsgBox)
 	return rb_bool_new(shState->oneshot().msgbox(type, bodyStr.c_str(), titleStr.c_str()));
 }
 
-RB_METHOD(oneshotTextInput)
-{
+RB_METHOD(oneshotTextInput){
 	RB_UNUSED_PARAM;
 	VALUE prompt;
 	int char_limit = 100;
@@ -42,21 +39,18 @@ RB_METHOD(oneshotTextInput)
 	return rb_str_new2(shState->oneshot().textinput(promptStr.c_str(), char_limit, fontStr.c_str()).c_str());
 }
 
-RB_METHOD(oneshotResetObscured)
-{
+RB_METHOD(oneshotResetObscured){
 	RB_UNUSED_PARAM;
 	shState->oneshot().resetObscured();
 	return Qnil;
 }
 
-RB_METHOD(oneshotObscuredCleared)
-{
+RB_METHOD(oneshotObscuredCleared){
 	RB_UNUSED_PARAM;
 	return shState->oneshot().obscuredCleared() ? Qtrue : Qfalse;
 }
 
-RB_METHOD(oneshotAllowExit)
-{
+RB_METHOD(oneshotAllowExit){
 	RB_UNUSED_PARAM;
 	bool allowExit;
 	rb_get_args(argc, argv, "b", &allowExit RB_ARG_END);
@@ -64,8 +58,7 @@ RB_METHOD(oneshotAllowExit)
 	return Qnil;
 }
 
-RB_METHOD(oneshotExiting)
-{
+RB_METHOD(oneshotExiting){
 	RB_UNUSED_PARAM;
 	bool exiting;
 	rb_get_args(argc, argv, "b", &exiting RB_ARG_END);
@@ -73,8 +66,7 @@ RB_METHOD(oneshotExiting)
 	return Qnil;
 }
 
-RB_METHOD(oneshotShake)
-{
+RB_METHOD(oneshotShake){
 	RB_UNUSED_PARAM;
 	int absx, absy;
 	SDL_GetWindowPosition(shState->rtData().window, &absx, &absy);
@@ -90,8 +82,7 @@ RB_METHOD(oneshotShake)
 	return Qnil;
 }
 
-RB_METHOD(oneshotCRC32)
-{
+RB_METHOD(oneshotCRC32){
 	RB_UNUSED_PARAM;
 	VALUE string;
 	boost::crc_32_type result;
@@ -101,8 +92,7 @@ RB_METHOD(oneshotCRC32)
 	return UINT2NUM(result.checksum());
 }
 
-void oneshotBindingInit()
-{
+void oneshotBindingInit(){
 	VALUE module = rb_define_module("Oneshot");
 	VALUE msg = rb_define_module_under(module, "Msg");
 

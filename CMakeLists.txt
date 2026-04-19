@@ -269,6 +269,7 @@ set(BINDING_SOURCE
 	binding-mri/module_rpg.cpp
 	binding-mri/filesystem-binding.cpp
 	binding-mri/oneshot-binding.cpp
+    binding-mri/sunshine-binding.cpp
 	binding-mri/steam-binding.cpp
 	binding-mri/wallpaper-binding.cpp
 	binding-mri/journal-binding.cpp
