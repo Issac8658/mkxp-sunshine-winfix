@@ -183,22 +183,22 @@ void fileIntBindingInit(){
 	VALUE klass = rb_define_class("FileInt", rb_cIO);
 	rb_define_alloc_func(klass, classAllocate<&FileIntType>);
 
-	_rb_define_method(klass, "read", fileIntRead);
-	_rb_define_method(klass, "getbyte", fileIntGetByte);
-	_rb_define_method(klass, "binmode", fileIntBinmode);
-	_rb_define_method(klass, "close", fileIntClose);
+    rb_define_method(klass, "read", RUBY_METHOD_FUNC(fileIntRead), -1);
+    rb_define_method(klass, "getbyte", RUBY_METHOD_FUNC(fileIntGetByte), 0);
+    rb_define_method(klass, "binmode", RUBY_METHOD_FUNC(fileIntBinmode), 0);
+    rb_define_method(klass, "close", RUBY_METHOD_FUNC(fileIntClose), 0);
 
-	_rb_define_module_function(rb_mKernel, "load_data", kernelLoadData);
-	_rb_define_module_function(rb_mKernel, "save_data", kernelSaveData);
+	rb_define_module_function(rb_mKernel, "load_data", RUBY_METHOD_FUNC(kernelLoadData), -1);
+    rb_define_module_function(rb_mKernel, "save_data", RUBY_METHOD_FUNC(kernelSaveData), -1);
 
 	/* We overload the built-in 'Marshal::load()' function to silently
 	 * insert our utf8proc that ensures all read strings will be
 	 * UTF-8 encoded */
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-	if(marsh = Qnil){
+	if(marsh == Qnil){
 		printf("BrUh: cant get Marshal\n");
 		exit(1);
 	}
 	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
-	_rb_define_module_function(marsh, "load", _marshalLoad);
+	rb_define_module_function(marsh, "load", RUBY_METHOD_FUNC(_marshalLoad), -1);
 }

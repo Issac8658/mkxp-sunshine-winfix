@@ -249,15 +249,19 @@ static void processReset(){
 	                                false);
 }
 
+static VALUE rgssMainCb_wrapper(VALUE data){ return rgssMainCb(data); }
+
+static VALUE rgssMainRescue_wrapper(VALUE data, VALUE ex){ return rgssMainRescue(data, ex); }
+
 RB_METHOD(mriRgssMain){
 	RB_UNUSED_PARAM;
 
 	while (true){
 		VALUE exc = Qnil;
 
-		rb_rescue2((VALUE(*)(ANYARGS)) rgssMainCb, rb_block_proc(),
-		           (VALUE(*)(ANYARGS)) rgssMainRescue, (VALUE) &exc,
-		           rb_eException, (VALUE) 0);
+		rb_rescue2(rgssMainCb_wrapper, rb_block_proc(),
+           rgssMainRescue_wrapper, (VALUE)&exc,
+           rb_eException, (VALUE)0);
 
 		if (NIL_P(exc))
 			break;
