@@ -66,34 +66,28 @@ struct SDLRWIoContext
 
 static PHYSFS_Io *createSDLRWIo(const char *filename);
 
-static SDL_IOStream *getSDLRWops(PHYSFS_Io *io)
-{
+static SDL_IOStream *getSDLRWops(PHYSFS_Io *io){
 	return static_cast<SDLRWIoContext*>(io->opaque)->ops;
 }
 
-static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf, PHYSFS_uint64 len)
-{
+static PHYSFS_sint64 SDLRWIoRead(struct PHYSFS_Io *io, void *buf, PHYSFS_uint64 len){
 	// return SDL_ReadIO(getSDLRWops(io), buf, 1, len);
 	return SDL_ReadIO(getSDLRWops(io), buf, len);
 }
 
-static int SDLRWIoSeek(struct PHYSFS_Io *io, PHYSFS_uint64 offset)
-{
+static int SDLRWIoSeek(struct PHYSFS_Io *io, PHYSFS_uint64 offset){
 	return (SDL_SeekIO(getSDLRWops(io), offset, SDL_IOWhence::SDL_IO_SEEK_SET) != -1);
 }
 
-static PHYSFS_sint64 SDLRWIoTell(struct PHYSFS_Io *io)
-{
+static PHYSFS_sint64 SDLRWIoTell(struct PHYSFS_Io *io){
 	return SDL_SeekIO(getSDLRWops(io), 0, SDL_IOWhence::SDL_IO_SEEK_CUR);
 }
 
-static PHYSFS_sint64 SDLRWIoLength(struct PHYSFS_Io *io)
-{
+static PHYSFS_sint64 SDLRWIoLength(struct PHYSFS_Io *io){
 	return SDL_GetIOSize(getSDLRWops(io));
 }
 
-static struct PHYSFS_Io *SDLRWIoDuplicate(struct PHYSFS_Io *io)
-{
+static struct PHYSFS_Io *SDLRWIoDuplicate(struct PHYSFS_Io *io){
 	SDLRWIoContext *ctx = static_cast<SDLRWIoContext*>(io->opaque);
 	int64_t offset = io->tell(io);
 	PHYSFS_Io *dup = createSDLRWIo(ctx->filename.c_str());
@@ -104,14 +98,12 @@ static struct PHYSFS_Io *SDLRWIoDuplicate(struct PHYSFS_Io *io)
 	return dup;
 }
 
-static void SDLRWIoDestroy(struct PHYSFS_Io *io)
-{
+static void SDLRWIoDestroy(struct PHYSFS_Io *io){
 	delete static_cast<SDLRWIoContext*>(io->opaque);
 	delete io;
 }
 
-static PHYSFS_Io SDLRWIoTemplate =
-{
+static PHYSFS_Io SDLRWIoTemplate ={
 	0, 0, /* version, opaque */
 	SDLRWIoRead,
 	0, /* write */
@@ -123,16 +115,12 @@ static PHYSFS_Io SDLRWIoTemplate =
 	SDLRWIoDestroy
 };
 
-static PHYSFS_Io *createSDLRWIo(const char *filename)
-{
+static PHYSFS_Io *createSDLRWIo(const char *filename){
 	SDLRWIoContext *ctx;
 
-	try
-	{
+	try{
 		ctx = new SDLRWIoContext(filename);
-	}
-	catch (const Exception &e)
-	{
+	}catch (const Exception &e){
 		Debug() << "Failed mounting" << filename;
 		return 0;
 	}
@@ -144,13 +132,11 @@ static PHYSFS_Io *createSDLRWIo(const char *filename)
 	return io;
 }
 
-static inline PHYSFS_File *sdlPHYS(void *userdata)
-{
+static inline PHYSFS_File *sdlPHYS(void *userdata){
 	return static_cast<PHYSFS_File*>(userdata);
 }
 
-static Sint64 SDL_RWopsSize(void *userdata)
-{
+static Sint64 SDL_RWopsSize(void *userdata){
 	PHYSFS_File *f = sdlPHYS(userdata);
 
 	if (!f)
@@ -159,8 +145,7 @@ static Sint64 SDL_RWopsSize(void *userdata)
 	return PHYSFS_fileLength(f);
 }
 
-static Sint64 SDL_RWopsSeek(void *userdata, Sint64 offset, SDL_IOWhence whence)
-{
+static Sint64 SDL_RWopsSeek(void *userdata, Sint64 offset, SDL_IOWhence whence){
 	PHYSFS_File *f = sdlPHYS(userdata);
 
 	if (!f)
@@ -187,8 +172,7 @@ static Sint64 SDL_RWopsSeek(void *userdata, Sint64 offset, SDL_IOWhence whence)
 	return (result != 0) ? PHYSFS_tell(f) : -1;
 }
 
-static size_t SDL_RWopsRead(void *userdata, void *ptr, size_t size, SDL_IOStatus *status)
-{
+static size_t SDL_RWopsRead(void *userdata, void *ptr, size_t size, SDL_IOStatus *status){
 	PHYSFS_File *f = sdlPHYS(userdata);
 
 	if (!f)
@@ -204,8 +188,7 @@ static size_t SDL_RWopsRead(void *userdata, void *ptr, size_t size, SDL_IOStatus
 	return (result != -1) ? (result) : 0;
 }
 
-static size_t SDL_RWopsWrite(void *userdata, const void *ptr, size_t size, SDL_IOStatus *status)
-{
+static size_t SDL_RWopsWrite(void *userdata, const void *ptr, size_t size, SDL_IOStatus *status){
 	PHYSFS_File *f = sdlPHYS(userdata);
 
 	if (!f)
@@ -219,8 +202,7 @@ static size_t SDL_RWopsWrite(void *userdata, const void *ptr, size_t size, SDL_I
 	return (result != -1) ? (result) : 0;
 }
 
-static bool SDL_RWopsClose(void *userdata)
-{
+static bool SDL_RWopsClose(void *userdata){
 	PHYSFS_File *f = sdlPHYS(userdata);
 
 	if (!f)
@@ -269,13 +251,10 @@ strcpySafe(char *dst, const char *src,
 /* Attempt to locate an extension string in a filename.
  * Either a pointer into the input string pointing at the
  * extension, or null is returned */
-static const char *
-findExt(const char *filename)
-{
+static const char *findExt(const char *filename){
 	size_t len;
 
-	for (len = strlen(filename); len > 0; --len)
-	{
+	for (len = strlen(filename); len > 0; --len){
 		if (filename[len] == '/')
 			return 0;
 
@@ -310,16 +289,14 @@ initReadOps(PHYSFS_File *handle,
 	ops = SDL_OpenIO(&iface, handle);
 }
 
-static void strTolower(std::string &str)
-{
+static void strTolower(std::string &str){
 	for (size_t i = 0; i < str.size(); ++i)
 		str[i] = tolower(str[i]);
 }
 
 // const Uint32 SDL_RWOPS_PHYSFS = SDL_RWOPS_UNKNOWN+10;
 
-struct FileSystemPrivate
-{
+struct FileSystemPrivate{
 	/* Maps: lower case full filepath,
 	 * To:   mixed case full filepath */
 	BoostHash<std::string, std::string> pathCache;
@@ -345,16 +322,14 @@ FileSystem::FileSystem(bool allowSymlinks)
 		PHYSFS_permitSymbolicLinks(1);
 }
 
-FileSystem::~FileSystem()
-{
+FileSystem::~FileSystem(){
 	delete p;
 
 	if (PHYSFS_deinit() == 0)
 		Debug() << "PhyFS failed to deinit.";
 }
 
-void FileSystem::addPath(const char *path)
-{
+void FileSystem::addPath(const char *path){
 	/* Try the normal mount first */
 	if (!PHYSFS_mount(path, 0, 1))
 	{
@@ -367,8 +342,7 @@ void FileSystem::addPath(const char *path)
 	}
 }
 
-struct CacheEnumData
-{
+struct CacheEnumData{
 	FileSystemPrivate *p;
 	std::stack<std::vector<std::string>*> fileLists;
 
@@ -393,8 +367,7 @@ struct CacheEnumData
 	}
 
 	/* Converts in-place */
-	void toNFC(char *inout)
-	{
+	void toNFC(char *inout){
 #ifdef OS_OSX
 		size_t srcSize = strlen(inout);
 		size_t bufSize = sizeof(buf);
@@ -417,8 +390,7 @@ struct CacheEnumData
 };
 
 static PHYSFS_EnumerateCallbackResult
-cacheEnumCB(void *d, const char *origdir, const char *fname)
-{
+cacheEnumCB(void *d, const char *origdir, const char *fname){
 	CacheEnumData &data = *static_cast<CacheEnumData*>(d);
 	char fullPath[512];
 
@@ -437,8 +409,7 @@ cacheEnumCB(void *d, const char *origdir, const char *fname)
 	PHYSFS_Stat stat;
 	PHYSFS_stat(fullPath, &stat);
 
-	if (stat.filetype == PHYSFS_FILETYPE_DIRECTORY)
-	{
+	if (stat.filetype == PHYSFS_FILETYPE_DIRECTORY){
 		/* Create a new list for this directory */
 		std::vector<std::string> &list = data.p->fileLists[lowerCase];
 
@@ -446,9 +417,7 @@ cacheEnumCB(void *d, const char *origdir, const char *fname)
 		data.fileLists.push(&list);
 		PHYSFS_enumerate(fullPath, cacheEnumCB, d);
 		data.fileLists.pop();
-	}
-	else
-	{
+	}else{
 		/* Get the file list for the directory we're currently
 		 * traversing and append this filename to it */
 		std::vector<std::string> &list = *data.fileLists.top();
@@ -463,8 +432,7 @@ cacheEnumCB(void *d, const char *origdir, const char *fname)
 	return PHYSFS_ENUM_OK;
 }
 
-void FileSystem::createPathCache()
-{
+void FileSystem::createPathCache(){
 	CacheEnumData data(p);
 	data.fileLists.push(&p->fileLists[""]);
 	PHYSFS_enumerate("", cacheEnumCB, &data);
@@ -472,15 +440,13 @@ void FileSystem::createPathCache()
 	p->havePathCache = true;
 }
 
-struct FontSetsCBData
-{
+struct FontSetsCBData{
 	FileSystemPrivate *p;
 	SharedFontState *sfs;
 };
 
 static PHYSFS_EnumerateCallbackResult
-fontSetEnumCB (void *data, const char *dir, const char *fname)
-{
+fontSetEnumCB (void *data, const char *dir, const char *fname){
 	FontSetsCBData *d = static_cast<FontSetsCBData*>(data);
 
 	/* Only consider filenames with font extensions */
@@ -516,15 +482,13 @@ fontSetEnumCB (void *data, const char *dir, const char *fname)
 	return PHYSFS_ENUM_OK;
 }
 
-void FileSystem::initFontSets(SharedFontState &sfs)
-{
+void FileSystem::initFontSets(SharedFontState &sfs){
 	FontSetsCBData d = { p, &sfs };
 
 	PHYSFS_enumerate("Fonts", fontSetEnumCB, &d);
 }
 
-struct OpenReadEnumData
-{
+struct OpenReadEnumData{
 	FileSystem::OpenHandler &handler;
 	SDL_IOStream* ops;
 
@@ -554,8 +518,7 @@ struct OpenReadEnumData
 };
 
 static PHYSFS_EnumerateCallbackResult
-openReadEnumCB(void *d, const char *dirpath, const char *filename)
-{
+openReadEnumCB(void *d, const char *dirpath, const char *filename){
 	OpenReadEnumData &data = *static_cast<OpenReadEnumData*>(d);
 	char buffer[512];
 	const char *fullPath;
@@ -567,12 +530,10 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename)
 	if (strncmp(filename, data.filename, data.filenameN) != 0)
 		return PHYSFS_ENUM_OK;
 
-	if (!*dirpath)
-	{
+	if (!*dirpath){
 		fullPath = filename;
 	}
-	else
-	{
+	else{
 		snprintf(buffer, sizeof(buffer), "%s/%s", dirpath, filename);
 		fullPath = buffer;
 	}
@@ -592,8 +553,7 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename)
 
 	PHYSFS_File *phys = PHYSFS_openRead(fullPath);
 
-	if (!phys)
-	{
+	if (!phys){
 		/* Failing to open this file here means there must
 		 * be a deeper rooted problem somewhere within PhysFS.
 		 * Just abort alltogether. */
@@ -614,8 +574,7 @@ openReadEnumCB(void *d, const char *dirpath, const char *filename)
 	return PHYSFS_ENUM_OK;
 }
 
-void FileSystem::openRead(OpenHandler &handler, const char *filename)
-{
+void FileSystem::openRead(OpenHandler &handler, const char *filename){
 	char buffer[512];
 	size_t len = strcpySafe(buffer, filename, sizeof(buffer), -1);
 	char *delim;
@@ -634,8 +593,7 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename)
 	const char *file = buffer;
 	const char *dir = "";
 
-	if (!root)
-	{
+	if (!root){
 		/* Cut the buffer in half so we can use it
 		 * for both filename and directory path */
 		*delim = '\0';
@@ -646,17 +604,14 @@ void FileSystem::openRead(OpenHandler &handler, const char *filename)
 	OpenReadEnumData data(handler, file, len + buffer - delim - !root,
 	                      p->havePathCache ? &p->pathCache : 0);
 
-	if (p->havePathCache)
-	{
+	if (p->havePathCache){
 		/* Get the list of files contained in this directory
 		 * and manually iterate over them */
 		const std::vector<std::string> &fileList = p->fileLists[dir];
 
 		for (size_t i = 0; i < fileList.size(); ++i)
 			openReadEnumCB(&data, dir, fileList[i].c_str());
-	}
-	else
-	{
+	}else{
 		PHYSFS_enumerate(dir, openReadEnumCB, &data);
 	}
 
@@ -678,7 +633,6 @@ void FileSystem::openReadRaw(SDL_IOStream* &stream,
 	initReadOps(handle, stream);
 }
 
-bool FileSystem::exists(const char *filename)
-{
+bool FileSystem::exists(const char *filename){
 	return PHYSFS_exists(filename);
 }

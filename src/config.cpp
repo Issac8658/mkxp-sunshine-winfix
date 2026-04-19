@@ -35,20 +35,16 @@
 #include "util.h"
 #include "sdl-util.h"
 
-namespace std
-{
-	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec)
-	{
-		for (auto item : vec)
-		{
+namespace std{
+	std::ostream& operator<<(std::ostream &os, const std::vector<std::string> &vec){
+		for (auto item : vec){
 			os << item << " ";
 		}
 		return os;
 	}
 }
 
-static std::string prefPath(const char *org, const char *app)
-{
+static std::string prefPath(const char *org, const char *app){
 	const char *path = PHYSFS_getPrefDir(org, app);
 
 	if (!path)
@@ -71,8 +67,7 @@ namespace po = boost::program_options;
 Config::Config()
 {}
 
-void Config::read(int argc, char *argv[])
-{
+void Config::read(int argc, char *argv[]){
 #define PO_DESC_ALL \
 	PO_DESC(debugMode, bool, false) \
 	PO_DESC(screenMode, bool, false) \
@@ -104,8 +99,7 @@ void Config::read(int argc, char *argv[])
 	editor.battleTest = false;
 
 	/* Read arguments sent from the editor */
-	if (argc > 1)
-	{
+	if (argc > 1){
 		std::string argv1 = argv[1];
 		/* RGSS1 uses "debug", 2 and 3 use "test" */
 		if (argv1 == "debug" || argv1 == "test")
@@ -114,8 +108,7 @@ void Config::read(int argc, char *argv[])
 			editor.battleTest = true;
 
 		/* Fix offset */
-		if (editor.debug || editor.battleTest)
-		{
+		if (editor.debug || editor.battleTest){
 			argc--;
 			argv++;
 		}
@@ -134,29 +127,24 @@ void Config::read(int argc, char *argv[])
 	po::variables_map vm;
 
 	/* Parse command line options */
-	try
-	{
+	try{
 		po::parsed_options cmdPo =
 			po::command_line_parser(argc, argv).options(podesc).run();
 		po::store(cmdPo, vm);
 	}
-	catch (po::error &error)
-	{
+	catch (po::error &error){
 		Debug() << "Command line:" << error.what();
 	}
 
 	/* Parse configuration file */
 	SDLRWStream confFile(CONF_FILE, "r");
 
-	if (confFile)
-	{
-		try
-		{
+	if (confFile){
+		try{
 			po::store(po::parse_config_file(confFile.stream(), podesc, true), vm);
 			po::notify(vm);
 		}
-		catch (po::error &error)
-		{
+		catch (po::error &error){
 			Debug() << CONF_FILE":" << error.what();
 		}
 	}
@@ -188,8 +176,7 @@ void Config::read(int argc, char *argv[])
 
 #ifdef STEAM
 	/* Override fullscreen config if Big Picture */
-	if (const char *env = std::getenv("SteamTenfoot"))
-	{
+	if (const char *env = std::getenv("SteamTenfoot")){
 		if (!strcmp(env, "1"))
 			fullscreen = true;
 	}

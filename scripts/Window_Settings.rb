@@ -155,7 +155,7 @@ class Window_Settings
 			 tr('Frameskip'),
              tr('In-Game Timer'),
 			 tr('Language'),
-             tr('Debug mode(DEVS ONLY!)'),
+             tr('Debug mode(!)'),
              tr('One Shot Mode(!)'),
 			]
 

@@ -389,8 +389,7 @@ int main(int argc, char *argv[]){
 	if (rtData.rqTermAck)
 		SDL_WaitThread(rgssThread, 0);
 	else
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(),
-		                         "The RGSS script seems to be stuck and OneShot will now force quit", win);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and OneShot: sunshine will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty()){
 		Debug() << rtData.rgssErrorMsg;

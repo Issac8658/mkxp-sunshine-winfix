@@ -22,7 +22,6 @@
 	#include <mmsystem.h>
 	#include <security.h>
 	#include <shlobj.h>
-	#include <SDL2/SDL_syswm.h>
 #elif defined __APPLE__ || __linux__
 	#include <stdlib.h>
 	#include <unistd.h>
@@ -164,8 +163,7 @@ static WCHAR *w32_toWide(const char *str){
 #endif
 
 Oneshot::Oneshot(RGSSThreadData &threadData) :
-    threadData(threadData)
-{
+    threadData(threadData){
 	p = new OneshotPrivate();
 	p->window = threadData.window;
 	p->savePath = threadData.config.commonDataPath.substr(0, threadData.config.commonDataPath.size() - 1);
