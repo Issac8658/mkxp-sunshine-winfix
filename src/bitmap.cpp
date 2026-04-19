@@ -44,9 +44,6 @@
 #include "font.h"
 #include "eventthread.h"
 
-// :3c
-#include "oldimpls/include.h"
-
 #define GUARD_MEGA \
 	{ \
 		if (p->megaSurface) \

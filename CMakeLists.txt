@@ -6,32 +6,21 @@ include(FindPackageHandleStandardArgs)
 
 option(STEAM "Build for Steam" OFF)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
-option(DEBUG "Debug mode" OFF)
+option(DEBUG "Debug mode" ON)
 
 ## Misc setup ##
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #i want die
-set(DEBUG_C_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
-set(DEBUG_CXX_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
+# set(DEBUG_C_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
+# set(DEBUG_CXX_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_C_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_CXX_FLAGS}")
 ## Setup main source ##
 
-# oldimpls dir stuff
-set(OLDIMPLS_HEADERS
-	src/oldimpls/include.h
-	src/oldimpls/sdl/include.h
-)
-
-set(OLDIMPLS_SOURCE
-	src/oldimpls/sdl/rgb-surfaces.cpp
-)
-
 # main stuff
 set(MAIN_HEADERS
-	${OLDIMPLS_HEADERS}
 	src/quadarray.h
 	src/audio.h
 	src/binding.h
@@ -346,9 +335,6 @@ target_link_libraries(${PROJECT_NAME}
 		${Ruby_LIBRARIES}
 		Boost::boost ${Boost_LIBRARIES}
 		${VORBISFILE_LIBRARIES})
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math")
-#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math")
 
 IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)
