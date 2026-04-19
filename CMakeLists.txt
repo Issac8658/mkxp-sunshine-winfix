@@ -83,7 +83,6 @@ set(MAIN_HEADERS
 )
 
 set(MAIN_SOURCE
-	${OLDIMPLS_SOURCE}
 	src/main.cpp
 	src/audio.cpp
 	src/bitmap.cpp

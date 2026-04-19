@@ -31,8 +31,7 @@
 #include "disposable-binding.h"
 
 template<class C>
-RB_METHOD(viewportElementGetViewport)
-{
+RB_METHOD(viewportElementGetViewport){
 	RB_UNUSED_PARAM;
 
 	checkDisposed<C>(self);
@@ -41,8 +40,7 @@ RB_METHOD(viewportElementGetViewport)
 }
 
 template<class C>
-RB_METHOD(viewportElementSetViewport)
-{
+RB_METHOD(viewportElementSetViewport){
 	RB_UNUSED_PARAM;
 
 	ViewportElement *ve = getPrivateData<C>(self);
@@ -63,17 +61,14 @@ RB_METHOD(viewportElementSetViewport)
 }
 
 template<class C>
-static C *
-viewportElementInitialize(int argc, VALUE *argv, VALUE self)
-{
+static C *viewportElementInitialize(int argc, VALUE *argv, VALUE self){
 	/* Get parameters */
 	VALUE viewportObj = Qnil;
 	Viewport *viewport = 0;
 
 	rb_get_args(argc, argv, "|o", &viewportObj RB_ARG_END);
 
-	if (!NIL_P(viewportObj))
-	{
+	if (!NIL_P(viewportObj)){
 		viewport = getPrivateDataCheck<Viewport>(viewportObj, ViewportType);
 
 		if (rgssVer == 1)
@@ -90,9 +85,7 @@ viewportElementInitialize(int argc, VALUE *argv, VALUE self)
 }
 
 template<class C>
-void
-viewportElementBindingInit(VALUE klass)
-{
+void viewportElementBindingInit(VALUE klass){
 	sceneElementBindingInit<C>(klass);
 
 	_rb_define_method(klass, "viewport", viewportElementGetViewport<C>);

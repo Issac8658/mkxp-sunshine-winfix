@@ -29,16 +29,13 @@
 
 DEF_TYPE(Viewport);
 
-RB_METHOD(viewportInitialize)
-{
+RB_METHOD(viewportInitialize){
 	Viewport *v;
 
-	if (argc == 0 && rgssVer >= 3)
-	{
+	if (argc == 0 && rgssVer >= 3){
 		v = new Viewport();
 	}
-	else if (argc == 1)
-	{
+	else if (argc == 1){
 		/* The rect arg is only used to init the viewport,
 		 * and does NOT replace its 'rect' property */
 		VALUE rectObj;
@@ -49,9 +46,7 @@ RB_METHOD(viewportInitialize)
 		rect = getPrivateDataCheck<Rect>(rectObj, RectType);
 
 		v = new Viewport(rect);
-	}
-	else
-	{
+	}else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiii", &x, &y, &width, &height RB_ARG_END);
@@ -84,9 +79,7 @@ DEF_PROP_I(Viewport, OX)
 DEF_PROP_I(Viewport, OY)
 
 
-void
-viewportBindingInit()
-{
+void viewportBindingInit(){
 	VALUE klass = rb_define_class("Viewport", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&ViewportType>);
 

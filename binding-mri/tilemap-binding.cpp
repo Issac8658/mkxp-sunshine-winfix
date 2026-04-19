@@ -30,8 +30,7 @@
 
 DEF_TYPE_CUSTOMFREE(TilemapAutotiles, RUBY_TYPED_NEVER_FREE);
 
-RB_METHOD(tilemapAutotilesSet)
-{
+RB_METHOD(tilemapAutotilesSet){
 	Tilemap::Autotiles *a = getPrivateData<Tilemap::Autotiles>(self);
 
 	int i;
@@ -49,8 +48,7 @@ RB_METHOD(tilemapAutotilesSet)
 	return self;
 }
 
-RB_METHOD(tilemapAutotilesGet)
-{
+RB_METHOD(tilemapAutotilesGet){
 	int i;
 	rb_get_args (argc, argv, "i", &i RB_ARG_END);
 
@@ -64,8 +62,7 @@ RB_METHOD(tilemapAutotilesGet)
 
 DEF_TYPE(Tilemap);
 
-RB_METHOD(tilemapInitialize)
-{
+RB_METHOD(tilemapInitialize){
 	Tilemap *t;
 
 	/* Get parameters */
@@ -101,8 +98,7 @@ RB_METHOD(tilemapInitialize)
 	return self;
 }
 
-RB_METHOD(tilemapGetAutotiles)
-{
+RB_METHOD(tilemapGetAutotiles){
 	RB_UNUSED_PARAM;
 
 	checkDisposed<Tilemap>(self);
@@ -110,8 +106,7 @@ RB_METHOD(tilemapGetAutotiles)
 	return rb_iv_get(self, "autotiles");
 }
 
-RB_METHOD(tilemapUpdate)
-{
+RB_METHOD(tilemapUpdate){
 	RB_UNUSED_PARAM;
 
 	Tilemap *t = getPrivateData<Tilemap>(self);
@@ -121,8 +116,7 @@ RB_METHOD(tilemapUpdate)
 	return Qnil;
 }
 
-RB_METHOD(tilemapGetViewport)
-{
+RB_METHOD(tilemapGetViewport){
 	RB_UNUSED_PARAM;
 
 	checkDisposed<Tilemap>(self);
@@ -141,9 +135,7 @@ DEF_PROP_B(Tilemap, Wrapping)
 DEF_PROP_I(Tilemap, OX)
 DEF_PROP_I(Tilemap, OY)
 
-void
-tilemapBindingInit()
-{
+void tilemapBindingInit(){
 	VALUE klass = rb_define_class("TilemapAutotiles", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TilemapAutotilesType>);
 

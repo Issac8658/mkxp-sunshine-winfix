@@ -165,8 +165,7 @@
 	}
 #endif
 
-RB_METHOD(wallpaperSet)
-{
+RB_METHOD(wallpaperSet){
 	RB_UNUSED_PARAM;
 	const char *name;
 	int color;
@@ -483,8 +482,7 @@ RB_METHOD(wallpaperReset)
 	return Qnil;
 }
 
-void wallpaperBindingInit()
-{
+void wallpaperBindingInit(){
 	VALUE module = rb_define_module("Wallpaper");
 
 	// Functions
@@ -493,8 +491,7 @@ void wallpaperBindingInit()
 }
 
 #ifdef __linux__
-void wallpaperBindingTerminate()
-{
+void wallpaperBindingTerminate(){
 	// Clean up.
 	if (desktop == "xfce") {
 		xfconf_shutdown();

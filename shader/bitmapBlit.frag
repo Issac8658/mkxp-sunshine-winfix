@@ -10,8 +10,7 @@ uniform lowp float opacity;
 
 varying vec2 v_texCoord;
 
-void main()
-{
+void main(){
 	vec2 coor = v_texCoord;
 	vec2 dstCoor = (coor - subRect.xy) * subRect.zw;
 
