@@ -40,6 +40,10 @@ static VALUE fileIntForPath(const char *path, bool rubyExc){
 	SDL_IOStream* ops = nullptr;
 	try{
 		shState->fileSystem().openReadRaw(ops, path);
+        if (!ops){
+            printf("NULL guard! fileIntForPath broken!");
+            return Qnil;
+        }
 	}
 	catch (const Exception &e){
 		if (ops)
@@ -61,12 +65,14 @@ static VALUE fileIntForPath(const char *path, bool rubyExc){
 }
 
 RB_METHOD(fileIntRead){
-
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length);
 
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
-
+    if (!ops){
+        printf("NULL guard! fileIntRead broken!");
+        return Qnil;
+    }
 	if (length == -1){
 		Sint64 cur = SDL_TellIO(ops);
 		Sint64 end = SDL_SeekIO(ops, 0, SDL_IO_SEEK_END);
@@ -89,10 +95,9 @@ RB_METHOD(fileIntClose){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
         printf("NULL guard! fileIntClose broken!");
-        return Qnil;    
+        return Qnil;
     }
 	SDL_CloseIO(ops);
-    setPrivateData(self, nullptr);
 	return Qnil;
 }
 
