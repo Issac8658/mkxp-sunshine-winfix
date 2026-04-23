@@ -205,9 +205,12 @@ if (MSVC)
 endif()
 
 ## Process Embeddeds ##
-
-find_program(XXD_EXE xxd
-	DOC "Location of the xxd executable"
+find_program(XXD_EXE
+  NAMES xxd xxd.exe
+  DOC "Location of the xxd executable"
+  HINTS
+    ENV PATH
+    /usr/bin /usr/local/bin .
 )
 
 macro(ProcessWithXXD outvar inputfile outdir)

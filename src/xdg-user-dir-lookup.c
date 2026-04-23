@@ -62,8 +62,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
     goto error;
 
   config_home = getenv ("XDG_CONFIG_HOME");
-  if (config_home == NULL || config_home[0] == 0)
-    {
+  if (config_home == NULL || config_home[0] == 0){
       config_file = (char*) malloc (strlen (home_dir) + strlen ("/.config/user-dirs.dirs") + 1);
       if (config_file == NULL)
         goto error;
@@ -87,8 +86,7 @@ char * xdg_user_dir_lookup_with_fallback (const char *type, const char *fallback
     goto error;
 
   user_dir = NULL;
-  while (fgets (buffer, sizeof (buffer), file))
-    {
+  while (fgets (buffer, sizeof (buffer), file)){
       /* Remove newline at end */
       len = strlen (buffer);
       if (len > 0 && buffer[len-1] == '\n')
@@ -187,9 +185,7 @@ error2:
  * The return value is newly allocated and must be freed with
  * free().
  **/
-char *
-xdg_user_dir_lookup (const char *type)
-{
+char *xdg_user_dir_lookup (const char *type){
   char *dir, *home_dir, *user_dir;
 	  
   dir = xdg_user_dir_lookup_with_fallback (type, NULL);
@@ -202,8 +198,7 @@ xdg_user_dir_lookup (const char *type)
     return strdup ("/tmp");
   
   /* Special case desktop for historical compatibility */
-  if (strcmp (type, "DESKTOP") == 0)
-    {
+  if (strcmp (type, "DESKTOP") == 0){
       user_dir = (char*) malloc (strlen (home_dir) + strlen ("/Desktop") + 1);
       if (user_dir == NULL)
         return NULL;

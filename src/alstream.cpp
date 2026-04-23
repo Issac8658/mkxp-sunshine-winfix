@@ -56,8 +56,7 @@ ALStream::ALStream(LoopMode loopMode,
 	threadName = std::string("al_stream (") + threadId + ")";
 }
 
-ALStream::~ALStream()
-{
+ALStream::~ALStream(){
 	close();
 
 	AL::Source::clearQueue(alSrc);
@@ -69,12 +68,10 @@ ALStream::~ALStream()
 	SDL_DestroyMutex(pauseMut);
 }
 
-void ALStream::close()
-{
+void ALStream::close(){
 	checkStopped();
 
-	switch (state)
-	{
+	switch (state){
 	case Playing:
 	case Paused:
 		stopStream();
@@ -88,12 +85,10 @@ void ALStream::close()
 	}
 }
 
-void ALStream::open(const std::string &filename)
-{
+void ALStream::open(const std::string &filename){
 	checkStopped();
 
-	switch (state)
-	{
+	switch (state){
 	case Playing:
 	case Paused:
 		stopStream();
@@ -108,12 +103,10 @@ void ALStream::open(const std::string &filename)
 	state = Stopped;
 }
 
-void ALStream::stop()
-{
+void ALStream::stop(){
 	checkStopped();
 
-	switch (state)
-	{
+	switch (state){
 	case Closed:
 	case Stopped:
 		return;
@@ -125,15 +118,13 @@ void ALStream::stop()
 	state = Stopped;
 }
 
-void ALStream::play(float offset)
-{
+void ALStream::play(float offset){
 	if (!source)
 		return;
 
 	checkStopped();
 
-	switch (state)
-	{
+	switch (state){
 	case Closed:
 	case Playing:
 		return;
@@ -147,12 +138,10 @@ void ALStream::play(float offset)
 	state = Playing;
 }
 
-void ALStream::pause()
-{
+void ALStream::pause(){
 	checkStopped();
 
-	switch (state)
-	{
+	switch (state){
 	case Closed:
 	case Stopped:
 	case Paused:
@@ -164,13 +153,11 @@ void ALStream::pause()
 	state = Paused;
 }
 
-void ALStream::setVolume(float value)
-{
+void ALStream::setVolume(float value){
 	AL::Source::setVolume(alSrc, value);
 }
 
-void ALStream::setPitch(float value)
-{
+void ALStream::setPitch(float value){
 	/* If the source supports setting pitch natively,
 	 * we don't have to do it via OpenAL */
 	if (source && source->setPitch(value))
@@ -179,15 +166,13 @@ void ALStream::setPitch(float value)
 		AL::Source::setPitch(alSrc, value);
 }
 
-ALStream::State ALStream::queryState()
-{
+ALStream::State ALStream::queryState(){
 	checkStopped();
 
 	return state;
 }
 
-float ALStream::queryOffset()
-{
+float ALStream::queryOffset(){
 	if (state == Closed)
 		return 0;
 
@@ -196,13 +181,11 @@ float ALStream::queryOffset()
 	return procOffset + AL::Source::getSecOffset(alSrc);
 }
 
-void ALStream::closeSource()
-{
+void ALStream::closeSource(){
 	delete source;
 }
 
-struct ALStreamOpenHandler : FileSystem::OpenHandler
-{
+struct ALStreamOpenHandler : FileSystem::OpenHandler{
 	SDL_IOStream *srcOps;
 	bool looped;
 	ALDataSource *source;
@@ -212,8 +195,7 @@ struct ALStreamOpenHandler : FileSystem::OpenHandler
 	    : srcOps(srcOps), looped(looped), source(0)
 	{}
 
-	bool tryRead(SDL_IOStream* &ops, const char *ext)
-	{
+	bool tryRead(SDL_IOStream* &ops, const char *ext){
 		/* Copy this because we need to keep it around,
 		 * as we will continue reading data from it later */
 		srcOps = ops;
@@ -223,18 +205,15 @@ struct ALStreamOpenHandler : FileSystem::OpenHandler
 		SDL_ReadIO(srcOps, sig, 4);
 		SDL_SeekIO(srcOps, 0, SDL_IO_SEEK_SET);
 
-		try
-		{
-			if (!strcmp(sig, "OggS"))
-			{
+		try{
+			if (!strcmp(sig, "OggS")){
 				source = createVorbisSource(*srcOps, looped);
 				return true;
 			}
 
 			source = createSDLSource(*srcOps, ext, STREAM_BUF_SIZE, looped);
 		}
-		catch (const Exception &e)
-		{
+		catch (const Exception &e){
 			/* All source constructors will close the passed ops
 			 * before throwing errors */
 			errorMsg = e.msg;
@@ -245,15 +224,13 @@ struct ALStreamOpenHandler : FileSystem::OpenHandler
 	}
 };
 
-void ALStream::openSource(const std::string &filename)
-{
+void ALStream::openSource(const std::string &filename){
 	ALStreamOpenHandler handler(srcOps, looped);
 	shState->fileSystem().openRead(handler, filename.c_str());
 	source = handler.source;
 	needsRewind.clear();
 
-	if (!source)
-	{
+	if (!source){
 		char buf[512];
 		snprintf(buf, sizeof(buf), "Unable to decode audio stream: %s: %s",
 		         filename.c_str(), handler.errorMsg.c_str());
@@ -262,12 +239,10 @@ void ALStream::openSource(const std::string &filename)
 	}
 }
 
-void ALStream::stopStream()
-{
+void ALStream::stopStream(){
 	threadTermReq.set();
 
-	if (thread)
-	{
+	if (thread){
 		SDL_WaitThread(thread, 0);
 		thread = 0;
 		needsRewind.set();
@@ -281,8 +256,7 @@ void ALStream::stopStream()
 	procFrames = 0;
 }
 
-void ALStream::startStream(float offset)
-{
+void ALStream::startStream(float offset){
 	AL::Source::clearQueue(alSrc);
 
 	preemptPause = false;
@@ -297,8 +271,7 @@ void ALStream::startStream(float offset)
 		<ALStream, &ALStream::streamData>(this, threadName);
 }
 
-void ALStream::pauseStream()
-{
+void ALStream::pauseStream(){
 	SDL_LockMutex(pauseMut);
 
 	if (AL::Source::getState(alSrc) != AL_PLAYING)
@@ -309,8 +282,7 @@ void ALStream::pauseStream()
 	SDL_UnlockMutex(pauseMut);
 }
 
-void ALStream::resumeStream()
-{
+void ALStream::resumeStream(){
 	SDL_LockMutex(pauseMut);
 
 	if (preemptPause)
@@ -321,8 +293,7 @@ void ALStream::resumeStream()
 	SDL_UnlockMutex(pauseMut);
 }
 
-void ALStream::checkStopped()
-{
+void ALStream::checkStopped(){
 	/* This only concerns the scenario where
 	 * state is still 'Playing', but the stream
 	 * has already ended on its own (EOF, Error) */
@@ -349,8 +320,7 @@ void ALStream::checkStopped()
 }
 
 /* thread func */
-void ALStream::streamData()
-{
+void ALStream::streamData(){
 	/* Fill up queue */
 	bool firstBuffer = true;
 	ALDataSource::Status status;
@@ -358,13 +328,11 @@ void ALStream::streamData()
 	if (threadTermReq)
 		return;
 
-	if (needsRewind)
-	{
+	if (needsRewind){
 		source->seekToOffset(startOffset);
 	}
 
-	for (int i = 0; i < STREAM_BUFS; ++i)
-	{
+	for (int i = 0; i < STREAM_BUFS; ++i){
 		if (threadTermReq)
 			return;
 
@@ -377,8 +345,7 @@ void ALStream::streamData()
 
 		AL::Source::queueBuffer(alSrc, buf);
 
-		if (firstBuffer)
-		{
+		if (firstBuffer){
 			resumeStream();
 
 			firstBuffer = false;
@@ -388,8 +355,7 @@ void ALStream::streamData()
 		if (threadTermReq)
 			return;
 
-		if (status == ALDataSource::EndOfStream)
-		{
+		if (status == ALDataSource::EndOfStream){
 			sourceExhausted.set();
 			break;
 		}
@@ -397,14 +363,12 @@ void ALStream::streamData()
 
 	/* Wait for buffers to be consumed, then
 	 * refill and queue them up again */
-	while (true)
-	{
+	while (true){
 		shState->rtData().syncPoint.passSecondarySync();
 
 		ALint procBufs = AL::Source::getProcBufferCount(alSrc);
 
-		while (procBufs--)
-		{
+		while (procBufs--){
 			if (threadTermReq)
 				break;
 
@@ -414,15 +378,12 @@ void ALStream::streamData()
 			if (buf == AL::Buffer::ID(0))
 				break;
 
-			if (buf == lastBuf)
-			{
+			if (buf == lastBuf){
 				/* Reset the processed sample count so
 				 * querying the playback offset returns 0.0 again */
 				procFrames = source->loopStartFrames();
 				lastBuf = AL::Buffer::ID(0);
-			}
-			else
-			{
+			}else{
 				/* Add the frame count contained in this
 				 * buffer to the total count */
 				ALint bits = AL::Buffer::getBits(buf);
@@ -438,8 +399,7 @@ void ALStream::streamData()
 
 			status = source->fillBuffer(buf);
 
-			if (status == ALDataSource::Error)
-			{
+			if (status == ALDataSource::Error){
 				sourceExhausted.set();
 				return;
 			}
