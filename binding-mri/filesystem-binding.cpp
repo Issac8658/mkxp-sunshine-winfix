@@ -129,8 +129,13 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
 
+	if(RTEST(result) == false){
+		printf("DEBUG ERROR\n");
+		return 1;
+	}
+	
     rb_funcallv(port, rb_intern("close"), 0, nullptr);
-
+	
     if (state) {
 		VALUE err = rb_errinfo();
 
