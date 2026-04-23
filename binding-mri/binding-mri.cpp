@@ -594,3 +594,4 @@ static void mriBindingTerminate(){
 static void mriBindingReset(){
 	rb_raise(getRbData()->exc[Reset], " ");
 }
+

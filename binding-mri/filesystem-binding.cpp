@@ -30,10 +30,11 @@
 #include <ruby.h>
 
 static void fileIntFreeInstance(void *inst){
-	SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
-	SDL_CloseIO(ops);
+    SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
+    if (ops) {
+        SDL_CloseIO(ops);
+    }
 }
-
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 static VALUE fileIntForPath(const char *path, bool rubyExc){
@@ -91,14 +92,15 @@ RB_METHOD(fileIntRead){
 }
 
 RB_METHOD(fileIntClose){
-	RB_UNUSED_PARAM;
-	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
+    RB_UNUSED_PARAM;
+    SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
         printf("NULL guard! fileIntClose broken!");
         return Qnil;
     }
-	SDL_CloseIO(ops);
-	return Qnil;
+    SDL_CloseIO(ops);
+    setPrivateData(self, nullptr);
+    return Qnil;
 }
 
 RB_METHOD(fileIntGetByte){
