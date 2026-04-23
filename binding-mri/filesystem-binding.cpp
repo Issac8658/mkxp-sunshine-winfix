@@ -91,9 +91,8 @@ RB_METHOD(fileIntRead){
 	return data;
 }
 
-RB_METHOD(fileIntClose){
-    RB_UNUSED_PARAM;
-    SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
+RB_NA_METHOD(fileIntClose){
+	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
         printf("NULL guard! fileIntClose broken!");
         return Qnil;
@@ -103,8 +102,7 @@ RB_METHOD(fileIntClose){
     return Qnil;
 }
 
-RB_METHOD(fileIntGetByte){
-	RB_UNUSED_PARAM;
+RB_NA_METHOD(fileIntGetByte){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 
 	unsigned char byte = 0;
@@ -112,8 +110,7 @@ RB_METHOD(fileIntGetByte){
 	return (result == 1) ? INT2NUM(byte) : Qnil;
 }
 
-RB_METHOD(fileIntBinmode){
-	RB_UNUSED_PARAM;
+RB_NA_METHOD(fileIntBinmode){
 	return Qnil;
 }
 
@@ -132,9 +129,19 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
 
-    rb_funcall(port, rb_intern("close"), 0);
+    rb_funcallv(port, rb_intern("close"), 0, nullptr);
 
     if (state) {
+		VALUE err = rb_errinfo();
+
+		VALUE klass = rb_obj_class(err);
+		VALUE message = rb_funcall(err, rb_intern("message"), 0);
+		VALUE backtrace = rb_funcall(err, rb_intern("backtrace"), 0);
+
+		rb_p(klass);
+		rb_p(message);
+		rb_p(backtrace);
+		
         rb_jump_tag(state);
     }
     return result;
@@ -192,15 +199,18 @@ RB_METHOD(_marshalLoad){
 	RB_UNUSED_PARAM;
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
+
 	VALUE utf8Proc;
+
 	if (NIL_P(proc))
 		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
 	else
 		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(customProc), proc);
+
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 
 	VALUE v[] = { port, utf8Proc };
-	return rb_funcall2(marsh, rb_intern("_mkxp_load_alias"), ARRAY_SIZE(v), v);
+	return rb_funcallv(marsh, rb_intern("_mkxp_load_alias"), ARRAY_SIZE(v), v);
 }
 
 void fileIntBindingInit(){
@@ -209,7 +219,7 @@ void fileIntBindingInit(){
     
     rb_define_method(klass, "read", RUBY_METHOD_FUNC(fileIntRead), -1);
     rb_define_method(klass, "getbyte", RUBY_METHOD_FUNC(fileIntGetByte), 0);
-    rb_define_method(klass, "binmode", RUBY_METHOD_FUNC(fileIntBinmode), 0);
+    rb_define_method(klass, "binmode1", RUBY_METHOD_FUNC(fileIntBinmode), 0);
     rb_define_method(klass, "close", RUBY_METHOD_FUNC(fileIntClose), 0);
 
 	rb_define_module_function(rb_mKernel, "load_data", RUBY_METHOD_FUNC(kernelLoadData), -1);
@@ -219,10 +229,6 @@ void fileIntBindingInit(){
 	 * insert our utf8proc that ensures all read strings will be
 	 * UTF-8 encoded */
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-	if(marsh == Qnil){
-		fprintf(stderr, "Cannot get Marshal\n");
-		rb_raise(rb_eRuntimeError, "Marshal constant not found");
-	}
 	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
 	rb_define_module_function(marsh, "load", RUBY_METHOD_FUNC(_marshalLoad), -1);
 }

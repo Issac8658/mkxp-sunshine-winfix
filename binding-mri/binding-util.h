@@ -412,6 +412,8 @@ static inline VALUE rb_file_open_str(VALUE filename, const char *mode) {
 #endif
 #endif
 
+#define RB_NA_METHOD(name) \
+	static VALUE name(VALUE self)
 
 #define RB_METHOD(name) \
 	static VALUE name(int argc, VALUE *argv, VALUE self)
