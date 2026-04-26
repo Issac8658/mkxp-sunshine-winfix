@@ -8,6 +8,11 @@ class Window_MainMenu < Window_Selectable
     @commands << 'Travel'
     @commands << 'Notes'
     @commands << 'Settings'
+	
+	if Window_Settings.DebugIsEnabled == true
+		@commands << 'TPtLOC'
+	end
+	
     @item_max = @commands.size
     @column_max = @item_max
 
@@ -138,10 +143,26 @@ class Window_MainMenu < Window_Selectable
       when 1
         $game_temp.common_event_id = 15
         @fade_out = true
-      else
+      when 2
         $game_system.se_play($data_system.decision_se)
         $game_temp.window_settings_calling = true
         @fade_out = true
+      when 3
+      	if File.exist?("imstupidcheater.txt")
+      	  id = Integer(File.read("imstupidcheater.txt").strip.to_i)
+#      	  id = 177
+      	  x = Integer(File.read("imstupidcheater.x").strip.to_i)
+      	  y = Integer(File.read("imstupidcheater.y").strip.to_i)
+		  $game_temp.player_transferring = true
+		  $game_temp.player_new_map_id = id
+		  $game_temp.player_new_x = x
+		  $game_temp.player_new_y = y
+		  $game_temp.player_new_direction = 0
+		  Graphics.freeze
+		  $game_temp.transition_processing = true
+		  $game_temp.transition_name = ""
+		  @fade_out = true
+      	end
       end
       return
     end

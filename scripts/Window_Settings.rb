@@ -9,6 +9,12 @@ class Window_Settings
   class << self
     attr_accessor :DebugIsEnabled
     attr_accessor :OneShotMode
+    def OneShotMode?
+          !!@OneShotMode
+    end
+    def DebugIsEnabled?
+          !!@DebugIsEnabled
+    end
   end
   @DebugIsEnabled = false
   #You have only ONE shot!

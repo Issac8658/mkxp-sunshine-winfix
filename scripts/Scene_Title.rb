@@ -46,23 +46,20 @@ class Scene_Title
     if File.exists?("Graphics/Titles/#{translation_name}.png")
        @sprite.bitmap = RPG::Cache.title(translation_name)
  	else
-       if Window_Settings.OneShotMode = true
-            if File.exist?("badend.lock")
-                @sprite.bitmap = RPG::Cache.title("badend")
-            else
-                @sprite.bitmap = RPG::Cache.title($data_system.title_name)
-            end
- 	    end
+    	if File.exist?("badend.lock")
+			@sprite.bitmap = RPG::Cache.title("badend")
+        else
+            @sprite.bitmap = RPG::Cache.title($data_system.title_name)
+        end
 	end
 	# check for debug file to add debug items
-	if Window_Settings.DebugIsEnabled = true
+	if Window_Settings.DebugIsEnabled
 		# debug save
 		$game_party.gain_item(54, 1)
 		# plight skip
 		$game_party.gain_item(82, 1)
         #George reroler
 		$game_party.gain_item(81, 1)
-        #George reroler        
 	end
 	
     @sprite.zoom_x = 2.0
