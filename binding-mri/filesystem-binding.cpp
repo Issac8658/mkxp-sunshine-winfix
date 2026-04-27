@@ -124,7 +124,6 @@ static VALUE load_protect(VALUE marsh_and_port) {
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
     VALUE port = fileIntForPath(filename, rubyExc);
     VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
-
     VALUE args[2] = { marsh, port };
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);

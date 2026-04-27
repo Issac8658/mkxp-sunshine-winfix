@@ -78,6 +78,7 @@ class Window_Message < Window_Selectable
     @choice_start = -1
     @number_start = -1
     @skip_message_proc = false
+    $game_system.windowskin_name = "normal"
     self.active = false
     self.pause = false
     self.index = -1
@@ -177,7 +178,14 @@ class Window_Message < Window_Selectable
       face = RPG::Cache.face($game_temp.message_face)
       self.contents.blt(self.contents.width - 96, 0, face, Rect.new(0, 0, 96, 96))
     end
-
+	if $game_temp.message_face != nil
+		if $game_temp.message_face.start_with?("en")
+			$game_system.windowskin_name = "en_normal"
+		else
+			$game_system.windowskin_name = "normal"
+		end
+	end
+	
     if $game_temp.choices != nil
       # Prepare choices, if they fit
       if lines + $game_temp.choices.size <= 4
