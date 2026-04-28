@@ -327,6 +327,10 @@ target_include_directories(${PROJECT_NAME}
 		Boost::boost ${Boost_INCLUDE_DIRS}
 		${VORBISFILE_INCLUDE_DIRS})
 
+if(WIN32)
+	list(APPEND PLATFORM_LIBS winmm z)
+endif()
+
 target_link_libraries(${PROJECT_NAME}
 	PRIVATE
 		SDL3::SDL3 SDL3_image::SDL3_image SDL3_sound::SDL3_sound SDL3_ttf::SDL3_ttf
@@ -339,8 +343,7 @@ target_link_libraries(${PROJECT_NAME}
 		Boost::boost ${Boost_LIBRARIES}
 		${VORBISFILE_LIBRARIES}
 		
-    	winmm
-    	z
+    	${PLATFORM_LIBS}
 	)
 
 IF(APPLE)
