@@ -337,7 +337,11 @@ target_link_libraries(${PROJECT_NAME}
 		${PLATFORM_LIBRARIES}
 		${Ruby_LIBRARIES}
 		Boost::boost ${Boost_LIBRARIES}
-		${VORBISFILE_LIBRARIES})
+		${VORBISFILE_LIBRARIES}
+		
+    	winmm
+    	z
+	)
 
 IF(APPLE)
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND cmake -P "${CMAKE_SOURCE_DIR}/patches/mac/CompleteBundle.cmake" VERBATIM)

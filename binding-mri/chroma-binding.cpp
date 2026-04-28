@@ -32,7 +32,7 @@ void _attemptLinkSdk() {
 
       _playAnimation = (PluginPlayAnimation) GetProcAddress(hLib, "PluginPlayAnimation");
       INIT_SUCCESS &= _playAnimation != NULL;
-      Debug() << "[_attempLinkSdk]Plugin method @" << (long)_playAnimation;
+      Debug() << "[_attempLinkSdk]Plugin method @" << reinterpret_cast<void*>(_playAnimation);
 
       _openAnimation = (PluginOpenAnimation) GetProcAddress(hLib, "PluginOpenAnimation");
       INIT_SUCCESS &= _openAnimation != NULL;

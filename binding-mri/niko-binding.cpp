@@ -138,7 +138,17 @@ RB_METHOD(nikoStart){
 	POINT pos;
 	pos.x = NIKO_X;
 	pos.y = NIKO_Y;
-	ClientToScreen(syswindow.info.win.window, &pos);
+
+	// idk if shState->rtData().window will work, i inserted it here so that project would at least be build
+	SDL_PropertiesID props = SDL_GetWindowProperties(shState->rtData().window);
+
+	HWND hwnd = (HWND)SDL_GetPointerProperty(
+	    props,
+	    SDL_PROP_WINDOW_WIN32_HWND_POINTER,
+	    NULL
+	);
+
+	ClientToScreen(hwnd, &pos);
 	// Start process
 	WCHAR path[MAX_PATH];
 	WCHAR args[MAX_PATH];
