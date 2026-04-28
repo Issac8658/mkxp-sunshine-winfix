@@ -20,14 +20,12 @@ Target of sunshine mod - improve original game.
 * OpenAL 
 * PhysFS
 * sigc++-2.0
-(Linux only!):
-* GTK3
-* libxfconf
+* GTK3(Linux only!)
+* libxfconf(Linux only!)
 
 2.build
 
 * In project dir create build dir
 * cmake -S . -B build
 * cd build
-* make -jn 
-n - count of threads for compilation.
+* make -jn (n - count of threads for compilation)
