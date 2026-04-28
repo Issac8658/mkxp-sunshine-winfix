@@ -65,12 +65,11 @@ static inline const char* glGetStringInt(GLenum name){
 	return (const char*) gl.GetString(name);
 }
 
-static void
-printGLInfo(){
-	Debug() << "GL Vendor    :" << glGetStringInt(GL_VENDOR);
-	Debug() << "GL Renderer  :" << glGetStringInt(GL_RENDERER);
-	Debug() << "GL Version   :" << glGetStringInt(GL_VERSION);
-	Debug() << "GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
+static void printGLInfo(){
+	Debug() << "[main.cpp]GL Vendor    :" << glGetStringInt(GL_VENDOR);
+	Debug() << "[main.cpp]GL Renderer  :" << glGetStringInt(GL_RENDERER);
+	Debug() << "[main.cpp]GL Version   :" << glGetStringInt(GL_VERSION);
+	Debug() << "[main.cpp]GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 }
 
 int rgssThreadFun(void *userdata){
@@ -89,7 +88,7 @@ int rgssThreadFun(void *userdata){
 	glCtx = SDL_GL_CreateContext(win);
 
 	if (!glCtx){
-		rgssThreadError(threadData, std::string("Error creating context: ") + SDL_GetError());
+		rgssThreadError(threadData, std::string("[rgssThreadFun]Error creating context: ") + SDL_GetError());
 		return 0;
 	}
 
@@ -123,7 +122,7 @@ int rgssThreadFun(void *userdata){
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
 
 	if (!alcCtx){
-		rgssThreadError(threadData, "Error creating OpenAL context");
+		rgssThreadError(threadData, "[rgssThreadFun]Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
 
 		return 0;
@@ -376,7 +375,7 @@ int main(int argc, char *argv[]){
 	for (int i = 0; i < 1000; ++i){
 		/* We can stop waiting when the request was ack'd */
 		if (rtData.rqTermAck){
-			Debug() << "RGSS thread ack'd request after" << i*10 << "ms";
+			Debug() << "[main]RGSS thread ack'd request after" << i*10 << "ms";
 			break;
 		}
 
@@ -389,7 +388,7 @@ int main(int argc, char *argv[]){
 	if (rtData.rqTermAck)
 		SDL_WaitThread(rgssThread, 0);
 	else
-		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and OneShot: sunshine will now force quit", win);
+		SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, conf.windowTitle.c_str(), "The RGSS script seems to be stuck and OneShot will now force quit", win);
 
 	if (!rtData.rgssErrorMsg.empty()){
 		Debug() << rtData.rgssErrorMsg;
@@ -400,7 +399,7 @@ int main(int argc, char *argv[]){
 	/* Clean up any remainin events */
 	eventThread.cleanup();
 
-	Debug() << "Shutting down.";
+	Debug() << "[main]Shutting down.";
 
 	unloadLocale();
 	unloadLanguageMetadata();

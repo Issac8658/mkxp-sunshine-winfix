@@ -30,8 +30,7 @@
 
 DEF_TYPE(Sprite);
 
-RB_METHOD(spriteInitialize)
-{
+RB_METHOD(spriteInitialize){
 	Sprite *s = viewportElementInitialize<Sprite>(argc, argv, self);
 
 	setPrivateData(self, s);
@@ -71,8 +70,7 @@ DEF_PROP_F(Sprite, WavePhase)
 DEF_PROP_B(Sprite, Mirror)
 DEF_PROP_B(Sprite, Obscured)
 
-RB_METHOD(spriteWidth)
-{
+RB_METHOD(spriteWidth){
 	RB_UNUSED_PARAM;
 
 	Sprite *s = getPrivateData<Sprite>(self);
@@ -80,11 +78,10 @@ RB_METHOD(spriteWidth)
 	int value = 0;
 	GUARD_EXC( value = s->getWidth(); )
 
-	return rb_fix_new(value);
+	return INT2NUM(value);
 }
 
-RB_METHOD(spriteHeight)
-{
+RB_METHOD(spriteHeight){
 	RB_UNUSED_PARAM;
 
 	Sprite *s = getPrivateData<Sprite>(self);
@@ -92,12 +89,11 @@ RB_METHOD(spriteHeight)
 	int value = 0;
 	GUARD_EXC( value = s->getHeight(); )
 
-	return rb_fix_new(value);
+	return INT2NUM(value);
 }
 
-void
-spriteBindingInit()
-{
+void spriteBindingInit(){
+	printf("[spriteBindingInit] Initializing sprite binding\n");
 	VALUE klass = rb_define_class("Sprite", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&SpriteType>);
 
@@ -124,8 +120,7 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, Tone,      "tone"       );
 	INIT_PROP_BIND( Sprite, Obscured,  "obscured"   );
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 	_rb_define_method(klass, "width", spriteWidth);
 	_rb_define_method(klass, "height", spriteHeight);
 
@@ -136,4 +131,5 @@ spriteBindingInit()
 	INIT_PROP_BIND( Sprite, WaveSpeed,  "wave_speed"  );
 	INIT_PROP_BIND( Sprite, WavePhase,  "wave_phase"  );
 	}
+	printf("[spriteBindingInit] Done\n");
 }

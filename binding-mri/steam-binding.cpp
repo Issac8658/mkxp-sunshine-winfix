@@ -7,8 +7,7 @@
 #include "binding-types.h"
 #include "debugwriter.h"
 
-RB_METHOD(steamEnabled)
-{
+RB_METHOD(steamEnabled){
 	RB_UNUSED_PARAM;
 
 #ifdef STEAM
@@ -18,8 +17,7 @@ RB_METHOD(steamEnabled)
 #endif
 }
 
-RB_METHOD(steamUnlock)
-{
+RB_METHOD(steamUnlock){
 	RB_UNUSED_PARAM;
 
     const char *name;
@@ -31,8 +29,7 @@ RB_METHOD(steamUnlock)
 	return Qnil;
 }
 
-RB_METHOD(steamLock)
-{
+RB_METHOD(steamLock){
 	RB_UNUSED_PARAM;
 
 	const char *name;
@@ -44,8 +41,7 @@ RB_METHOD(steamLock)
 	return Qnil;
 }
 
-RB_METHOD(steamUnlocked)
-{
+RB_METHOD(steamUnlocked){
 	RB_UNUSED_PARAM;
 
 	const char *name;
@@ -58,8 +54,8 @@ RB_METHOD(steamUnlocked)
 #endif
 }
 
-void steamBindingInit()
-{
+void steamBindingInit(){
+	printf("[steamBindingInit] Initializing Steam binding\n");
     VALUE module = rb_define_module("Steam");
 
 	/* Constants */
@@ -79,4 +75,5 @@ void steamBindingInit()
     _rb_define_module_function(module, "unlock", steamUnlock);
 	_rb_define_module_function(module, "lock", steamLock);
 	_rb_define_module_function(module, "unlocked?", steamUnlocked);
+	printf("[steamBindingInit] Done\n");
 }

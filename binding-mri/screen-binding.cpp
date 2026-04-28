@@ -8,8 +8,7 @@
 
 static Pipe ipc;
 
-static void start()
-{
+static void start(){
 	ipc.open("oneshot-pipe", Pipe::Write);
 
 	// Create process
@@ -40,8 +39,7 @@ static void start()
 	pid_t pid = fork();
 	if (pid == 0) {
 		execl(exename.c_str(), "oneshot",
-		      (std::string("--gameFolder=") + shState->config().gameFolder).c_str(),
-		      "--screenMode=true", NULL);
+		      (std::string("--gameFolder=") + shState->config().gameFolder).c_str(), "--screenMode=true", NULL);
 		exit(1);
 	}
 #endif
@@ -49,23 +47,20 @@ static void start()
 	ipc.connect();
 }
 
-RB_METHOD(screenStart)
-{
+RB_METHOD(screenStart){
 	RB_UNUSED_PARAM;
 	start();
 	return Qnil;
 }
 
-RB_METHOD(screenFinish)
-{
+RB_METHOD(screenFinish){
 	RB_UNUSED_PARAM;
 	ipc.write("END", sizeof("END"));
 	ipc.close();
 	return Qnil;
 }
 
-RB_METHOD(screenSet)
-{
+RB_METHOD(screenSet){
 	RB_UNUSED_PARAM;
 	const char *imageName;
 	rb_get_args(argc, argv, "z", &imageName RB_ARG_END);
@@ -75,10 +70,11 @@ RB_METHOD(screenSet)
 	return Qnil;
 }
 
-void screenBindingInit()
-{
+void screenBindingInit(){
+	printf("[screenBindingInit] Initializing Screen binding\n");
     VALUE module = rb_define_module("Screen");
     _rb_define_module_function(module, "start", screenStart);
     _rb_define_module_function(module, "finish", screenFinish);
 	_rb_define_module_function(module, "set", screenSet);
+	printf("[screenBindingInit] Done\n");
 }

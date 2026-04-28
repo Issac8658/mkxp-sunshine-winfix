@@ -30,24 +30,28 @@
 #include <ruby.h>
 
 static void fileIntFreeInstance(void *inst){
+	printf("[fileIntFreeInstance] fileIntFreeInstance\n");
     SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
     if (ops) {
+    	printf("[fileIntFreeInstance] Closing ops\n");
         SDL_CloseIO(ops);
     }
 }
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
 static VALUE fileIntForPath(const char *path, bool rubyExc){
+	printf("[fileIntForPath] %s!\n", *path);
 	SDL_IOStream* ops = nullptr;
 	try{
 		shState->fileSystem().openReadRaw(ops, path);
         if (!ops){
-            printf("NULL guard! fileIntForPath broken!");
+            printf("[fileIntForPath] Null guard!\n");
             return Qnil;
         }
 	}
 	catch (const Exception &e){
 		if (ops)
+			printf("[fileIntForPath] Closing ops\n");
 			SDL_CloseIO(ops);
 
 		if (rubyExc)
@@ -66,12 +70,13 @@ static VALUE fileIntForPath(const char *path, bool rubyExc){
 }
 
 RB_METHOD(fileIntRead){
+	printf("[fileIntRead] fileIntRead\n");
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length);
 
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
-        printf("NULL guard! fileIntRead broken!");
+        printf("[fileIntRead] Null guard!\n");
         return Qnil;
     }
 	if (length == -1){
@@ -82,9 +87,12 @@ RB_METHOD(fileIntRead){
 	}
 
 	if (length == 0)
+		printf("[fileIntRead] zero length\n");
 		return Qnil;
 
 	VALUE data = rb_str_new(0, length);
+	printf("[fileIntRead] data: %s\n", rb_str_to_str(data));
+	printf("[fileIntRead] length: %ld\n", NUM2LONG(length));
 
 	SDL_ReadIO(ops, RSTRING_PTR(data), length);
 
@@ -92,29 +100,34 @@ RB_METHOD(fileIntRead){
 }
 
 RB_NA_METHOD(fileIntClose){
+	printf("[fileIntClose] fileIntClose\n");
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
-        printf("NULL guard! fileIntClose broken!");
+        printf("[fileIntClose] Null guard\n");
         return Qnil;
     }
+    printf("[fileIntClose] Closing ops\n");
     SDL_CloseIO(ops);
     setPrivateData(self, nullptr);
     return Qnil;
 }
 
 RB_NA_METHOD(fileIntGetByte){
+	printf("[fileIntGetByte] fileIntGetByte\n");
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
-
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
+	printf("[fileIntGetByte] %s\n", byte);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
 }
 
 RB_NA_METHOD(fileIntBinmode){
+	printf("[fileIntBinMode] Plug\n");
 	return Qnil;
 }
 
 static VALUE load_protect(VALUE marsh_and_port) {
+	printf("[Load_protect] Protecting!\n");
     VALUE *arr = (VALUE *)marsh_and_port;
     VALUE marsh = arr[0];
     VALUE port  = arr[1];
@@ -122,15 +135,15 @@ static VALUE load_protect(VALUE marsh_and_port) {
 }
 
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
+	printf("[kernelLoadDataInt] Filename: %s\n", filename);
     VALUE port = fileIntForPath(filename, rubyExc);
     VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
     VALUE args[2] = { marsh, port };
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
-
+	printf("[kernelLoadDataInt] State %ld\n", NUM2LONG(state));
 	if(RTEST(result) == false){
-		printf("DEBUG ERROR\n");
-		return 1;
+		printf("[kernelLoadDataInt] Result == false, bRuH\n");
 	}
 	
     rb_funcallv(port, rb_intern("close"), 0, nullptr);
@@ -153,10 +166,9 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
 
 RB_METHOD(kernelLoadData){
 	RB_UNUSED_PARAM;
-
 	const char *filename;
 	rb_get_args(argc, argv, "z", &filename);
-
+	printf("[kernelLoadData] filename: %s\n", filename);
 	return kernelLoadDataInt(filename, true);
 }
 
@@ -167,20 +179,21 @@ RB_METHOD(kernelSaveData){
 	VALUE filename;
 
 	rb_get_args(argc, argv, "oS", &obj, &filename);
-
+	printf("[kernelSaveData] Filename: %s\n", rb_str_to_str(filename));
 	VALUE file = rb_file_open_str(filename, "wb");
 
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 
 	VALUE v[] = { obj, file };
 	rb_funcall2(marsh, rb_intern("dump"), ARRAY_SIZE(v), v);
-
+	printf("[kernelSaveData] Closing file %s\n", rb_str_to_str(filename));
 	rb_io_close(file);
 
 	return Qnil;
 }
 
 static VALUE stringForceUTF8(VALUE arg){
+	printf("[stringForceUTF8] %s\n", rb_str_to_str(arg));
 	if (RB_TYPE_P(arg, RUBY_T_STRING)) {
 		/* If current encoding is ASCII-8BIT (binary), associate UTF-8 so
 		   subsequent Ruby-level handling treats it as UTF-8. This preserves
@@ -194,6 +207,7 @@ static VALUE stringForceUTF8(VALUE arg){
 }
 
 static VALUE customProc(VALUE arg, VALUE proc){
+	printf("[customProc] \n");
 	VALUE obj = stringForceUTF8(arg);
 	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
 	return obj;
@@ -205,7 +219,7 @@ RB_METHOD(_marshalLoad){
 	rb_scan_args(argc, argv, "01", &port, &proc);
 
 	VALUE utf8Proc;
-
+	printf("[_marshalLoad]\n");
 	if (NIL_P(proc))
 		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
 	else
@@ -218,12 +232,13 @@ RB_METHOD(_marshalLoad){
 }
 
 void fileIntBindingInit(){
+	printf("[fileIntBindingInit] Initializing filesystem binding...\n");
 	VALUE klass = rb_define_class("FileInt", rb_cIO);
 	rb_define_alloc_func(klass, classAllocate<&FileIntType>);
     
     rb_define_method(klass, "read", RUBY_METHOD_FUNC(fileIntRead), -1);
     rb_define_method(klass, "getbyte", RUBY_METHOD_FUNC(fileIntGetByte), 0);
-    rb_define_method(klass, "binmode1", RUBY_METHOD_FUNC(fileIntBinmode), 0);
+    rb_define_method(klass, "binmode", RUBY_METHOD_FUNC(fileIntBinmode), 0);
     rb_define_method(klass, "close", RUBY_METHOD_FUNC(fileIntClose), 0);
 
 	rb_define_module_function(rb_mKernel, "load_data", RUBY_METHOD_FUNC(kernelLoadData), -1);
@@ -235,5 +250,7 @@ void fileIntBindingInit(){
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 	rb_define_alias(rb_singleton_class(marsh), "_mkxp_load_alias", "load");
 	rb_define_module_function(marsh, "load", RUBY_METHOD_FUNC(_marshalLoad), -1);
+	printf("[fileIntBindingInit] Done\n");
 }
+
 

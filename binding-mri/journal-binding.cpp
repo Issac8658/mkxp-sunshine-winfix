@@ -41,15 +41,13 @@ static volatile int message_len = 0;
 #ifdef LINUX
 	static std::string PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-pipe";
 	static volatile int out_pipe = -1;
-	void cleanup_pipe()
-	{
+	void cleanup_pipe(){
 		unlink(PIPE_PATH.c_str());
 		remove(PIPE_PATH.c_str());
 	}
 #endif
 
-int server_thread(void *data)
-{
+int server_thread(void *data){
 	(void)data;
 #if defined OS_W32
 	HANDLE pipe = CreateNamedPipeW(L"\\\\.\\pipe\\oneshot-journal-to-game",
@@ -72,16 +70,13 @@ int server_thread(void *data)
 	}
 	CloseHandle(pipe);
 #else
-	if (access(PIPE_PATH.c_str(), F_OK) != -1)
-	{
+	if (access(PIPE_PATH.c_str(), F_OK) != -1){
 		out_pipe = open(PIPE_PATH.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		SDL_LockMutex(mutex);
 		active = true;
-		if (message_len > 0)
-		{
-			if (write(out_pipe, (char*)message_buffer, message_len) == -1)
-			{
-				Debug() << "Failure writing to journal's pipe!";
+		if (message_len > 0){
+			if (write(out_pipe, (char*)message_buffer, message_len) == -1){
+				Debug() << "[journal-binding>server_thread()]Failure writing to journal's pipe!";
 			}
 		}
 		SDL_UnlockMutex(mutex);
@@ -165,8 +160,8 @@ RB_METHOD(journalActive)
 	return active ? Qtrue : Qfalse;
 }
 
-void journalBindingInit()
-{
+void journalBindingInit(){
+	printf("[journalBindingInit] Initializing Journal binding\n");
 	mutex = SDL_CreateMutex();
 	memset((char*)lang_buffer, 0, BUFFER_SIZE);
 	lang_buffer[0] = '_';
@@ -179,4 +174,5 @@ void journalBindingInit()
 	_rb_define_module_function(module, "set", journalSet);
 	_rb_define_module_function(module, "active?", journalActive);
 	_rb_define_module_function(module, "setLang", journalSetLang);
+	printf("[inputBindingInit] Done\n");
 }

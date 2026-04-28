@@ -29,14 +29,12 @@
 
 DEF_TYPE(Bitmap);
 
-static const char *objAsStringPtr(VALUE obj)
-{
+static const char *objAsStringPtr(VALUE obj){
 	VALUE str = rb_obj_as_string(obj);
 	return RSTRING_PTR(str);
 }
 
-void bitmapInitProps(Bitmap *b, VALUE self)
-{
+void bitmapInitProps(Bitmap *b, VALUE self){
 	/* Wrap properties */
 	VALUE fontKlass = rb_const_get(rb_cObject, rb_intern("Font"));
 	VALUE fontObj = rb_obj_alloc(fontKlass);
@@ -48,19 +46,16 @@ void bitmapInitProps(Bitmap *b, VALUE self)
 	rb_iv_set(self, "font", fontObj);
 }
 
-RB_METHOD(bitmapInitialize)
-{
+RB_METHOD(bitmapInitialize){
 	Bitmap *b = 0;
 
-	if (argc == 1)
-	{
+	if (argc == 1){
 		char *filename;
 		rb_get_args(argc, argv, "z", &filename RB_ARG_END);
 
 		GUARD_EXC( b = new Bitmap(filename); )
 	}
-	else
-	{
+	else{
 		int width, height;
 		rb_get_args(argc, argv, "ii", &width, &height RB_ARG_END);
 
@@ -73,8 +68,7 @@ RB_METHOD(bitmapInitialize)
 	return self;
 }
 
-RB_METHOD(bitmapWidth)
-{
+RB_METHOD(bitmapWidth){
 	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
@@ -85,8 +79,7 @@ RB_METHOD(bitmapWidth)
 	return INT2FIX(value);
 }
 
-RB_METHOD(bitmapHeight)
-{
+RB_METHOD(bitmapHeight){
 	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
@@ -97,8 +90,7 @@ RB_METHOD(bitmapHeight)
 	return INT2FIX(value);
 }
 
-RB_METHOD(bitmapRect)
-{
+RB_METHOD(bitmapRect){
 	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
@@ -111,8 +103,7 @@ RB_METHOD(bitmapRect)
 	return wrapObject(r, RectType);
 }
 
-RB_METHOD(bitmapBlt)
-{
+RB_METHOD(bitmapBlt){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	int x, y;
@@ -133,8 +124,7 @@ RB_METHOD(bitmapBlt)
 	return self;
 }
 
-RB_METHOD(bitmapStretchBlt)
-{
+RB_METHOD(bitmapStretchBlt){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	VALUE destRectObj;
@@ -156,15 +146,13 @@ RB_METHOD(bitmapStretchBlt)
 	return self;
 }
 
-RB_METHOD(bitmapFillRect)
-{
+RB_METHOD(bitmapFillRect){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	VALUE colorObj;
 	Color *color;
 
-	if (argc == 2)
-	{
+	if (argc == 2){
 		VALUE rectObj;
 		Rect *rect;
 
@@ -175,8 +163,7 @@ RB_METHOD(bitmapFillRect)
 
 		GUARD_EXC( b->fillRect(rect->toIntRect(), color->norm); );
 	}
-	else
-	{
+	else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiiio", &x, &y, &width, &height, &colorObj RB_ARG_END);
@@ -189,8 +176,7 @@ RB_METHOD(bitmapFillRect)
 	return self;
 }
 
-RB_METHOD(bitmapClear)
-{
+RB_METHOD(bitmapClear){
 	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
@@ -200,8 +186,7 @@ RB_METHOD(bitmapClear)
 	return self;
 }
 
-RB_METHOD(bitmapGetPixel)
-{
+RB_METHOD(bitmapGetPixel){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	int x, y;
@@ -216,8 +201,7 @@ RB_METHOD(bitmapGetPixel)
 	return wrapObject(color, ColorType);
 }
 
-RB_METHOD(bitmapSetPixel)
-{
+RB_METHOD(bitmapSetPixel){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	int x, y;
@@ -234,8 +218,7 @@ RB_METHOD(bitmapSetPixel)
 	return self;
 }
 
-RB_METHOD(bitmapHueChange)
-{
+RB_METHOD(bitmapHueChange){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	int hue;
@@ -247,27 +230,23 @@ RB_METHOD(bitmapHueChange)
 	return self;
 }
 
-RB_METHOD(bitmapDrawText)
-{
+RB_METHOD(bitmapDrawText){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	const char *str;
 	int align = Bitmap::Left;
 
-	if (argc == 2 || argc == 3)
-	{
+	if (argc == 2 || argc == 3){
 		VALUE rectObj;
 		Rect *rect;
 
-		if (rgssVer >= 2)
-		{
+		if (rgssVer >= 2){
 			VALUE strObj;
 			rb_get_args(argc, argv, "oo|i", &rectObj, &strObj, &align RB_ARG_END);
 
 			str = objAsStringPtr(strObj);
 		}
-		else
-		{
+		else{
 			rb_get_args(argc, argv, "oz|i", &rectObj, &str, &align RB_ARG_END);
 		}
 
@@ -275,19 +254,16 @@ RB_METHOD(bitmapDrawText)
 
 		GUARD_EXC( b->drawText(rect->toIntRect(), str, align); );
 	}
-	else
-	{
+	else{
 		int x, y, width, height;
 
-		if (rgssVer >= 2)
-		{
+		if (rgssVer >= 2){
 			VALUE strObj;
 			rb_get_args(argc, argv, "iiiio|i", &x, &y, &width, &height, &strObj, &align RB_ARG_END);
 
 			str = objAsStringPtr(strObj);
 		}
-		else
-		{
+		else{
 			rb_get_args(argc, argv, "iiiiz|i", &x, &y, &width, &height, &str, &align RB_ARG_END);
 		}
 
@@ -297,21 +273,18 @@ RB_METHOD(bitmapDrawText)
 	return self;
 }
 
-RB_METHOD(bitmapTextSize)
-{
+RB_METHOD(bitmapTextSize){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	const char *str;
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 		VALUE strObj;
 		rb_get_args(argc, argv, "o", &strObj RB_ARG_END);
 
 		str = objAsStringPtr(strObj);
 	}
-	else
-	{
+	else{
 		rb_get_args(argc, argv, "z", &str RB_ARG_END);
 	}
 
@@ -325,16 +298,14 @@ RB_METHOD(bitmapTextSize)
 
 DEF_PROP_OBJ_VAL(Bitmap, Font, Font, "font")
 
-RB_METHOD(bitmapGradientFillRect)
-{
+RB_METHOD(bitmapGradientFillRect){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	VALUE color1Obj, color2Obj;
 	Color *color1, *color2;
 	bool vertical = false;
 
-	if (argc == 3 || argc == 4)
-	{
+	if (argc == 3 || argc == 4){
 		VALUE rectObj;
 		Rect *rect;
 
@@ -347,8 +318,7 @@ RB_METHOD(bitmapGradientFillRect)
 
 		GUARD_EXC( b->gradientFillRect(rect->toIntRect(), color1->norm, color2->norm, vertical); );
 	}
-	else
-	{
+	else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiiioo|b", &x, &y, &width, &height,
@@ -363,12 +333,10 @@ RB_METHOD(bitmapGradientFillRect)
 	return self;
 }
 
-RB_METHOD(bitmapClearRect)
-{
+RB_METHOD(bitmapClearRect){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
-	if (argc == 1)
-	{
+	if (argc == 1){
 		VALUE rectObj;
 		Rect *rect;
 
@@ -378,8 +346,7 @@ RB_METHOD(bitmapClearRect)
 
 		GUARD_EXC( b->clearRect(rect->toIntRect()); );
 	}
-	else
-	{
+	else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiii", &x, &y, &width, &height RB_ARG_END);
@@ -390,8 +357,7 @@ RB_METHOD(bitmapClearRect)
 	return self;
 }
 
-RB_METHOD(bitmapBlur)
-{
+RB_METHOD(bitmapBlur){
 	RB_UNUSED_PARAM;
 
 	Bitmap *b = getPrivateData<Bitmap>(self);
@@ -401,8 +367,7 @@ RB_METHOD(bitmapBlur)
 	return Qnil;
 }
 
-RB_METHOD(bitmapRadialBlur)
-{
+RB_METHOD(bitmapRadialBlur){
 	Bitmap *b = getPrivateData<Bitmap>(self);
 
 	int angle, divisions;
@@ -413,8 +378,7 @@ RB_METHOD(bitmapRadialBlur)
 	return Qnil;
 }
 
-RB_METHOD(bitmapInitializeCopy)
-{
+RB_METHOD(bitmapInitializeCopy){
 	rb_check_argc(argc, 1);
 	VALUE origObj = argv[0];
 
@@ -434,9 +398,8 @@ RB_METHOD(bitmapInitializeCopy)
 }
 
 
-void
-bitmapBindingInit()
-{
+void bitmapBindingInit(){
+	printf("[bitmapBindingInit] Initializing Bitmap binding\n");
 	VALUE klass = rb_define_class("Bitmap", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&BitmapType>);
 
@@ -458,8 +421,7 @@ bitmapBindingInit()
 	_rb_define_method(klass, "draw_text",   bitmapDrawText);
 	_rb_define_method(klass, "text_size",   bitmapTextSize);
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 	_rb_define_method(klass, "gradient_fill_rect", bitmapGradientFillRect);
 	_rb_define_method(klass, "clear_rect",         bitmapClearRect);
 	_rb_define_method(klass, "blur",               bitmapBlur);
@@ -467,4 +429,5 @@ bitmapBindingInit()
 	}
 
 	INIT_PROP_BIND(Bitmap, Font, "font");
+	printf("[bitmapBindingInit] Done\n");
 }

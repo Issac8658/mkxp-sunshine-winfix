@@ -25,8 +25,7 @@
 #include "binding-types.h"
 #include "exception.h"
 
-RB_METHOD(graphicsUpdate)
-{
+RB_METHOD(graphicsUpdate){
 	RB_UNUSED_PARAM;
 
 	shState->graphics().update();
@@ -34,8 +33,7 @@ RB_METHOD(graphicsUpdate)
 	return Qnil;
 }
 
-RB_METHOD(graphicsFreeze)
-{
+RB_METHOD(graphicsFreeze){
 	RB_UNUSED_PARAM;
 
 	shState->graphics().freeze();
@@ -43,8 +41,7 @@ RB_METHOD(graphicsFreeze)
 	return Qnil;
 }
 
-RB_METHOD(graphicsTransition)
-{
+RB_METHOD(graphicsTransition){
 	RB_UNUSED_PARAM;
 
 	int duration = 8;
@@ -58,8 +55,7 @@ RB_METHOD(graphicsTransition)
 	return Qnil;
 }
 
-RB_METHOD(graphicsFrameReset)
-{
+RB_METHOD(graphicsFrameReset){
 	RB_UNUSED_PARAM;
 
 	shState->graphics().frameReset();
@@ -79,7 +75,7 @@ RB_METHOD(graphicsFrameReset)
 		int value; \
 		rb_get_args(argc, argv, "i", &value RB_ARG_END); \
 		shState->graphics().set##PropName(value); \
-		return rb_fix_new(value); \
+		return INT2FIX(value); \
 	}
 
 #define DEF_GRA_PROP_B(PropName) \
@@ -97,22 +93,17 @@ RB_METHOD(graphicsFrameReset)
 		return rb_bool_new(value); \
 	}
 
-RB_METHOD(graphicsWidth)
-{
+RB_METHOD(graphicsWidth){
 	RB_UNUSED_PARAM;
-
-	return rb_fix_new(shState->graphics().width());
+	return INT2FIX(shState->graphics().width());
 }
 
-RB_METHOD(graphicsHeight)
-{
+RB_METHOD(graphicsHeight){
 	RB_UNUSED_PARAM;
-
-	return rb_fix_new(shState->graphics().height());
+	return INT2FIX(shState->graphics().height());
 }
 
-RB_METHOD(graphicsWait)
-{
+RB_METHOD(graphicsWait){
 	RB_UNUSED_PARAM;
 
 	int duration;
@@ -123,8 +114,7 @@ RB_METHOD(graphicsWait)
 	return Qnil;
 }
 
-RB_METHOD(graphicsFadeout)
-{
+RB_METHOD(graphicsFadeout){
 	RB_UNUSED_PARAM;
 
 	int duration;
@@ -135,8 +125,7 @@ RB_METHOD(graphicsFadeout)
 	return Qnil;
 }
 
-RB_METHOD(graphicsFadein)
-{
+RB_METHOD(graphicsFadein){
 	RB_UNUSED_PARAM;
 
 	int duration;
@@ -149,8 +138,7 @@ RB_METHOD(graphicsFadein)
 
 void bitmapInitProps(Bitmap *b, VALUE self);
 
-RB_METHOD(graphicsSnapToBitmap)
-{
+RB_METHOD(graphicsSnapToBitmap){
 	RB_UNUSED_PARAM;
 
 	Bitmap *result = 0;
@@ -162,8 +150,7 @@ RB_METHOD(graphicsSnapToBitmap)
 	return obj;
 }
 
-RB_METHOD(graphicsResizeScreen)
-{
+RB_METHOD(graphicsResizeScreen){
 	RB_UNUSED_PARAM;
 
 	int width, height;
@@ -174,8 +161,7 @@ RB_METHOD(graphicsResizeScreen)
 	return Qnil;
 }
 
-RB_METHOD(graphicsReset)
-{
+RB_METHOD(graphicsReset){
 	RB_UNUSED_PARAM;
 
 	shState->graphics().reset();
@@ -183,8 +169,7 @@ RB_METHOD(graphicsReset)
 	return Qnil;
 }
 
-RB_METHOD(graphicsPlayMovie)
-{
+RB_METHOD(graphicsPlayMovie){
 	RB_UNUSED_PARAM;
 
 	const char *filename;
@@ -210,8 +195,8 @@ DEF_GRA_PROP_B(Frameskip)
 	_rb_define_module_function(module, prop_name_s "=", graphics##Set##PropName); \
 }
 
-void graphicsBindingInit()
-{
+void graphicsBindingInit(){
+	printf("[graphicsBindingInit] Initializing Graphics binding\n");
 	VALUE module = rb_define_module("Graphics");
 
 	_rb_define_module_function(module, "update", graphicsUpdate);
@@ -224,8 +209,7 @@ void graphicsBindingInit()
 	INIT_GRA_PROP_BIND( FrameRate,  "frame_rate"  );
 	INIT_GRA_PROP_BIND( FrameCount, "frame_count" );
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 	_rb_define_module_function(module, "width", graphicsWidth);
 	_rb_define_module_function(module, "height", graphicsHeight);
 	_rb_define_module_function(module, "wait", graphicsWait);
@@ -237,8 +221,7 @@ void graphicsBindingInit()
 	INIT_GRA_PROP_BIND( Brightness, "brightness" );
 	}
 
-	if (rgssVer >= 3)
-	{
+	if (rgssVer >= 3){
 	_rb_define_module_function(module, "play_movie", graphicsPlayMovie);
 	}
 
@@ -246,4 +229,5 @@ void graphicsBindingInit()
 	INIT_GRA_PROP_BIND( ShowCursor, "show_cursor" );
 	INIT_GRA_PROP_BIND( Smooth,     "smooth"      );
 	INIT_GRA_PROP_BIND( Frameskip,     "frameskip"      );
+	printf("[graphicsBindingInit] Done\n");
 }

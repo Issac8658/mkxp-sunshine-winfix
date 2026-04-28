@@ -80,6 +80,7 @@ DEF_PROP_I(Viewport, OY)
 
 
 void viewportBindingInit(){
+	printf("[viewportBindingInit] Initializing viewport binding\n");
 	VALUE klass = rb_define_class("Viewport", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&ViewportType>);
 
@@ -94,5 +95,6 @@ void viewportBindingInit(){
 	INIT_PROP_BIND( Viewport, OY,    "oy"    );
 	INIT_PROP_BIND( Viewport, Color, "color" );
 	INIT_PROP_BIND( Viewport, Tone,  "tone"  );
+	printf("[viewportBindingInit] Done\n");
 }
 

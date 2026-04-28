@@ -24,14 +24,12 @@
 #include "binding-util.h"
 #include "serializable-binding.h"
 
-static int num2TableSize(VALUE v)
-{
+static int num2TableSize(VALUE v){
 	int i = NUM2INT(v);
 	return std::max(0, i);
 }
 
-static void parseArgsTableSizes(int argc, VALUE *argv, int *x, int *y, int *z)
-{
+static void parseArgsTableSizes(int argc, VALUE *argv, int *x, int *y, int *z){
 	*y = *z = 1;
 
 	switch (argc)
@@ -52,8 +50,7 @@ static void parseArgsTableSizes(int argc, VALUE *argv, int *x, int *y, int *z)
 
 DEF_TYPE(Table);
 
-RB_METHOD(tableInitialize)
-{
+RB_METHOD(tableInitialize){
 	int x, y, z;
 
 	parseArgsTableSizes(argc, argv, &x, &y, &z);
@@ -65,8 +62,7 @@ RB_METHOD(tableInitialize)
 	return self;
 }
 
-RB_METHOD(tableResize)
-{
+RB_METHOD(tableResize){
 	Table *t = getPrivateData<Table>(self);
 
 	int x, y, z;
@@ -89,8 +85,7 @@ TABLE_SIZE(x, X)
 TABLE_SIZE(y, Y)
 TABLE_SIZE(z, Z)
 
-RB_METHOD(tableGetAt)
-{
+RB_METHOD(tableGetAt){
 	Table *t = getPrivateData<Table>(self);
 
 	int x, y, z;
@@ -117,8 +112,7 @@ RB_METHOD(tableGetAt)
 	return INT2FIX(result); /* short always fits in a Fixnum */
 }
 
-RB_METHOD(tableSetAt)
-{
+RB_METHOD(tableSetAt){
 	Table *t = getPrivateData<Table>(self);
 
 	int x, y, z, value;
@@ -158,9 +152,8 @@ RB_METHOD(tableSetAt)
 MARSH_LOAD_FUN(Table)
 INITCOPY_FUN(Table)
 
-void
-tableBindingInit()
-{
+void tableBindingInit(){
+	printf("[tableBindingInit] Initializing Table binding\n");
 	VALUE klass = rb_define_class("Table", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&TableType>);
 
@@ -176,5 +169,5 @@ tableBindingInit()
 	_rb_define_method(klass, "zsize", tableZSize);
 	_rb_define_method(klass, "[]", tableGetAt);
 	_rb_define_method(klass, "[]=", tableSetAt);
-
+	printf("[tableBindingInit] Done\n");
 }

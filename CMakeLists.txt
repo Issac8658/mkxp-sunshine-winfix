@@ -12,8 +12,8 @@ option(DEBUG "Debug mode" ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 #i want die
-# set(DEBUG_C_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
-# set(DEBUG_CXX_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
+set(DEBUG_C_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
+set(DEBUG_CXX_FLAGS "-g -O0 -fno-omit-frame-pointer -ggdb")
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_C_FLAGS}")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_CXX_FLAGS}")

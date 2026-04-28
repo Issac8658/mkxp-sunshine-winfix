@@ -28,17 +28,12 @@
 #include <string.h>
 
 
-static void
-collectStrings(VALUE obj, std::vector<std::string> &out)
-{
-	if (RB_TYPE_P(obj, RUBY_T_STRING))
-	{
+static void collectStrings(VALUE obj, std::vector<std::string> &out){
+	if (RB_TYPE_P(obj, RUBY_T_STRING)){
 		out.push_back(RSTRING_PTR(obj));
 	}
-	else if (RB_TYPE_P(obj, RUBY_T_ARRAY))
-	{
-		for (long i = 0; i < RARRAY_LEN(obj); ++i)
-		{
+	else if (RB_TYPE_P(obj, RUBY_T_ARRAY)){
+		for (long i = 0; i < RARRAY_LEN(obj); ++i){
 			VALUE str = rb_ary_entry(obj, i);
 
 			/* Non-string objects are tolerated (ignored) */
@@ -52,8 +47,7 @@ collectStrings(VALUE obj, std::vector<std::string> &out)
 
 DEF_TYPE(Font);
 
-RB_METHOD(fontDoesExist)
-{
+RB_METHOD(fontDoesExist){
 	RB_UNUSED_PARAM;
 
 	const char *name = 0;
@@ -69,8 +63,7 @@ RB_METHOD(fontDoesExist)
 
 RB_METHOD(FontSetName);
 
-RB_METHOD(fontInitialize)
-{
+RB_METHOD(fontInitialize){
 	VALUE namesObj = Qnil;
 	int size = 0;
 
@@ -109,8 +102,7 @@ RB_METHOD(fontInitialize)
 	return self;
 }
 
-RB_METHOD(fontInitializeCopy)
-{
+RB_METHOD(fontInitializeCopy){
 	VALUE origObj;
 	rb_get_args(argc, argv, "o", &origObj RB_ARG_END);
 
@@ -132,15 +124,13 @@ RB_METHOD(fontInitializeCopy)
 	return self;
 }
 
-RB_METHOD(FontGetName)
-{
+RB_METHOD(FontGetName){
 	RB_UNUSED_PARAM;
 
 	return rb_iv_get(self, "name");
 }
 
-RB_METHOD(FontSetName)
-{
+RB_METHOD(FontSetName){
 	Font *f = getPrivateData<Font>(self);
 
 	rb_check_argc(argc, 1);
@@ -188,14 +178,12 @@ DEF_KLASS_PROP(Font, bool, DefaultItalic,  "b", rb_bool_new)
 DEF_KLASS_PROP(Font, bool, DefaultShadow,  "b", rb_bool_new)
 DEF_KLASS_PROP(Font, bool, DefaultOutline, "b", rb_bool_new)
 
-RB_METHOD(FontGetDefaultOutColor)
-{
+RB_METHOD(FontGetDefaultOutColor){
 	RB_UNUSED_PARAM;
 	return rb_iv_get(self, "default_out_color");
 }
 
-RB_METHOD(FontSetDefaultOutColor)
-{
+RB_METHOD(FontSetDefaultOutColor){
 	RB_UNUSED_PARAM;
 
 	VALUE colorObj;
@@ -208,15 +196,13 @@ RB_METHOD(FontSetDefaultOutColor)
 	return colorObj;
 }
 
-RB_METHOD(FontGetDefaultName)
-{
+RB_METHOD(FontGetDefaultName){
 	RB_UNUSED_PARAM;
 
 	return rb_iv_get(self, "default_name");
 }
 
-RB_METHOD(FontSetDefaultName)
-{
+RB_METHOD(FontSetDefaultName){
 	RB_UNUSED_PARAM;
 
 	rb_check_argc(argc, 1);
@@ -230,15 +216,13 @@ RB_METHOD(FontSetDefaultName)
 	return argv[0];
 }
 
-RB_METHOD(FontGetDefaultColor)
-{
+RB_METHOD(FontGetDefaultColor){
 	RB_UNUSED_PARAM;
 	return rb_iv_get(self, "default_color");
 }
 
 
-RB_METHOD(FontSetDefaultColor)
-{
+RB_METHOD(FontSetDefaultColor){
 	RB_UNUSED_PARAM;
 
 	VALUE colorObj;
@@ -257,9 +241,8 @@ RB_METHOD(FontSetDefaultColor)
 	rb_define_class_method(klass, prop_name_s "=", Klass##Set##PropName); \
 }
 
-void
-fontBindingInit()
-{
+void fontBindingInit(){
+	printf("[fontBindingInit] Initializing Font binding\n");
 	VALUE klass = rb_define_class("Font", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&FontType>);
 
@@ -270,12 +253,10 @@ fontBindingInit()
 	const std::vector<std::string> &defNames = Font::getInitialDefaultNames();
 	VALUE defNamesObj;
 
-	if (defNames.size() == 1)
-	{
+	if (defNames.size() == 1){
 		defNamesObj = rb_str_new_cstr(defNames[0].c_str());
 	}
-	else
-	{
+	else{
 		defNamesObj = rb_ary_new2(defNames.size());
 
 		for (size_t i = 0; i < defNames.size(); ++i)
@@ -293,13 +274,11 @@ fontBindingInit()
 	INIT_KLASS_PROP_BIND(Font, DefaultItalic, "default_italic");
 	INIT_KLASS_PROP_BIND(Font, DefaultColor, "default_color");
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 	INIT_KLASS_PROP_BIND(Font, DefaultShadow, "default_shadow");
 	}
 
-	if (rgssVer >= 3)
-	{
+	if (rgssVer >= 3){
 	INIT_KLASS_PROP_BIND(Font, DefaultOutline, "default_outline");
 	INIT_KLASS_PROP_BIND(Font, DefaultOutColor, "default_out_color");
 	}
@@ -315,14 +294,13 @@ fontBindingInit()
 	INIT_PROP_BIND(Font, Italic, "italic");
 	INIT_PROP_BIND(Font, Color, "color");
 
-	if (rgssVer >= 2)
-	{
+	if (rgssVer >= 2){
 	INIT_PROP_BIND(Font, Shadow, "shadow");
 	}
 
-	if (rgssVer >= 3)
-	{
+	if (rgssVer >= 3){
 	INIT_PROP_BIND(Font, Outline, "outline");
 	INIT_PROP_BIND(Font, OutColor, "out_color");
 	}
+	printf("[fontBindingInit] Done\n");
 }

@@ -192,8 +192,7 @@ struct WindowPrivate {
 
 	Quad baseTexQuad;
 
-	struct WindowControls : public ViewportElement
-	{
+	struct WindowControls : public ViewportElement{
 		WindowPrivate *p;
 
 		WindowControls(WindowPrivate *p,

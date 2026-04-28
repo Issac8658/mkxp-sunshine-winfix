@@ -95,6 +95,7 @@ RB_METHOD(mriRgssStop);
 RB_METHOD(_kernelCaller);
 
 static void mriBindingInit(){
+	printf("[mriBindingInit] Loading bindings...\n");
 	tableBindingInit();
 	etcBindingInit();
 	fontBindingInit();
@@ -118,7 +119,8 @@ static void mriBindingInit(){
     SunshineBindingInit();
 	steamBindingInit();
 	chromaBindingInit();
-
+	printf("[mriBindingInit] Done\n");
+	printf("[mriBindingInit] RGSS version: %i\n", rgssVer);
 	if (rgssVer >= 3){
 		_rb_define_module_function(rb_mKernel, "rgss_main", mriRgssMain);
 		_rb_define_module_function(rb_mKernel, "rgss_stop", mriRgssStop);
@@ -243,6 +245,7 @@ static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 }
 
 static void processReset(){
+	printf("[processReset]\n");
 	shState->graphics().reset();
 	shState->audio().reset();
 
@@ -257,7 +260,6 @@ static VALUE rgssMainRescue_wrapper(VALUE data, VALUE ex){ return rgssMainRescue
 
 RB_METHOD(mriRgssMain){
 	RB_UNUSED_PARAM;
-
 	while (true){
 		VALUE exc = Qnil;
 
@@ -362,11 +364,13 @@ static void runRMXPScripts(BacktraceData &btData){
 	const std::string &scriptPack = conf.game.scripts;
 
 	if (scriptPack.empty()){
+		printf("[runRMXPScripts] No game scripts specified (missing Game.ini?)\n");
 		showMsg("No game scripts specified (missing Game.ini?)");
 		return;
 	}
 
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
+		printf("[runRMXPScripts] Unable to open %s\n", scriptPack);
 		showMsg("Unable to open '" + scriptPack + "'");
 		return;
 	}
@@ -377,12 +381,15 @@ static void runRMXPScripts(BacktraceData &btData){
 	 * still go wrong */
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
+		printf("[runRMXPScripts] %s", scriptPack.c_str());
 	}catch (const Exception &e){
+		printf("[runRMXPScripts] Failed to read script data: %s", e.msg);
 		showMsg(std::string("Failed to read script data: ") + e.msg);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
+		printf("[runRMXPScripts] Failed to read script data");
 		showMsg("Failed to read script data");
 		return;
 	}
@@ -393,7 +400,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	rb_gv_set("$RGSS_SCRIPTS", scriptArray);
 
 	long scriptCount = RARRAY_LEN(scriptArray);
-
+	printf("[runRMXPScripts] Scripts count: %ld\n", scriptCount);
 	std::string decodeBuffer;
 	decodeBuffer.resize(0x1000);
 
@@ -403,22 +410,21 @@ static void runRMXPScripts(BacktraceData &btData){
 		if (!RB_TYPE_P(script, RUBY_T_ARRAY))
 			continue;
 
-		VALUE scriptName   = rb_ary_entry(script, 1);
+		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
-
+		printf("[runRMXPScripts] Script Name: %s", rb_str_to_str(scriptName));
+		//printf("[runRMXPScripts] ");
+		
 		int result = Z_OK;
 		unsigned long bufferLen;
 
 		while (true){
-			unsigned char *bufferPtr =
-			        reinterpret_cast<unsigned char*>(const_cast<char*>(decodeBuffer.c_str()));
-			const unsigned char *sourcePtr =
-			        reinterpret_cast<const unsigned char*>(RSTRING_PTR(scriptString));
+			unsigned char *bufferPtr = reinterpret_cast<unsigned char*>(const_cast<char*>(decodeBuffer.c_str()));
+			const unsigned char *sourcePtr = reinterpret_cast<const unsigned char*>(RSTRING_PTR(scriptString));
 
 			bufferLen = decodeBuffer.length();
 
-			result = uncompress(bufferPtr, &bufferLen,
-			                    sourcePtr, RSTRING_LEN(scriptString));
+			result = uncompress(bufferPtr, &bufferLen, sourcePtr, RSTRING_LEN(scriptString));
 
 			bufferPtr[bufferLen] = '\0';
 
@@ -430,14 +436,13 @@ static void runRMXPScripts(BacktraceData &btData){
 
 		if (result != Z_OK){
 			static char buffer[256];
-			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'",
-			         i, RSTRING_PTR(scriptName));
-
+			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'", i, RSTRING_PTR(scriptName));
+			printf("[runRMXPScripts] Script Name: %s", buffer);
 			showMsg(buffer);
 
 			break;
 		}
-
+		
 		rb_ary_store(script, 3, rb_str_new_cstr(decodeBuffer.c_str()));
 	}
 
@@ -454,8 +459,7 @@ static void runRMXPScripts(BacktraceData &btData){
 		for (long i = 0; i < scriptCount; ++i){
 			VALUE script = rb_ary_entry(scriptArray, i);
 			VALUE scriptDecoded = rb_ary_entry(script, 3);
-			VALUE string = newStringUTF8(RSTRING_PTR(scriptDecoded),
-			                             RSTRING_LEN(scriptDecoded));
+			VALUE string = newStringUTF8(RSTRING_PTR(scriptDecoded), RSTRING_LEN(scriptDecoded));
 
 			VALUE fname;
 			const char *scriptName = RSTRING_PTR(rb_ary_entry(script, 1));
@@ -533,13 +537,14 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file = btData.scriptNames.value(file, file);
 
 	std::string ms(640, '\0');
-	snprintf(&ms[0], ms.size(), "Script '%s' line %s: %s occured.\n\n%s",
+	snprintf(&ms[0], ms.size(), "[runRMXPScripts]Script '%s' line %s: %s occured.\n\n%s",
 	         file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
 
 	showMsg(ms);
 }
 
 static void mriBindingExecute(){
+	printf("[mirBindingExecute] Setting up ruby\n");
 	/* Normally only a ruby executable would do a sysinit,
 	 * but not doing it will lead to crashes due to closed
 	 * stdio streams on some platforms (eg. Windows) */
@@ -548,9 +553,9 @@ static void mriBindingExecute(){
 	char **argv = 0;
 	char options_argv1[] = "oneshot", options_argv2[] = "-evd", options_argv3[] = "--jit";
 	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
+	printf("[mriBindingExecute] %s %s %s\n", options_argv1, options_argv2, options_argv3);
 	ruby_setup();
 	ruby_sysinit(&argc, &argv);
-	//ruby_init();
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
 
 	Config &conf = shState->rtData().config;
@@ -566,25 +571,27 @@ static void mriBindingExecute(){
 			rb_ary_push(lpaths, pathv);
 		}
 	}
-
+	
 	RbData rbData;
 	shState->setBindingData(&rbData);
 	BacktraceData btData;
 
 	mriBindingInit();
-
+	
 	runRMXPScripts(btData);
 
 	VALUE exc = rb_errinfo();
 	if (!NIL_P(exc) && !rb_obj_is_kind_of(exc, rb_eSystemExit))
 		showExc(exc, btData);
 
+	printf("[mirBindingExecure] Ruby cleanup\n");
 	ruby_cleanup(0);
 
 	shState->rtData().rqTermAck.set();
 }
 
 static void mriBindingTerminate(){
+	printf("[mriBindingTerminate] Terminating binding...\n");
 	rb_raise(rb_eSystemExit, " ");
 #ifdef __linux__
 	wallpaperBindingTerminate();
@@ -592,6 +599,7 @@ static void mriBindingTerminate(){
 }
 
 static void mriBindingReset(){
+	printf("[mriBindingReset] Binding reset...\n");
 	rb_raise(getRbData()->exc[Reset], " ");
 }
 

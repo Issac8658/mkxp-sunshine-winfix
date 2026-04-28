@@ -25,8 +25,7 @@
 #include "binding-util.h"
 #include "util.h"
 
-RB_METHOD(inputUpdate)
-{
+RB_METHOD(inputUpdate){
 	RB_UNUSED_PARAM;
 
 	shState->input().update();
@@ -34,23 +33,19 @@ RB_METHOD(inputUpdate)
 	return Qnil;
 }
 
-static int getButtonArg(int argc, VALUE *argv)
-{
+static int getButtonArg(int argc, VALUE *argv){
 	int num;
 
 	rb_check_argc(argc, 1);
 
-	if (FIXNUM_P(argv[0]))
-	{
+	if (FIXNUM_P(argv[0])){
 		num = FIX2INT(argv[0]);
 	}
-	else if (SYMBOL_P(argv[0]) && rgssVer >= 3)
-	{
+	else if (SYMBOL_P(argv[0]) && rgssVer >= 3){
 		VALUE symHash = getRbData()->buttoncodeHash;
 		num = FIX2INT(rb_hash_lookup2(symHash, argv[0], INT2FIX(Input::None)));
 	}
-	else
-	{
+	else{
 		// FIXME: RMXP allows only few more types that
 		// don't make sense (symbols in pre 3, floats)
 		num = 0;
@@ -59,8 +54,7 @@ static int getButtonArg(int argc, VALUE *argv)
 	return num;
 }
 
-RB_METHOD(inputPress)
-{
+RB_METHOD(inputPress){
 	RB_UNUSED_PARAM;
 
 	int num = getButtonArg(argc, argv);
@@ -68,8 +62,7 @@ RB_METHOD(inputPress)
 	return rb_bool_new(shState->input().isPressed(num));
 }
 
-RB_METHOD(inputTrigger)
-{
+RB_METHOD(inputTrigger){
 	RB_UNUSED_PARAM;
 
 	int num = getButtonArg(argc, argv);
@@ -77,8 +70,7 @@ RB_METHOD(inputTrigger)
 	return rb_bool_new(shState->input().isTriggered(num));
 }
 
-RB_METHOD(inputRepeat)
-{
+RB_METHOD(inputRepeat){
 	RB_UNUSED_PARAM;
 
 	int num = getButtonArg(argc, argv);
@@ -86,50 +78,43 @@ RB_METHOD(inputRepeat)
 	return rb_bool_new(shState->input().isRepeated(num));
 }
 
-RB_METHOD(inputDir4)
-{
+RB_METHOD(inputDir4){
 	RB_UNUSED_PARAM;
 
 	return rb_fix_new(shState->input().dir4Value());
 }
 
-RB_METHOD(inputDir8)
-{
+RB_METHOD(inputDir8){
 	RB_UNUSED_PARAM;
 
 	return rb_fix_new(shState->input().dir8Value());
 }
 
 /* Non-standard extensions */
-RB_METHOD(inputMouseX)
-{
+RB_METHOD(inputMouseX){
 	RB_UNUSED_PARAM;
 
 	return rb_fix_new(shState->input().mouseX());
 }
 
-RB_METHOD(inputMouseY)
-{
+RB_METHOD(inputMouseY){
 	RB_UNUSED_PARAM;
 
 	return rb_fix_new(shState->input().mouseY());
 }
 
-RB_METHOD(inputQuit)
-{
+RB_METHOD(inputQuit){
 	RB_UNUSED_PARAM;
 
 	return rb_bool_new(shState->input().hasQuit());
 }
 
 
-struct
-{
+struct{
 	const char *str;
 	Input::ButtonCode val;
 }
-static buttonCodes[] =
-{
+static buttonCodes[] = {
 	{ "DOWN",       Input::Down       },
 	{ "LEFT",       Input::Left       },
 	{ "RIGHT",      Input::Right      },
@@ -158,9 +143,8 @@ static buttonCodes[] =
 
 static elementsN(buttonCodes);
 
-void
-inputBindingInit()
-{
+void inputBindingInit(){
+	printf("[inputBindingInit] Initializing Input binding\n");
 	VALUE module = rb_define_module("Input");
 
 	_rb_define_module_function(module, "update", inputUpdate);
@@ -203,4 +187,5 @@ inputBindingInit()
 			rb_const_set(module, sym, val);
 		}
 	}
+	printf("[inputBindingInit] Done\n");
 }

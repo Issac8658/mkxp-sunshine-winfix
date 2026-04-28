@@ -46,15 +46,13 @@ static volatile int message_len = 0;
 #ifdef LINUX
 	static std::string NIKO_PIPE_PATH = std::string(getpwuid(getuid())->pw_dir) + "/.oneshot-niko-pipe";
 	static volatile int out_pipe = -1;
-	void niko_cleanup_pipe()
-	{
+	void niko_cleanup_pipe(){
 		unlink(NIKO_PIPE_PATH.c_str());
 		remove(NIKO_PIPE_PATH.c_str());
 	}
 #endif
 
-int niko_server_thread(void *data)
-{
+int niko_server_thread(void *data){
 	(void)data;
 #if defined OS_W32
 	HANDLE pipe = CreateNamedPipeW(L"\\\\.\\pipe\\oneshot-journal-to-game",
@@ -85,7 +83,7 @@ int niko_server_thread(void *data)
 		{
 			if (write(out_pipe, (char*)message_buffer, message_len) == -1)
 			{
-				Debug() << "Failed to write to pipe!";
+				Debug() << "[niko_server_thread]Failed to write to pipe!";
 			}
 		}
 		SDL_UnlockMutex(mutex);
@@ -94,8 +92,7 @@ int niko_server_thread(void *data)
 #endif
 }
 
-RB_METHOD(nikoPrepare)
-{
+RB_METHOD(nikoPrepare){
 	RB_UNUSED_PARAM;
 
 	// Prime native window info
@@ -128,8 +125,7 @@ RB_METHOD(nikoPrepare)
 	return Qnil;
 }
 
-RB_METHOD(nikoStart)
-{
+RB_METHOD(nikoStart){
 	RB_UNUSED_PARAM;
 
 	// Prime native window info
@@ -191,8 +187,8 @@ RB_METHOD(nikoStart)
 	return Qnil;
 }
 
-void nikoBindingInit()
-{
+void nikoBindingInit(){
+	printf("[nikoBindingInit] Initializing Niko binding:3\n");
 	mutex = SDL_CreateMutex();
 #if defined __linux
 	mkfifo(NIKO_PIPE_PATH.c_str(), 0666);
@@ -204,4 +200,5 @@ void nikoBindingInit()
 	//Functions
 	_rb_define_module_function(module, "get_ready", nikoPrepare);
 	_rb_define_module_function(module, "do_your_thing", nikoStart);
+	printf("[nikoBindingInit] Done\n");
 }

@@ -58,6 +58,7 @@
 
 #ifdef __linux__
 	void desktopEnvironmentInit(){
+		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized") {
 			return;
 		}
@@ -173,7 +174,7 @@ RB_METHOD(wallpaperSet){
 	std::string path;
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
-	Debug() << "Setting wallpaper to" << path;
+	Debug() << "[wallpaperSet]Setting wallpaper to" << path;
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
@@ -248,7 +249,7 @@ end:
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
 
-	Debug() << "Setting wallpaper to " << path;
+	Debug() << "[wallpaperSet]Setting wallpaper to " << path;
 
 	#ifdef __APPLE__
 		if (!isCached) {
@@ -299,7 +300,7 @@ end:
 				colorArrType = g_type_from_name("GPtrArray_GValue_");
 				if (!colorArrType) {
 					// Let's do some debug output here and skip changing the color
-					Debug() << "WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
+					Debug() << "[wallpaperSet]WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
 					return Qnil;
 				}
 			}
@@ -468,12 +469,12 @@ RB_METHOD(wallpaperReset){
 					"}" <<
 				"}" <<
 			"'";
-			Debug() << "Reset wallpaper command:" << command.str();
+			Debug() << "[wallpaperReset]Reset wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
-			Debug() << "Reset result:" << result;
+			Debug() << "[wallpaperReset]Reset result:" << result;
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
-				Debug() << "Failed to delete:" << fallbackPath;
+				Debug() << "[wallpaperReset]Failed to delete:" << fallbackPath;
 			}
 		}
 	#endif

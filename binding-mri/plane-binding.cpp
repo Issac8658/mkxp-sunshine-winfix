@@ -27,8 +27,7 @@
 
 DEF_TYPE(Plane);
 
-RB_METHOD(planeInitialize)
-{
+RB_METHOD(planeInitialize){
 	Plane *p = viewportElementInitialize<Plane>(argc, argv, self);
 
 	setPrivateData(self, p);
@@ -56,9 +55,8 @@ DEF_PROP_F(Plane, ZoomX)
 DEF_PROP_F(Plane, ZoomY)
 
 
-void
-planeBindingInit()
-{
+void planeBindingInit(){
+	printf("[planeBindingInit] Initializing Plane binding\n");
 	VALUE klass = rb_define_class("Plane", rb_cObject);
 	rb_define_alloc_func(klass, classAllocate<&PlaneType>);
 
@@ -77,4 +75,5 @@ planeBindingInit()
 	INIT_PROP_BIND( Plane, BlendType, "blend_type" );
 	INIT_PROP_BIND( Plane, Color,     "color"      );
 	INIT_PROP_BIND( Plane, Tone,      "tone"       );
+	printf("[planeBindingInit] Done\n");	
 }

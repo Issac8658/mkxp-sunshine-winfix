@@ -37,6 +37,8 @@
 		#include <gdk/gdk.h>
 		#include "xdg-user-dir-lookup.h"
 	#endif
+#elif defined __FreeBSD__ || __NetBSD__ || __OpenBSD__
+	#error "Work in progress:3"
 #else
 	#error "Operating system not detected."
 #endif
@@ -481,8 +483,7 @@ bool Oneshot::msgbox(int type, const char *body, const char *title){
 #endif
 
 	//Set type
-	switch (type)
-	{
+	switch (type){
 	case MSG_INFO:
 	case MSG_YESNO:
 	default:

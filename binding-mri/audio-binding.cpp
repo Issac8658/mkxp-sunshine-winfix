@@ -117,7 +117,7 @@ DEF_AUD_PROP_I(SFX_Volume)
 
 RB_METHOD(audioReset){
 	RB_UNUSED_PARAM;
-
+	printf("[audioReset] Reseting audio\n");
 	shState->audio().reset();
 
 	return Qnil;
@@ -144,8 +144,8 @@ RB_METHOD(audioReset){
 	_rb_define_module_function(module, prop_name_s "=", audio##Set##PropName); \
 }
 
-void
-audioBindingInit(){
+void audioBindingInit(){
+	printf("[audioBindingInit] Initialing Audio binding\n");
 	VALUE module = rb_define_module("Audio");
 
 	BIND_PLAY_STOP_FADE( bgm );
@@ -163,4 +163,5 @@ audioBindingInit(){
 
 	INIT_AUD_PROP_BIND( BGM_Volume, "bgm_volume" );
 	INIT_AUD_PROP_BIND( SFX_Volume, "sfx_volume" );
+	printf("[audioBindingInit] Done\n");
 }
