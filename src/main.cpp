@@ -182,7 +182,7 @@ static void setGamePathInRegistry() {
 
 #if defined WIN32
 	// this logic is currently windows specific
-	char* dataDir = SDL_GetBasePath();
+	const char* dataDir = SDL_GetBasePath();
 	if (dataDir){
 		HKEY key;
 		long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
@@ -208,7 +208,7 @@ static void setGamePathInRegistry() {
 			}
 			RegCloseKey(key);
 		}
-		SDL_free(dataDir);
+		SDL_free((void*)dataDir);
 	}
 #endif
 	//TODO handle this for Linux/Mac
