@@ -27,6 +27,7 @@
 DEF_TYPE(Window);
 
 RB_METHOD(windowInitialize){
+	printf("[windowInitialize] Creating window\n");
 	Window *w = viewportElementInitialize<Window>(argc, argv, self);
 
 	setPrivateData(self, w);

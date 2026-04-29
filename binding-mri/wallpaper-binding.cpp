@@ -91,6 +91,7 @@
 				defColorStyle = xfconf_channel_get_int(bgchannel, optionColorStyle.c_str(), -1);
 			} else {
 				// Configuration failed to initialize, we won't set the wallpaper
+				printf("[desktopEnvironmentInit] Configuration failed to initialize, we won't set the wallpaper\n");
 				desktop = "xfce_error";
 				g_error_free(xferror);
 			}
@@ -157,7 +158,7 @@
 				}
 				configFile.close();
 			} else {
-				Debug() << "FATAL: Cannot find desktop configuration!";
+				Debug() << "[desktopEnvironmentInit]FATAL: Cannot find desktop configuration!";
 				desktop = "kde_error";
 			}
 		} else {
@@ -345,9 +346,9 @@ end:
 					"\"]);" <<
 				"}" <<
 			"'";
-			Debug() << "Wallpaper command:" << command.str();
+			Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
-			Debug() << "Result:" << result;
+			Debug() << "[wallpaperSet ]Result:" << result;
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);

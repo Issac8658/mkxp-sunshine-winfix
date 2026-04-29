@@ -29,7 +29,7 @@
 #include "ruby/intern.h"
 #include <ruby.h>
 
-static void fileIntFreeInstance(void *inst){
+void fileIntFreeInstance(void *inst){
 	printf("[fileIntFreeInstance] fileIntFreeInstance\n");
     SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
     if (ops) {
@@ -39,8 +39,8 @@ static void fileIntFreeInstance(void *inst){
 }
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
-static VALUE fileIntForPath(const char *path, bool rubyExc){
-	printf("[fileIntForPath] %s!\n", *path);
+VALUE fileIntForPath(const char *path, bool rubyExc){
+	printf("[fileIntForPath] %s!\n", path);
 	SDL_IOStream* ops = nullptr;
 	try{
 		shState->fileSystem().openReadRaw(ops, path);
@@ -100,18 +100,19 @@ RB_METHOD(fileIntRead){
 }
 
 RB_NA_METHOD(fileIntClose){
-	printf("[fileIntClose] fileIntClose\n");
-	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
+    printf("[fileIntClose] fileIntClose\n");
+    SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
-        printf("[fileIntClose] Null guard\n");
+        printf("[fileIntClose] Already closed or null\n");
         return Qnil;
     }
+    
     printf("[fileIntClose] Closing ops\n");
     SDL_CloseIO(ops);
     setPrivateData(self, nullptr);
+    
     return Qnil;
 }
-
 RB_NA_METHOD(fileIntGetByte){
 	printf("[fileIntGetByte] fileIntGetByte\n");
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
@@ -126,7 +127,7 @@ RB_NA_METHOD(fileIntBinmode){
 	return Qnil;
 }
 
-static VALUE load_protect(VALUE marsh_and_port) {
+VALUE load_protect(VALUE marsh_and_port) {
 	printf("[Load_protect] Protecting!\n");
     VALUE *arr = (VALUE *)marsh_and_port;
     VALUE marsh = arr[0];
@@ -146,7 +147,7 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
 		printf("[kernelLoadDataInt] Result == false, bRuH\n");
 	}
 	
-    rb_funcallv(port, rb_intern("close"), 0, nullptr);
+    rb_funcallv(port, rb_intern("close"), 0, NULL);
 	
     if (state) {
 		VALUE err = rb_errinfo();
@@ -158,7 +159,6 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
 		rb_p(klass);
 		rb_p(message);
 		rb_p(backtrace);
-		
         rb_jump_tag(state);
     }
     return result;
@@ -192,7 +192,7 @@ RB_METHOD(kernelSaveData){
 	return Qnil;
 }
 
-static VALUE stringForceUTF8(VALUE arg){
+VALUE stringForceUTF8(VALUE arg){
 	printf("[stringForceUTF8] %s\n", rb_str_to_str(arg));
 	if (RB_TYPE_P(arg, RUBY_T_STRING)) {
 		/* If current encoding is ASCII-8BIT (binary), associate UTF-8 so
@@ -206,7 +206,7 @@ static VALUE stringForceUTF8(VALUE arg){
 	return arg;
 }
 
-static VALUE customProc(VALUE arg, VALUE proc){
+VALUE customProc(VALUE arg, VALUE proc){
 	printf("[customProc] \n");
 	VALUE obj = stringForceUTF8(arg);
 	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
@@ -219,7 +219,7 @@ RB_METHOD(_marshalLoad){
 	rb_scan_args(argc, argv, "01", &port, &proc);
 
 	VALUE utf8Proc;
-	printf("[_marshalLoad]\n");
+	printf("[_marshalLoad] i fuckin hate it\n");
 	if (NIL_P(proc))
 		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
 	else

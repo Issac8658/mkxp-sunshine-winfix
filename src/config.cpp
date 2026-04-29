@@ -133,7 +133,7 @@ void Config::read(int argc, char *argv[]){
 		po::store(cmdPo, vm);
 	}
 	catch (po::error &error){
-		Debug() << "Command line:" << error.what();
+		Debug() << "[config] Command line:" << error.what();
 	}
 
 	/* Parse configuration file */
