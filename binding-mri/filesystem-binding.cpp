@@ -252,5 +252,3 @@ void fileIntBindingInit(){
 	rb_define_module_function(marsh, "load", RUBY_METHOD_FUNC(_marshalLoad), -1);
 	printf("[fileIntBindingInit] Done\n");
 }
-
-

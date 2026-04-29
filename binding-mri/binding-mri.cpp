@@ -161,7 +161,7 @@ static void showMsg(const std::string &msg){
 #ifdef NDEBUG
 	shState->eThread().showMessageBox(msg.c_str());
 #else
-	Debug() << msg.c_str();
+	Debug() << "[DEBUG] " + msg.c_str();
 #endif
 }
 
@@ -227,25 +227,26 @@ RB_METHOD(mkxpRawKeyStates){
 
 RB_METHOD(mkxpMouseInWindow){
 	RB_UNUSED_PARAM;
-
+	
 	return rb_bool_new(EventThread::mouseState.inWindow);
 }
 
 static VALUE rgssMainCb(VALUE block){
+	printf("[rgssMainCb] \n");
 	rb_funcall2(block, rb_intern("call"), 0, 0);
 	return Qnil;
 }
 
 static VALUE rgssMainRescue(VALUE arg, VALUE exc){
 	VALUE *excRet = (VALUE*) arg;
-
+	
 	*excRet = exc;
 
 	return Qnil;
 }
 
 static void processReset(){
-	printf("[processReset]\n");
+	printf("[processReset] reset!\n");
 	shState->graphics().reset();
 	shState->audio().reset();
 
@@ -270,10 +271,12 @@ RB_METHOD(mriRgssMain){
 		if (NIL_P(exc))
 			break;
 
-		if (rb_obj_class(exc) == getRbData()->exc[Reset])
+		if (rb_obj_class(exc) == getRbData()->exc[Reset]){
+			printf("[mriRgssMain] Reset\n");
 			processReset();
-		else
+		}else{
 			rb_exc_raise(exc);
+		}
 	}
 
 	return Qnil;
@@ -281,7 +284,7 @@ RB_METHOD(mriRgssMain){
 
 RB_METHOD(mriRgssStop){
 	RB_UNUSED_PARAM;
-
+	printf("[mriRgssStop] Stop\n");
 	while (true)
 		shState->graphics().update();
 
@@ -364,13 +367,11 @@ static void runRMXPScripts(BacktraceData &btData){
 	const std::string &scriptPack = conf.game.scripts;
 
 	if (scriptPack.empty()){
-		printf("[runRMXPScripts] No game scripts specified (missing Game.ini?)\n");
 		showMsg("No game scripts specified (missing Game.ini?)");
 		return;
 	}
 
 	if (!shState->fileSystem().exists(scriptPack.c_str())){
-		printf("[runRMXPScripts] Unable to open %s\n", scriptPack);
 		showMsg("Unable to open '" + scriptPack + "'");
 		return;
 	}
@@ -383,13 +384,11 @@ static void runRMXPScripts(BacktraceData &btData){
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
 		printf("[runRMXPScripts] %s", scriptPack.c_str());
 	}catch (const Exception &e){
-		printf("[runRMXPScripts] Failed to read script data: %s", e.msg);
 		showMsg(std::string("Failed to read script data: ") + e.msg);
 		return;
 	}
 
 	if (!RB_TYPE_P(scriptArray, RUBY_T_ARRAY)){
-		printf("[runRMXPScripts] Failed to read script data");
 		showMsg("Failed to read script data");
 		return;
 	}
@@ -413,7 +412,6 @@ static void runRMXPScripts(BacktraceData &btData){
 		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
 		printf("[runRMXPScripts] Script Name: %s", rb_str_to_str(scriptName));
-		//printf("[runRMXPScripts] ");
 		
 		int result = Z_OK;
 		unsigned long bufferLen;
@@ -490,7 +488,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	VALUE msg = rb_funcall2(exc, rb_intern("message"), 0, NULL);
 	VALUE bt0 = rb_ary_entry(bt, 0);
 	VALUE name = rb_class_path(rb_obj_class(exc));
-
+	
 	VALUE ds = rb_sprintf("%" PRIsVALUE ": %" PRIsVALUE " (%" PRIsVALUE ")",
 	                      bt0, exc, name);
 	/* omit "useless" last entry (from ruby:1:in `eval') */
@@ -537,8 +535,7 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 	file = btData.scriptNames.value(file, file);
 
 	std::string ms(640, '\0');
-	snprintf(&ms[0], ms.size(), "[runRMXPScripts]Script '%s' line %s: %s occured.\n\n%s",
-	         file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
+	snprintf(&ms[0], ms.size(), "Script '%s' line %s: %s occured.\n\n%s", file.c_str(), line, RSTRING_PTR(name), RSTRING_PTR(msg));
 
 	showMsg(ms);
 }
@@ -577,7 +574,7 @@ static void mriBindingExecute(){
 	BacktraceData btData;
 
 	mriBindingInit();
-	
+	printf("[mriBindingExecute] run RMXP Scripts\n");
 	runRMXPScripts(btData);
 
 	VALUE exc = rb_errinfo();
