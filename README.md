@@ -16,7 +16,7 @@ Target of sunshine mod - improve original game.
 * pixman
 * SDL3_image
 * SDL3_ttf 
-* SDL3_sound
+* [SDL3_sound](https://github.com/icculus/SDL_sound)
 * OpenAL 
 * PhysFS
 * sigc++-2.0
@@ -29,3 +29,6 @@ Target of sunshine mod - improve original game.
 * cmake -S . -B build
 * cd build
 * make -jn (n - count of threads for compilation)
+
+# TODOs
+TODOs moved to github Issues

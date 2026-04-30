@@ -2,6 +2,7 @@
 require 'zlib'
 
 def usage
+  STDERR.puts "Tool for building xScripts.rxdata"
   STDERR.puts "usage: rpgscript.rb scripts_dir game_dir [x]"
   exit 1
 end
@@ -106,3 +107,4 @@ else
   File.open(target_path, 'wb') { |f| f.write(Marshal.dump(scripts)) }
   puts "#{target_path} written."
 end
+
