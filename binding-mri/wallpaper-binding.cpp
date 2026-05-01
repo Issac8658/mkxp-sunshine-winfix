@@ -53,6 +53,9 @@
 		static std::map<std::string, bool> defBlurs;
 		// Fallback settings
 		static std::string fallbackPath;
+		//meow
+		bool IsNitrogen = false;
+		bool IsFeh = false;
 	#endif
 #endif
 
@@ -60,7 +63,21 @@
 	void desktopEnvironmentInit(){
 		printf("[desktopEnvironmentInit] desktopEnvironmentInit()\n");
 		if (desktop != "uninitialized") {
-			return;
+			printf("[desktopEnvironmentInit] Running on standalone Window Manager?Trying identify configuration...\n");
+			// If Nitrogen wallpaper manager and feh is aviable we can just use nitrogen --restore command and feh --bg-scale:P
+			if (FILE *file = fopen("/usr/bin/nitrogen", "r")){
+        		IsNitrogen = true;
+				printf("[desktopEnvironmentInit] Nitrogen wallpaper manager detected!I will try to use it...\n");
+				fclose(file);
+    		}else{ fclose(file); }
+    		if (FILE *file = fopen("/usr/bin/feh", "r")) {
+        		IsFeh = true;
+    			printf("[desktopEnvironmentInit] Feh detected!I will try to use it...\n");
+    			fclose(file);
+    		} else{ fclose(file); }
+    		if(!IsNitrogen && !IsFeh){
+    			return;
+    		}
 		}
 		desktop = shState->oneshot().desktopEnv;
 		if (desktop == "cinnamon" || desktop == "gnome" || desktop == "mate" || desktop == "deepin") {
@@ -175,7 +192,7 @@ RB_METHOD(wallpaperSet){
 	std::string path;
 #ifdef _WIN32
 	path = shState->config().gameFolder + "\\Wallpaper\\" + name + ".bmp";
-	Debug() << "[wallpaperSet]Setting wallpaper to" << path;
+	Debug() << "[wallpaperSet] Setting wallpaper to " << path;
 	// Crapify the slashes
 	size_t index = 0;
 	for (;;) {
@@ -301,7 +318,7 @@ end:
 				colorArrType = g_type_from_name("GPtrArray_GValue_");
 				if (!colorArrType) {
 					// Let's do some debug output here and skip changing the color
-					Debug() << "[wallpaperSet]WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
+					Debug() << "[wallpaperSet] WALLPAPER ERROR: xfconf-query call returned" << colorCommandRes;
 					return Qnil;
 				}
 			}
@@ -349,6 +366,11 @@ end:
 			Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
 			Debug() << "[wallpaperSet ] Result:" << result;
+		} else if (IsFeh == true) {
+			//path
+			printf("[wallpaperSet] Trying set wallpapers via feh\n");
+			std::string cmd = std::string("feh --bg-scale '") + path + "'";
+			std::system(cmd.c_str());
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
@@ -473,6 +495,8 @@ RB_METHOD(wallpaperReset){
 			Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
 			Debug() << "[wallpaperReset] Reset result:" << result;
+		} else if (IsNitrogen == true){
+			system("nitrogen --restore");
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
 				Debug() << "[wallpaperReset] Failed to delete:" << fallbackPath;
