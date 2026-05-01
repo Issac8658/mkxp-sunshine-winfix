@@ -158,7 +158,7 @@
 				}
 				configFile.close();
 			} else {
-				Debug() << "[desktopEnvironmentInit]FATAL: Cannot find desktop configuration!";
+				Debug() << "[desktopEnvironmentInit] FATAL: Cannot find desktop configuration!";
 				desktop = "kde_error";
 			}
 		} else {
@@ -250,7 +250,7 @@ end:
 	}
 	path = "/Wallpaper/" + nameFix + ".png";
 
-	Debug() << "[wallpaperSet]Setting wallpaper to " << path;
+	Debug() << "[wallpaperSet] Setting wallpaper to " << path;
 
 	#ifdef __APPLE__
 		if (!isCached) {
@@ -348,7 +348,7 @@ end:
 			"'";
 			Debug() << "[wallpaperSet] Wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
-			Debug() << "[wallpaperSet ]Result:" << result;
+			Debug() << "[wallpaperSet ] Result:" << result;
 		} else {
 			std::ifstream srcHint(gameDirStr + path);
 			std::ofstream dstHint(fallbackPath);
@@ -470,12 +470,12 @@ RB_METHOD(wallpaperReset){
 					"}" <<
 				"}" <<
 			"'";
-			Debug() << "[wallpaperReset]Reset wallpaper command:" << command.str();
+			Debug() << "[wallpaperReset] Reset wallpaper command:" << command.str();
 			int result = system(command.str().c_str());
-			Debug() << "[wallpaperReset]Reset result:" << result;
+			Debug() << "[wallpaperReset] Reset result:" << result;
 		} else {
 			if (remove(fallbackPath.c_str()) != 0) {
-				Debug() << "[wallpaperReset]Failed to delete:" << fallbackPath;
+				Debug() << "[wallpaperReset] Failed to delete:" << fallbackPath;
 			}
 		}
 	#endif
