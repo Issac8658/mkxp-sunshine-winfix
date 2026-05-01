@@ -15,8 +15,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Debug stuff
 # i want die
 if(DEBUG)
-	set(CMAKE_C_FLAGS_DEBUG "-g3 -O0 -fno-omit-frame-pointer -ggdb")
-	set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O0 -fno-omit-frame-pointer -ggdb")
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
 endif()
 ## Setup main source ##
 
