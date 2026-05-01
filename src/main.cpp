@@ -88,7 +88,7 @@ int rgssThreadFun(void *userdata){
 	glCtx = SDL_GL_CreateContext(win);
 
 	if (!glCtx){
-		rgssThreadError(threadData, std::string("[rgssThreadFun]Error creating context: ") + SDL_GetError());
+		rgssThreadError(threadData, std::string("[rgssThreadFun] Error creating context: ") + SDL_GetError());
 		return 0;
 	}
 
@@ -122,7 +122,7 @@ int rgssThreadFun(void *userdata){
 	ALCcontext *alcCtx = alcCreateContext(threadData->alcDev, 0);
 
 	if (!alcCtx){
-		rgssThreadError(threadData, "[rgssThreadFun]Error creating OpenAL context");
+		rgssThreadError(threadData, "[rgssThreadFun] Error creating OpenAL context");
 		SDL_GL_DestroyContext(glCtx);
 
 		return 0;
@@ -156,7 +156,7 @@ int rgssThreadFun(void *userdata){
 
 static void showInitError(const std::string &msg){
 	Debug() << msg;
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OneShot: sunshine", msg.c_str(), 0);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Sun is not shining:(", msg.c_str(), 0);
 }
 
 static void setupWindowIcon(const Config &conf, SDL_Window *win){
@@ -215,10 +215,12 @@ static void setGamePathInRegistry() {
 
 int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
+	SDL_SetHint(SDL_HINT_APP_ID, "OneshotSunshine");
+	SDL_SetHint(SDL_HINT_APP_NAME, "Oneshot: Sunshine");
 	//deleted from SDL3
 	//SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
 	//SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
-#if defined(__linux__) && SDL_VERSION_ATLEAST(2, 0, 8)
+#if defined(__linux__)
 	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 #endif
 
