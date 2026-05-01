@@ -54,8 +54,7 @@ RB_METHOD(bitmapInitialize){
 		rb_get_args(argc, argv, "z", &filename RB_ARG_END);
 
 		GUARD_EXC( b = new Bitmap(filename); )
-	}
-	else{
+	}else{
 		int width, height;
 		rb_get_args(argc, argv, "ii", &width, &height RB_ARG_END);
 
@@ -162,8 +161,7 @@ RB_METHOD(bitmapFillRect){
 		color = getPrivateDataCheck<Color>(colorObj, ColorType);
 
 		GUARD_EXC( b->fillRect(rect->toIntRect(), color->norm); );
-	}
-	else{
+	}else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiiio", &x, &y, &width, &height, &colorObj RB_ARG_END);
@@ -245,16 +243,14 @@ RB_METHOD(bitmapDrawText){
 			rb_get_args(argc, argv, "oo|i", &rectObj, &strObj, &align RB_ARG_END);
 
 			str = objAsStringPtr(strObj);
-		}
-		else{
+		}else{
 			rb_get_args(argc, argv, "oz|i", &rectObj, &str, &align RB_ARG_END);
 		}
 
 		rect = getPrivateDataCheck<Rect>(rectObj, RectType);
 
 		GUARD_EXC( b->drawText(rect->toIntRect(), str, align); );
-	}
-	else{
+	}else{
 		int x, y, width, height;
 
 		if (rgssVer >= 2){
@@ -262,8 +258,7 @@ RB_METHOD(bitmapDrawText){
 			rb_get_args(argc, argv, "iiiio|i", &x, &y, &width, &height, &strObj, &align RB_ARG_END);
 
 			str = objAsStringPtr(strObj);
-		}
-		else{
+		}else{
 			rb_get_args(argc, argv, "iiiiz|i", &x, &y, &width, &height, &str, &align RB_ARG_END);
 		}
 
@@ -283,8 +278,7 @@ RB_METHOD(bitmapTextSize){
 		rb_get_args(argc, argv, "o", &strObj RB_ARG_END);
 
 		str = objAsStringPtr(strObj);
-	}
-	else{
+	}else{
 		rb_get_args(argc, argv, "z", &str RB_ARG_END);
 	}
 
@@ -317,8 +311,7 @@ RB_METHOD(bitmapGradientFillRect){
 		color2 = getPrivateDataCheck<Color>(color2Obj, ColorType);
 
 		GUARD_EXC( b->gradientFillRect(rect->toIntRect(), color1->norm, color2->norm, vertical); );
-	}
-	else{
+	}else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiiioo|b", &x, &y, &width, &height,

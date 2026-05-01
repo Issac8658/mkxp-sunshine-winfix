@@ -232,7 +232,7 @@ RB_METHOD(mkxpMouseInWindow){
 }
 
 static VALUE rgssMainCb(VALUE block){
-	printf("[rgssMainCb] \n");
+	printf("[rgssMainCb] ...my home is calling, my keep going, no more stolling...\n");
 	rb_funcall2(block, rb_intern("call"), 0, 0);
 	return Qnil;
 }
@@ -251,8 +251,7 @@ static void processReset(){
 	shState->audio().reset();
 
 	shState->rtData().rqReset.clear();
-	shState->graphics().repaintWait(shState->rtData().rqResetFinish,
-	                                false);
+	shState->graphics().repaintWait(shState->rtData().rqResetFinish, false);
 }
 
 static VALUE rgssMainCb_wrapper(VALUE data){ return rgssMainCb(data); }

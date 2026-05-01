@@ -50,14 +50,15 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
         }
 	}
 	catch (const Exception &e){
-		if (ops)
+		if (ops){
 			printf("[fileIntForPath] Closing ops\n");
 			SDL_CloseIO(ops);
-
-		if (rubyExc)
-			raiseRbExc(e);
-		else
+		}
+		if (rubyExc){
+			raiseRbExc(e); }
+		else{
 			throw e;
+		}
 	}
 
 	VALUE klass = rb_const_get(rb_cObject, rb_intern("FileInt"));
@@ -86,9 +87,10 @@ RB_METHOD(fileIntRead){
 		SDL_SeekIO(ops, cur, SDL_IO_SEEK_SET);
 	}
 
-	if (length == 0)
+	if (length == 0){
 		printf("[fileIntRead] zero length\n");
 		return Qnil;
+	}
 
 	VALUE data = rb_str_new(0, length);
 	printf("[fileIntRead] data: %s\n", rb_str_to_str(data));

@@ -115,8 +115,7 @@ int rb_get_args(int argc, VALUE *argv, const char *format, ...){
 		if (argI >= argc)
 			break;
 
-		switch (c)
-		{
+		switch (c){
 		case 'o' :
 		{
 			if (argI >= argc)
@@ -257,10 +256,8 @@ int rb_get_args(int argc, VALUE *argv, const char *format, ...){
 	 * the stack to check for RB_ARG_END */
 	format--;
 
-	while ((c = *format++))
-	{
-		switch (c)
-		{
+	while ((c = *format++)){
+		switch (c){
 		case 'o' :
 		case 'S' :
 			va_arg(ap, VALUE*);

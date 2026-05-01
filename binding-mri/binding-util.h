@@ -298,8 +298,7 @@ static inline void rb_define_class_method(VALUE klass, const char *name, RubyMet
 	rb_define_singleton_method(klass, name, RUBY_METHOD_FUNC(func), -1);
 }
 
-static inline void
-_rb_define_module_function(VALUE module, const char *name, RubyMethod func){
+static inline void _rb_define_module_function(VALUE module, const char *name, RubyMethod func){
 	rb_define_module_function(module, name, RUBY_METHOD_FUNC(func), -1);
 }
 
@@ -335,8 +334,7 @@ static inline VALUE objectLoad(int argc, VALUE *argv, VALUE self) {
 	return obj;
 }
 
-static inline VALUE
-rb_bool_new(bool value){
+static inline VALUE rb_bool_new(bool value){
 	return value ? Qtrue : Qfalse;
 }
 
@@ -358,7 +356,7 @@ inline void rb_float_arg(VALUE arg, double *out, int argPos = 0) {
 inline void rb_int_arg(VALUE arg, int *out, int argPos = 0) {
 	switch (rb_type(arg)) {
 		case RUBY_T_FLOAT:
-			// FIXME check int range?
+			// TODO: int range check
 			*out = NUM2LONG(arg);
 			break;
 

@@ -23,16 +23,16 @@ int lastAnimId = -1;
 
 
 void _attemptLinkSdk() {
-  Debug() << "[_attempLinkSdk]Attempting to bind Chroma SDK";
+  Debug() << "[_attempLinkSdk] Attempting to bind Chroma SDK";
   #ifdef _WIN32
     hLib = LoadLibrary(L"ChromaApi.dll");
     if (hLib != NULL) {
-      Debug() << "[_attempLinkSdk]Chroma Impl @" << hLib;
+      Debug() << "[_attempLinkSdk] Chroma Impl @" << hLib;
       INIT_SUCCESS = true;
 
       _playAnimation = (PluginPlayAnimation) GetProcAddress(hLib, "PluginPlayAnimation");
       INIT_SUCCESS &= _playAnimation != NULL;
-      Debug() << "[_attempLinkSdk]Plugin method @" << reinterpret_cast<void*>(_playAnimation);
+      Debug() << "[_attempLinkSdk] Plugin method @" << reinterpret_cast<void*>(_playAnimation);
 
       _openAnimation = (PluginOpenAnimation) GetProcAddress(hLib, "PluginOpenAnimation");
       INIT_SUCCESS &= _openAnimation != NULL;
@@ -43,18 +43,18 @@ void _attemptLinkSdk() {
       _pluginIsInitialized = (PluginIsInitialized) GetProcAddress(hLib, "PluginIsInitialized");
       INIT_SUCCESS &= _pluginInit != NULL;
       if (INIT_SUCCESS && !_pluginIsInitialized()) {
-        Debug() << "[_attempLinkSdk]Initializing chroma plugin";
+        Debug() << "[_attempLinkSdk] Initializing chroma plugin";
         _pluginInit();
       }
       _pluginUninit = (PluginUninit) GetProcAddress(hLib, "PluginUninit");
       INIT_SUCCESS &= _pluginUninit != NULL;
-      Debug() << "[_attempLinkSdk]Plugin init success:" << INIT_SUCCESS;
+      Debug() << "[_attempLinkSdk] Plugin init success:" << INIT_SUCCESS;
     }
   #else
     // Currently the Razor Chroma API is Windows-only.
     // So, if we are not building for Windows platform,
     // then don't bother with Chroma stuff.
-    Debug() << "[_attempLinkSdk]Chroma: Unsupported Platform";
+    Debug() << "[_attempLinkSdk] Chroma: Unsupported Platform";
   #endif
 }
 
@@ -62,16 +62,16 @@ void _attemptLinkSdk() {
 RB_METHOD(chromaPlayAnimation) {
   RB_UNUSED_PARAM;
 
-  Debug() << "[chromaPlayAnimation]Chroma: Attempting to play animation.";
+  Debug() << "[chromaPlayAnimation] Chroma: Attempting to play animation.";
   const char* animfile;
   bool loop;
 
   rb_get_args(argc, argv, "zb", &animfile, &loop RB_ARG_END);
 
   if (INIT_SUCCESS) {
-    Debug() << "[chromaPlayAnimation]Opening animation:" << animfile;
+    Debug() << "[chromaPlayAnimation] Opening animation:" << animfile;
     lastAnimId = _openAnimation(animfile);
-    Debug() << "[chromaPlayAnimation]ID:" << lastAnimId;
+    Debug() << "[chromaPlayAnimation] ID:" << lastAnimId;
     _playAnimation(lastAnimId);
   }
 
