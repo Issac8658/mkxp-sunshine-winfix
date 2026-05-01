@@ -30,12 +30,9 @@
 #include <ruby.h>
 
 void fileIntFreeInstance(void *inst){
-	printf("[fileIntFreeInstance] fileIntFreeInstance\n");
     SDL_IOStream *ops = static_cast<SDL_IOStream*>(inst);
-    if (ops) {
-    	printf("[fileIntFreeInstance] Closing ops\n");
-        SDL_CloseIO(ops);
-    }
+    printf("[fileIntFreeInstance] Closing ops\n");
+    SDL_CloseIO(ops);
 }
 DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 
@@ -44,10 +41,6 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
 	SDL_IOStream* ops = nullptr;
 	try{
 		shState->fileSystem().openReadRaw(ops, path);
-        if (!ops){
-            printf("[fileIntForPath] Null guard!\n");
-            return Qnil;
-        }
 	}
 	catch (const Exception &e){
 		if (ops){
@@ -71,15 +64,10 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
 }
 
 RB_METHOD(fileIntRead){
-	printf("[fileIntRead] fileIntRead\n");
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length);
 
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
-    if (!ops){
-        printf("[fileIntRead] Null guard!\n");
-        return Qnil;
-    }
 	if (length == -1){
 		Sint64 cur = SDL_TellIO(ops);
 		Sint64 end = SDL_SeekIO(ops, 0, SDL_IO_SEEK_END);
@@ -102,7 +90,6 @@ RB_METHOD(fileIntRead){
 }
 
 RB_NA_METHOD(fileIntClose){
-    printf("[fileIntClose] fileIntClose\n");
     SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
     if (!ops){
         printf("[fileIntClose] Already closed or null\n");
@@ -116,16 +103,14 @@ RB_NA_METHOD(fileIntClose){
     return Qnil;
 }
 RB_NA_METHOD(fileIntGetByte){
-	printf("[fileIntGetByte] fileIntGetByte\n");
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
-	printf("[fileIntGetByte] %s\n", byte);
+	printf("[fileIntGetByte] %u\n", byte);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
 }
 
 RB_NA_METHOD(fileIntBinmode){
-	printf("[fileIntBinMode] Plug\n");
 	return Qnil;
 }
 
@@ -209,7 +194,7 @@ VALUE stringForceUTF8(VALUE arg){
 }
 
 VALUE customProc(VALUE arg, VALUE proc){
-	printf("[customProc] \n");
+	printf("[customProc] UwU\n");
 	VALUE obj = stringForceUTF8(arg);
 	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
 	return obj;
