@@ -207,7 +207,8 @@ RB_METHOD(_marshalLoad){
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 
 	VALUE v[] = { port, utf8Proc };
-	return rb_funcall_with_block(marsh, rb_intern("_mkxp_load_alias"), 1, &port, utf8Proc);
+	return rb_marshal_load(port); // uh.. well.. it works now at least.
+	//return rb_funcall_with_block(marsh, rb_intern("_mkxp_load_alias"), 1, &port, utf8Proc);
 }
 
 void fileIntBindingInit(){
