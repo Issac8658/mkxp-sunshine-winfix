@@ -46,7 +46,7 @@ module Wallpaper
 		locWallpaperFullPath = "Wallpaper/" + locWallpaper + ".png"
 	end
 	
-	if File.exists?(locWallpaperFullPath)
+	if File.exist?(locWallpaperFullPath)
 		name = locWallpaper
 	end
 	

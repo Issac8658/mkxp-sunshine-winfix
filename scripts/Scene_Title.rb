@@ -68,11 +68,11 @@ class Scene_Title
     @menu = Sprite.new
     @menu.z += 1
     @menu.bitmap = Bitmap.new(640, 480)
-    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
+#    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
+#    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
+#    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
 	if $game_switches[160] && $game_switches[152]
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
+#      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
 	Language.register_text_sprite(self.class.name + "_contents", @menu.bitmap)
     # Make cursor graphic
@@ -131,11 +131,11 @@ class Scene_Title
   #--------------------------------------------------------------------------
   def update
 	@menu.bitmap.clear
-    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
-    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
+#    @menu.bitmap.draw_text(MENU_X, MENU_Y, 150, 24, tr("Start"))
+#    @menu.bitmap.draw_text(MENU_X, MENU_Y + 25, 150, 24, tr("Settings"))
+#    @menu.bitmap.draw_text(MENU_X, MENU_Y + 50, 150, 24, tr("Exit"))
 	if $game_switches[160] && $game_switches[152]
-      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
+#      @menu.bitmap.draw_text(MENU_X, MENU_Y + 75, 150, 24, tr("..."))
 	end
     # Handle cursor movement
     if !@window_settings_title.visible
@@ -177,7 +177,7 @@ class Scene_Title
     if !@window_settings_title.visible
       # Handle confirmation
       if Input.trigger?(Input::ACTION)
-        if File.exis?("badend.lock")
+        if File.exist?("badend.lock")
           case @cursor_pos
           when 0  # Continue
             EdText.info(tr("Savior not found"))

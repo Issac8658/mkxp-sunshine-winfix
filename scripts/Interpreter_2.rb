@@ -236,7 +236,7 @@ class Interpreter
     # Get indent
     indent = @list[@index].indent
     # Loop
-    loop do
+    while true
       # If next event command is at the same level as indent
       if @list[@index+1].indent == indent
         # Continue

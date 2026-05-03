@@ -116,9 +116,7 @@ TTF_Font *SharedFontState::getFont(std::string family,
 
 	/* Find out if the font asset exists */
 	const FontSet &req = p->sets[family];
-
-	if (req.regular.empty() && req.other.empty())
-	{
+	if (req.regular.empty() && req.other.empty()){
 		/* Doesn't exist; use built-in font */
 		family = "";
 	}
@@ -133,8 +131,7 @@ TTF_Font *SharedFontState::getFont(std::string family,
 	/* Not in pool; open new handle */
 	SDL_IOStream *ops;
 
-	if (family.empty())
-	{
+	if (family.empty()){
 		throw Exception(Exception::RGSSError, "font does not exist");
 	}
 	else
@@ -158,8 +155,7 @@ TTF_Font *SharedFontState::getFont(std::string family,
 	return font;
 }
 
-bool SharedFontState::fontPresent(std::string family) const
-{
+bool SharedFontState::fontPresent(std::string family) const{
 	/* Check for substitutions */
 	if (p->subs.contains(family))
 		family = p->subs[family];
@@ -190,8 +186,7 @@ void pickExistingFontName(const std::vector<std::string> &names,
 }
 
 
-struct FontPrivate
-{
+struct FontPrivate{
 	std::string name;
 	int size;
 	bool bold;
@@ -250,8 +245,7 @@ struct FontPrivate
 	      sdlFont(other.sdlFont)
 	{}
 
-	void operator=(const FontPrivate &o)
-	{
+	void operator=(const FontPrivate &o){
 		 name     =  o.name;
 		 size     =  o.size;
 		 bold     =  o.bold;
@@ -279,8 +273,7 @@ Color FontPrivate::defaultOutColorTmp(0, 0, 0, 128);
 
 std::vector<std::string> FontPrivate::initialDefaultNames;
 
-bool Font::doesExist(const char *name)
-{
+bool Font::doesExist(const char *name){
 	if (!name)
 		return false;
 
@@ -298,31 +291,26 @@ Font::Font(const std::vector<std::string> *names,
 		p->name = FontPrivate::defaultName;
 }
 
-Font::Font(const Font &other)
-{
+Font::Font(const Font &other){
 	p = new FontPrivate(*other.p);
 }
 
-Font::~Font()
-{
+Font::~Font(){
 	delete p;
 }
 
-const Font &Font::operator=(const Font &o)
-{
+const Font &Font::operator=(const Font &o){
 	*p = *o.p;
 
 	return o;
 }
 
-void Font::setName(const std::vector<std::string> &names)
-{
+void Font::setName(const std::vector<std::string> &names){
 	pickExistingFontName(names, p->name, shState->fontState());
 	p->sdlFont = 0;
 }
 
-void Font::setSize(int value)
-{
+void Font::setSize(int value){
 	if (p->size == value)
 		return;
 
@@ -359,33 +347,28 @@ void Font::setDefaultName(const std::vector<std::string> &names,
 	pickExistingFontName(names, FontPrivate::defaultName, sfs);
 }
 
-const std::vector<std::string> &Font::getInitialDefaultNames()
-{
+const std::vector<std::string> &Font::getInitialDefaultNames(){
 	return FontPrivate::initialDefaultNames;
 }
 
-void Font::initDynAttribs()
-{
+void Font::initDynAttribs(){
 	p->color = new Color(p->colorTmp);
 
 	if (rgssVer >= 3)
 		p->outColor = new Color(p->outColorTmp);;
 }
 
-void Font::initDefaultDynAttribs()
-{
+void Font::initDefaultDynAttribs(){
 	FontPrivate::defaultColor = new Color(FontPrivate::defaultColorTmp);
 
 	if (rgssVer >= 3)
 		FontPrivate::defaultOutColor = new Color(FontPrivate::defaultOutColorTmp);
 }
 
-void Font::initDefaults(const SharedFontState &sfs)
-{
+void Font::initDefaults(const SharedFontState &sfs){
 	std::vector<std::string> &names = FontPrivate::initialDefaultNames;
 
-	switch (rgssVer)
-	{
+	switch (rgssVer){
 	case 1 :
 		// FIXME: Japanese version has "MS PGothic" instead
 		names.push_back("Arial");
@@ -408,8 +391,7 @@ void Font::initDefaults(const SharedFontState &sfs)
 	FontPrivate::defaultShadow  = (rgssVer == 2 ? true : false);
 }
 
-TTF_Font *Font::getSdlFont()
-{
+TTF_Font *Font::getSdlFont(){
 	if (!p->sdlFont)
 		p->sdlFont = shState->fontState().getFont(p->name.c_str(),
 		                                          p->size);

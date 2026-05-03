@@ -198,7 +198,7 @@ class Scene_Map
       else
 	    name = $data_items[@item_id].icon_name
 	    translation_name = "#{$persistent.langcode}/#{name}"
-        if File.exists?("Graphics/Icons/#{translation_name}.png")
+        if File.exist?("Graphics/Icons/#{translation_name}.png")
           @item_icon.bitmap = RPG::Cache.icon(translation_name)
 	    else
           @item_icon.bitmap = RPG::Cache.icon(name)

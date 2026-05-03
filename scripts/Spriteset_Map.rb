@@ -29,7 +29,7 @@ class Spriteset_Map
       @tilemap.tileset = nil
     else
 	  translation_name = "#{$persistent.langcode}/#{$game_map.tileset_name}"
-	  if File.exists?("Graphics/Tilesets/#{translation_name}.png")
+	  if File.exist?("Graphics/Tilesets/#{translation_name}.png")
         @tilemap.tileset = RPG::Cache.tileset(translation_name)
 	  else
         @tilemap.tileset = RPG::Cache.tileset($game_map.tileset_name)

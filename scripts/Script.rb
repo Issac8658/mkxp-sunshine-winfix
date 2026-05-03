@@ -396,8 +396,8 @@ module Script
 
   def self.copy_journal
     # If the required directories don't exist, create them
-    Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
-    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
+    Dir.mkdir(Oneshot::GAME_PATH) unless File.exist?(Oneshot::GAME_PATH)
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot")
     begin
       # If we're on a supported Linux DE, make a .desktop file
       # so the clover icon can be properly shown
@@ -427,7 +427,7 @@ module Script
     rescue Errno::EEXIST => e
       # this means that the journal file already exists, so no need to create it again
     end
-    if File.exists?("README.txt")
+    if File.exist?("README.txt")
       File.open("README.txt", "rb") do |input|
         File.open(Oneshot::GAME_PATH + "/Oneshot/README.txt","wb") do |output|
           while buff = input.read(4096)
@@ -439,16 +439,16 @@ module Script
   end
 
   def self.create_boxes
-    Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
-    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
-    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/Portal1") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot/Portal1")
-    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/Portal2") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot/Portal2")
-    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/Portal3") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot/Portal3")
-    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/BigPortal") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot/BigPortal")
+    Dir.mkdir(Oneshot::GAME_PATH) unless File.exist?(Oneshot::GAME_PATH)
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot")
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/Portal1") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot/Portal1")
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/Portal2") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot/Portal2")
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/Portal3") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot/Portal3")
+    Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot/BigPortal") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot/BigPortal")
   end
 
   def self.delete_if_exists(f_name)
-    File.delete(f_name) unless !File.exists?(f_name)
+    File.delete(f_name) unless !File.exist?(f_name)
   end
 
   def self.clear_boxes
@@ -521,7 +521,7 @@ module Script
 	  locale = 'en'
 	end
     source_dir = "Graphics/Fogs/_/scenario1/" + locale.downcase
-    Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+    Dir.mkdir(Oneshot::DOCS_PATH) unless File.exist?(Oneshot::DOCS_PATH)
     copy_file(source_dir + "/pw1.png", Oneshot::DOCS_PATH + "/ONESHOT_password1.png")
     copy_file(source_dir + "/pw2.png", Oneshot::DOCS_PATH + "/ONESHOT_password2.png")
     copy_file(source_dir + "/pw3.png", Oneshot::DOCS_PATH + "/ONESHOT_password3.png")
@@ -534,7 +534,7 @@ module Script
 	  locale = 'en'
 	end
     source_dir = "Graphics/Fogs/_/scenario2/#{locale.downcase}"
-    Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+    Dir.mkdir(Oneshot::DOCS_PATH) unless File.exist?(Oneshot::DOCS_PATH)
     copy_file("#{source_dir}/pw1.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password1.png")
     copy_file("#{source_dir}/pw2.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password2.png")
     copy_file("#{source_dir}/pw3.png", "#{Oneshot::DOCS_PATH}/ONESHOT_password3.png")
@@ -543,10 +543,10 @@ module Script
 
 =begin
   def self.take_key_out_of_box(numb)
-	if File.exists?(Oneshot::GAME_PATH + "/Oneshot/Box" + numb.to_s + "/key" + numb.to_s + ".png")
+	if File.exist?(Oneshot::GAME_PATH + "/Oneshot/Box" + numb.to_s + "/key" + numb.to_s + ".png")
       File.delete(Oneshot::GAME_PATH + "/Oneshot/Box" + numb.to_s + "/key" + numb.to_s + ".png")
 	end
-	if File.exists?(Oneshot::GAME_PATH + "/Oneshot/BigBox/key" + numb.to_s + ".png")
+	if File.exist?(Oneshot::GAME_PATH + "/Oneshot/BigBox/key" + numb.to_s + ".png")
       File.delete(Oneshot::GAME_PATH + "/Oneshot/BigBox/key" + numb.to_s + ".png")
 	end
   end
@@ -556,11 +556,11 @@ module Script
     portal_path = Oneshot::GAME_PATH + "/Oneshot/Portal" + numb.to_s
 	case numb
 	when 1
-	  return File.exists?(portal_path + "/keyB.txt")
+	  return File.exist?(portal_path + "/keyB.txt")
 	when 2
-	  return File.exists?(portal_path + "/keyG.txt")
+	  return File.exist?(portal_path + "/keyG.txt")
 	when 3
-	  return File.exists?(portal_path + "/keyR.txt")
+	  return File.exist?(portal_path + "/keyR.txt")
 	end
     return false
   end
@@ -569,11 +569,11 @@ module Script
     portal_path = Oneshot::GAME_PATH + "/Oneshot/BigPortal"
 	case numb
 	when 1
-	  return (File.exists?(portal_path + "/keyB.txt") or File.exists?(portal_path + "/Portal1/keyB.txt"))
+	  return (File.exist?(portal_path + "/keyB.txt") or File.exist?(portal_path + "/Portal1/keyB.txt"))
 	when 2
-	  return (File.exists?(portal_path + "/keyG.txt") or File.exists?(portal_path + "/Portal2/keyG.txt"))
+	  return (File.exist?(portal_path + "/keyG.txt") or File.exist?(portal_path + "/Portal2/keyG.txt"))
 	when 3
-	  return (File.exists?(portal_path + "/keyR.txt") or File.exists?(portal_path + "/Portal3/keyR.txt"))
+	  return (File.exist?(portal_path + "/keyR.txt") or File.exist?(portal_path + "/Portal3/keyR.txt"))
 	end
 	
 	

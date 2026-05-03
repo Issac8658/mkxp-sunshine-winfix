@@ -62,7 +62,7 @@ class Game_Picture
     # in the appropriate language folder, else
     # default to the base graphics folder
     translation_name = "#{$persistent.langcode}/#{name}"
-    if File.exists?("Graphics/Pictures/#{translation_name}.png")
+    if File.exist?("Graphics/Pictures/#{translation_name}.png")
       @name = translation_name
     else
       @name = name

@@ -170,19 +170,14 @@ namespace Source
 }
 
 inline uint8_t formatSampleSize(int sdlFormat){
-	switch (sdlFormat)
-	{
+	switch (sdlFormat){
 	case SDL_AUDIO_U8 :
 	case SDL_AUDIO_S8 :
 		return 1;
 
-//removed from SDL3
-//	case AUDIO_U16LSB :
-//	case AUDIO_U16MSB :
-//	case AUDIO_S16LSB :
-//	case AUDIO_S16MSB :
-//		return 2;
-
+	case SDL_AUDIO_S16LE :
+	case SDL_AUDIO_S16BE :
+		return 2;
 	default :
 		assert(!"Unhandled sample format");
 	}
@@ -197,7 +192,6 @@ inline ALenum chooseALFormat(int sampleSize, int channelCount){
 		case 1 : return AL_FORMAT_MONO8;
 		case 2 : return AL_FORMAT_STEREO8;
 		}
-		/* falls through */
 	case 2 :
 		switch (channelCount){
 		case 1 : return AL_FORMAT_MONO16;

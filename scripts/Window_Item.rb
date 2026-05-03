@@ -83,7 +83,7 @@ class Window_Item < Window_Selectable
     self.contents.draw_text(rect, item.name, 1)
 
 	translation_name = "#{$persistent.langcode}/#{item.icon_name}"
-    if File.exists?("Graphics/Icons/#{translation_name}.png")
+    if File.exist?("Graphics/Icons/#{translation_name}.png")
       bitmap = RPG::Cache.icon(translation_name)
 	else
       bitmap = RPG::Cache.icon(item.icon_name)

@@ -122,7 +122,7 @@ class Interpreter
     # Initialize loop count
     @loop_count = 0
     # Loop
-    loop do
+    while true
       # Add 1 to loop count
       @loop_count += 1
       # If 100 event commands ran

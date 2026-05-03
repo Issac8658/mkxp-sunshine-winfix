@@ -8,7 +8,7 @@ def safe_puzzle_write
   end
   doc_text = File.read(docTextFilePath)
   
-  Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+  Dir.mkdir(Oneshot::DOCS_PATH) unless File.exist?(Oneshot::DOCS_PATH)
   File.open("#{Oneshot::DOCS_PATH}/DOCUMENT.oneshot.txt", 'w') do |file|
     file.puts(doc_text + $game_variables[20].to_s)
   end
@@ -23,7 +23,7 @@ def safe_puzzle_postgame_write
   end
   doc_text = File.read(docTextFilePath)
   
-  Dir.mkdir(Oneshot::DOCS_PATH) unless File.exists?(Oneshot::DOCS_PATH)
+  Dir.mkdir(Oneshot::DOCS_PATH) unless File.exist?(Oneshot::DOCS_PATH)
   File.open("#{Oneshot::DOCS_PATH}/DOCUMENT.oneshot.txt", 'w') do |file|
     file.puts(doc_text + $game_variables[20].to_s)
   end

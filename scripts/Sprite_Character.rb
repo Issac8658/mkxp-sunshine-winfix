@@ -55,7 +55,7 @@ class Sprite_Character
       else
 	    name = @character.character_name
 	    translation_name = "#{$persistent.langcode}/#{name}"
-        if File.exists?("Graphics/Characters/#{translation_name}.png")
+        if File.exist?("Graphics/Characters/#{translation_name}.png")
           @sprite.bitmap = RPG::Cache.character(translation_name,
             @character.character_hue)
 	    else

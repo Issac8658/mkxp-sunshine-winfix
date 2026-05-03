@@ -4,12 +4,12 @@ FAKE_SAVE_NAME = Oneshot::GAME_PATH + '/Oneshot/save_progress.oneshot'
 
 
 def erase_game
-  File.delete(SAVE_FILE_NAME) unless !File.exists?(SAVE_FILE_NAME)
+  File.delete(SAVE_FILE_NAME) unless !File.exist?(SAVE_FILE_NAME)
 end
 
 def fake_save
-  Dir.mkdir(Oneshot::GAME_PATH) unless File.exists?(Oneshot::GAME_PATH)
-  Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exists?(Oneshot::GAME_PATH + "/Oneshot")
+  Dir.mkdir(Oneshot::GAME_PATH) unless File.exist?(Oneshot::GAME_PATH)
+  Dir.mkdir(Oneshot::GAME_PATH + "/Oneshot") unless File.exist?(Oneshot::GAME_PATH + "/Oneshot")
   File.open(FAKE_SAVE_NAME, 'wb+') do |file|
     # Wrire frame count for measuring play time
     Marshal.dump(Graphics.frame_count, file)
@@ -44,24 +44,24 @@ def save
   write_save(SAVE_FILE_NAME)
   write_perma_flags(PERMA_FLAGS_NAME)
   
-  Dir.mkdir(Oneshot::SAVE_PATH + "/save_backups") unless File.exists?(Oneshot::SAVE_PATH + "/save_backups")
+  Dir.mkdir(Oneshot::SAVE_PATH + "/save_backups") unless File.exist?(Oneshot::SAVE_PATH + "/save_backups")
   i = 5
   while i > 0
     #delete save5.bk if it exists
-    if File.exists?(Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk")
+    if File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk")
 	  File.delete(Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk")
 	end
     #delete p-settings5.bk if it exists
-    if File.exists?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk")
+    if File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk")
 	  File.delete(Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk")
 	end
 
 	#rename save4.bk to save5.bk if save4.bk exists
-    if File.exists?(Oneshot::SAVE_PATH + "/save_backups/save" + (i-1).to_s + ".bk")
+    if File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i-1).to_s + ".bk")
 	  File.rename(Oneshot::SAVE_PATH + "/save_backups/save" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "/save_backups/save" + i.to_s + ".bk" )
 	end
 	#rename p-settings4.bk to p-settings5.bk if save4.bk exists
-    if File.exists?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i-1).to_s + ".bk")
+    if File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i-1).to_s + ".bk")
 	  File.rename(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i-1).to_s + ".bk", Oneshot::SAVE_PATH + "/save_backups/p-settings" + i.to_s + ".bk" )
 	end
 	
@@ -168,7 +168,7 @@ def load_perma_flags
 	  puts "oops: #{e.message}"
 	  EdText.err("p-settings.dat corrupt. Attempting to load backup.")
 	  for i in 1..6
-	    if !File.exists?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
+	    if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/p-settings" + (i).to_s + ".bk")
 	      EdText.err("All p-settings backups corrupt!  Deleting corrupt p-settings file and shutting down.")
 		  File.delete(PERMA_FLAGS_NAME)
           Oneshot.allow_exit true
@@ -215,7 +215,7 @@ def real_load
 	  puts "oops: #{e.message}"
 	  EdText.err("save.dat corrupt. Attempting to load backup.")
 	  for i in 1..6
-	    if !File.exists?(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
+	    if !File.exist?(Oneshot::SAVE_PATH + "/save_backups/save" + (i).to_s + ".bk")
 	      EdText.err("All save backups corrupt!  Deleting corrupt save and shutting down.")
 		  File.delete(SAVE_FILE_NAME)
           Oneshot.allow_exit true

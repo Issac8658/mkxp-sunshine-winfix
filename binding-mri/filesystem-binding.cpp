@@ -170,7 +170,6 @@ RB_METHOD(kernelSaveData){
 }
 
 VALUE stringForceUTF8(VALUE arg){
-	printf("[stringForceUTF8] %s\n", rb_str_to_str(arg));
 	if (RB_TYPE_P(arg, RUBY_T_STRING)) {
 		/* If current encoding is ASCII-8BIT (binary), associate UTF-8 so
 		   subsequent Ruby-level handling treats it as UTF-8. This preserves
@@ -184,8 +183,6 @@ VALUE stringForceUTF8(VALUE arg){
 }
 
 VALUE customProc(VALUE arg, VALUE proc){
-	rb_p(arg);
-	rb_p(proc);
 	VALUE obj = stringForceUTF8(arg);
 	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
 	return obj;
@@ -197,7 +194,6 @@ RB_METHOD(_marshalLoad){
 	rb_scan_args(argc, argv, "01", &port, &proc);
 	rb_p(proc);
 	VALUE utf8Proc;
-	printf("[_marshalLoad] i fuckin hate it\n");
 	if (NIL_P(proc)) {
 	    utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
 	} else {
