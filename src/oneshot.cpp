@@ -179,7 +179,7 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 	#elif defined OS_OSX
 		p->os = "macos";
 	#elif defined BSD
-		p->os = "BSD ";
+		p->os = "BSD";
 	#else
 		p->os = "linux";
 	#endif
