@@ -66,10 +66,10 @@ static inline const char* glGetStringInt(GLenum name){
 }
 
 static void printGLInfo(){
-	Debug() << "[main.cpp]GL Vendor    :" << glGetStringInt(GL_VENDOR);
-	Debug() << "[main.cpp]GL Renderer  :" << glGetStringInt(GL_RENDERER);
-	Debug() << "[main.cpp]GL Version   :" << glGetStringInt(GL_VERSION);
-	Debug() << "[main.cpp]GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
+	Debug() << "[main.cpp] GL Vendor    :" << glGetStringInt(GL_VENDOR);
+	Debug() << "[main.cpp] GL Renderer  :" << glGetStringInt(GL_RENDERER);
+	Debug() << "[main.cpp] GL Version   :" << glGetStringInt(GL_VERSION);
+	Debug() << "[main.cpp] GLSL Version :" << glGetStringInt(GL_SHADING_LANGUAGE_VERSION);
 }
 
 int rgssThreadFun(void *userdata){
@@ -217,10 +217,8 @@ int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetHint(SDL_HINT_APP_ID, "OneshotSunshine");
 	SDL_SetHint(SDL_HINT_APP_NAME, "Oneshot: Sunshine");
-	//deleted from SDL3
-	//SDL_SetHint(SDL_HINT_ACCELEROMETER_AS_JOYSTICK, "0");
-	//SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
-#if defined(__linux__)
+	//X11 work on *BSD,Solaris too!
+#if defined(__linux__) || defined(BSD) || defined(__sun) 
 	SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
 #endif
 

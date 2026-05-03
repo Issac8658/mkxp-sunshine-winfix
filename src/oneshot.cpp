@@ -22,7 +22,7 @@
 	#include <mmsystem.h>
 	#include <security.h>
 	#include <shlobj.h>
-#elif defined __APPLE__ || __linux__
+#elif defined __APPLE__ || __linux__ || BSD
 	#include <stdlib.h>
 	#include <unistd.h>
 	#include <pwd.h>
@@ -32,15 +32,13 @@
 		#define OS_OSX
 		#include <dispatch/dispatch.h>
 	#else
-		#define OS_LINUX
+		#define OS_LINUX || BSD
 		#include <gtk/gtk.h>
 		#include <gdk/gdk.h>
 		#include "xdg-user-dir-lookup.h"
 	#endif
-#elif defined __FreeBSD__ || __NetBSD__ || __OpenBSD__
-	#error "Work in progress:3"
 #else
-	#error "Operating system not detected."
+	#error "Operating system not detected or unsupported."
 #endif
 
 #define DEF_SCREEN_W 640
@@ -85,7 +83,7 @@ struct OneshotPrivate{
 };
 
 //OS-SPECIFIC FUNCTIONS
-#if defined OS_LINUX
+#if defined OS_LINUX || BSD
 struct linux_DialogData{
 	// Input
 	int type;
@@ -180,6 +178,8 @@ Oneshot::Oneshot(RGSSThreadData &threadData) :
 		p->os = "windows";
 	#elif defined OS_OSX
 		p->os = "macos";
+	#elif defined BSD
+		p->os = "BSD ";
 	#else
 		p->os = "linux";
 	#endif
