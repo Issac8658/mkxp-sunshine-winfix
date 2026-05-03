@@ -43,7 +43,7 @@ class Scene_Title
 	
 	# chinese has its own special title screen so check for it
 	translation_name = "#{$persistent.langcode}/#{$data_system.title_name}"
-    if File.exists?("Graphics/Titles/#{translation_name}.png")
+    if File.exist?("Graphics/Titles/#{translation_name}.png")
        @sprite.bitmap = RPG::Cache.title(translation_name)
  	else
     	if File.exist?("badend.lock")
@@ -87,7 +87,7 @@ class Scene_Title
     @cursor_pos = 0
     # Play title BGM
     if File.exist?("badend.lock")
-      #TODO: fix
+      #TODO: fitx
       Audio.bgm_play("Audio/BGM/MyBurdenIsDead.ogg", 100, 100)
     else
       $game_system.bgm_play($data_system.title_bgm)
@@ -98,7 +98,7 @@ class Scene_Title
     # Execute transition
     Graphics.transition(40)
     # Main loop
-    loop do
+    while true
       # Update game screen
       Graphics.update
       # Update input information
@@ -177,7 +177,7 @@ class Scene_Title
     if !@window_settings_title.visible
       # Handle confirmation
       if Input.trigger?(Input::ACTION)
-        if File.exist?("badend.lock")
+        if File.exis?("badend.lock")
           case @cursor_pos
           when 0  # Continue
             EdText.info(tr("Savior not found"))
