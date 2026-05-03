@@ -331,6 +331,7 @@ struct evalArg{
 };
 
 static VALUE evalHelper(evalArg *arg){
+	// crashes with Game_Battler_1 for some reason
 	VALUE argv[] = { arg->string, Qnil, arg->filename };
 	return rb_funcall2(Qnil, rb_intern("eval"), ARRAY_SIZE(argv), argv);
 }
@@ -381,7 +382,7 @@ static void runRMXPScripts(BacktraceData &btData){
 	 * still go wrong */
 	try{
 		scriptArray = kernelLoadDataInt(scriptPack.c_str(), false);
-		printf("[runRMXPScripts] %s", scriptPack.c_str());
+		printf("[runRMXPScripts] %s\n", scriptPack.c_str());
 	}catch (const Exception &e){
 		showMsg(std::string("Failed to read script data: ") + e.msg);
 		return;
@@ -410,7 +411,7 @@ static void runRMXPScripts(BacktraceData &btData){
 
 		VALUE scriptName = rb_ary_entry(script, 1);
 		VALUE scriptString = rb_ary_entry(script, 2);
-		printf("[runRMXPScripts] Script Name: %s", rb_str_to_str(scriptName));
+		//printf("[runRMXPScripts] Script Name: %s\n", RSTRING_PTR(scriptName));
 		
 		int result = Z_OK;
 		unsigned long bufferLen;
@@ -433,8 +434,8 @@ static void runRMXPScripts(BacktraceData &btData){
 
 		if (result != Z_OK){
 			static char buffer[256];
-			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'", i, RSTRING_PTR(scriptName));
-			printf("[runRMXPScripts] Script Name: %s", buffer);
+			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
+			//printf("[runRMXPScripts] Script Name: %s\n", buffer);
 			showMsg(buffer);
 
 			break;
@@ -467,6 +468,8 @@ static void runRMXPScripts(BacktraceData &btData){
 
 			fname = newStringUTF8(buf, len);
 			btData.scriptNames.insert(buf, scriptName);
+
+			printf("%s\n", scriptName);
 
 			int state;
 			evalString(string, fname, &state);
