@@ -39,34 +39,24 @@ DEF_TYPE_CUSTOMFREE(FileInt, fileIntFreeInstance);
 VALUE fileIntForPath(const char *path, bool rubyExc){
 	printf("[fileIntForPath] %s!\n", path);
 	SDL_IOStream* ops = nullptr;
-	try{
-		shState->fileSystem().openReadRaw(ops, path);
-	}
-	catch (const Exception &e){
-		if (ops){
-			printf("[fileIntForPath] Closing ops\n");
-			SDL_CloseIO(ops);
+	ops = SDL_IOFromFile(path, "r");
+	if (!ops){
+		printf("[fileIntForPath] Failed to open file: %s\n", path);
+		if (rubyExc) {
+			rb_raise(rb_eIOError, "Cannot open file: %s", path);
 		}
-		if (rubyExc){
-			raiseRbExc(e); }
-		else{
-			throw e;
-		}
+		return Qnil;
 	}
-
 	VALUE klass = rb_const_get(rb_cObject, rb_intern("FileInt"));
-
 	VALUE obj = rb_obj_alloc(klass);
-
 	setPrivateData(obj, ops);
-
 	return obj;
 }
 
 RB_METHOD(fileIntRead){
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length);
-
+	printf("[fileIntRead] length: %i\n", length);
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	if (length == -1){
 		Sint64 cur = SDL_TellIO(ops);
@@ -81,8 +71,7 @@ RB_METHOD(fileIntRead){
 	}
 
 	VALUE data = rb_str_new(0, length);
-	printf("[fileIntRead] data: %s\n", rb_str_to_str(data));
-	printf("[fileIntRead] length: %ld\n", NUM2LONG(length));
+	printf("[fileIntRead] length: %d\n", length);
 
 	SDL_ReadIO(ops, RSTRING_PTR(data), length);
 
@@ -106,7 +95,7 @@ RB_NA_METHOD(fileIntGetByte){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
-	printf("[fileIntGetByte] %u\n", byte);
+	printf("[fileIntGetByte] Reading %u\n", byte);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
 }
 
@@ -125,13 +114,14 @@ VALUE load_protect(VALUE marsh_and_port) {
 VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
 	printf("[kernelLoadDataInt] Filename: %s\n", filename);
     VALUE port = fileIntForPath(filename, rubyExc);
+    if (NIL_P(port)) return Qnil;
     VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
     VALUE args[2] = { marsh, port };
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
-	printf("[kernelLoadDataInt] State %ld\n", NUM2LONG(state));
+	printf("[kernelLoadDataInt] State %d\n", state);
 	if(RTEST(result) == false){
-		printf("[kernelLoadDataInt] Result == false, bRuH\n");
+		printf("[kernelLoadDataInt] Result = false, bRuH\n");
 	}
 	
     rb_funcallv(port, rb_intern("close"), 0, NULL);
@@ -194,7 +184,8 @@ VALUE stringForceUTF8(VALUE arg){
 }
 
 VALUE customProc(VALUE arg, VALUE proc){
-	printf("[customProc] UwU\n");
+	rb_p(arg);
+	rb_p(proc);
 	VALUE obj = stringForceUTF8(arg);
 	obj = rb_funcall2(proc, rb_intern("call"), 1, &obj);
 	return obj;
@@ -204,18 +195,19 @@ RB_METHOD(_marshalLoad){
 	RB_UNUSED_PARAM;
 	VALUE port, proc = Qnil;
 	rb_scan_args(argc, argv, "01", &port, &proc);
-
+	rb_p(proc);
 	VALUE utf8Proc;
 	printf("[_marshalLoad] i fuckin hate it\n");
-	if (NIL_P(proc))
-		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
-	else
-		utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(customProc), proc);
+	if (NIL_P(proc)) {
+	    utf8Proc = rb_proc_new(RUBY_METHOD_FUNC(stringForceUTF8), Qnil);
+	} else {
+	    utf8Proc = proc;
+	}
 
 	VALUE marsh = rb_const_get(rb_cObject, rb_intern("Marshal"));
 
 	VALUE v[] = { port, utf8Proc };
-	return rb_funcallv(marsh, rb_intern("_mkxp_load_alias"), ARRAY_SIZE(v), v);
+	return rb_funcall_with_block(marsh, rb_intern("_mkxp_load_alias"), 1, &port, utf8Proc);
 }
 
 void fileIntBindingInit(){
