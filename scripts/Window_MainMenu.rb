@@ -53,7 +53,7 @@ class Window_MainMenu < Window_Selectable
     # Update item
     rect = Rect.new(w * index, 0, w - 32, 32)
     self.contents.fill_rect(rect, Color.new(0, 0, 0, 0))
-    self.contents.draw_text(rect, tr(@commands[index]), 1)
+    #self.contents.draw_text(rect, tr(@commands[index]), 1)
   end
   #--------------------------------------------------------------------------
   # * Disable Item

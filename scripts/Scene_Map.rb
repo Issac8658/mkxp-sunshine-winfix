@@ -60,7 +60,7 @@ class Scene_Map
     # Transition run
     Graphics.transition
     # Main loop
-    loop do
+    while true
       # Update game screen
       Graphics.update
       # Update input information
@@ -112,7 +112,7 @@ class Scene_Map
                             total_sec * 1000 % 1000)
 
       @in_game_timer.bitmap.fill_rect(0, 0, 140, 30, Color.new(0, 0, 0, 128))
-      @in_game_timer.bitmap.draw_text(8, 0, 132, 30, time_string)
+      #@in_game_timer.bitmap.draw_text(8, 0, 132, 30, time_string)
     end
   
     if Input.quit?
@@ -132,7 +132,7 @@ class Scene_Map
       end
     end
     # Loop
-    loop do
+    while true
       if $game_temp.prompt_wait > 0
         $game_temp.prompt_wait -= 1
         return

@@ -21,7 +21,7 @@ class Scene_Item
     # Execute transition
     Graphics.transition
     # Main loop
-    loop do
+    while true
       # Update game screen
       Graphics.update
       # Update input information

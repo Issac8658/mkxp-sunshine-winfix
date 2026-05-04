@@ -81,7 +81,7 @@ class Interpreter
     # Set goods list on new item
     $game_temp.shop_goods = [@parameters]
     # Loop
-    loop do
+    while true
       # Advance index
       @index += 1
       # If next event command has shop on second line or after

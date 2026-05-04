@@ -255,7 +255,7 @@ class Interpreter
     # Set first line to script
     script = @list[@index].parameters[0] + "\n"
     # Loop
-    loop do
+    while true
       # If next event command is second line of script or after
       if @list[@index+1].code == 655
         # Add second line or after to script

@@ -183,7 +183,7 @@ class Window_NameInput < Window_Base
           if old_slot == 0
             @index = @table_size + @table_width - 1
           else
-            loop do
+            while true
               @index -= 1
               break if old_slot != mode_button_slot
             end
@@ -199,7 +199,7 @@ class Window_NameInput < Window_Base
           if old_slot == -1
             @index = @table_size
           else
-            loop do
+            while true
               @index += 1
               break if old_slot != mode_button_slot
             end

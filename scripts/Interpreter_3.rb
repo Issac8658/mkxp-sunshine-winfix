@@ -35,7 +35,7 @@ class Interpreter
     else
       is_doc = false
     end
-    loop do
+    while true
       # 401: another line of text
       if @list[@index+1].code == 401
         @index += 1
@@ -363,7 +363,7 @@ class Interpreter
     # Get indent
     indent = @list[@index].indent
     # Loop
-    loop do
+    while true
       # Return index
       @index -= 1
       # If this event command is the same level as indent
@@ -382,7 +382,7 @@ class Interpreter
     # Copy index to temporary variables
     temp_index = @index
     # Loop
-    loop do
+    while true
       # Advance index
       temp_index += 1
       # If a fitting loop was not found
@@ -453,7 +453,7 @@ class Interpreter
     # Initialize temporary variables
     temp_index = 0
     # Loop
-    loop do
+    while true
       # If a fitting label was not found
       if temp_index >= @list.size-1
         # Continue
