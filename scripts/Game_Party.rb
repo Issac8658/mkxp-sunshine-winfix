@@ -352,7 +352,7 @@ class Game_Party
       return nil
     end
     # Spin the roulette, choose an actor
-    return roulette[rand(roulette.size)]
+    return roulette[Random.rand(roulette.size)]
   end
   #--------------------------------------------------------------------------
   # * Random Selection of Target Actor (HP 0)

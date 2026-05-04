@@ -27,7 +27,15 @@ left_close = False
 if sys.platform == 'darwin': left_close = True
 
 try: base_path = sys._MEIPASS
-except AttributeError: base_path = os.path.abspath('.')
+except AttributeError:
+    if os.path.exists(os.getenv('HOME') + "/.cache/sunshine-path.cache"):
+        with open(os.getenv('HOME') + "/.cache/sunshine-path.cache", "r", encoding="utf-8") as f:
+          for i, line in enumerate(f):
+            if i == 1:
+              base_path = line.strip()
+              break
+    else:
+        base_path = os.path.abspath('.')
 
 class PipeThread(QThread):
 	def __init__(self, *args, **kwargs):

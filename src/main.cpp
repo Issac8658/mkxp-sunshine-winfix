@@ -36,6 +36,10 @@
 #include <string.h>
 #include <assert.h>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <filesystem>
 
 #include "sharedstate.h"
 #include "eventthread.h"
@@ -178,10 +182,9 @@ static void setupWindowIcon(const Config &conf, SDL_Window *win){
 
 // mainly doing this so journal app knows where to load images from
 static void setGamePathInRegistry() {
-
 #if defined WIN32
 	// this logic is currently windows specific
-	const char* dataDir = SDL_GetBasePath();
+	char* dataDir = SDL_GetBasePath();
 	if (dataDir){
 		HKEY key;
 		long keyOpenError = RegOpenKey(HKEY_CURRENT_USER, TEXT("Software\\OneShot\\"), &key);
@@ -192,7 +195,8 @@ static void setGamePathInRegistry() {
 
 			if (keyCreateError != ERROR_SUCCESS){
 				showInitError("Unable to create key in registry.");
-			}else {
+			}
+			else {
 				keyOpenError = ERROR_SUCCESS;
 			}
 		}
@@ -207,12 +211,11 @@ static void setGamePathInRegistry() {
 			}
 			RegCloseKey(key);
 		}
-		SDL_free((void*)dataDir);
+		SDL_free(dataDir);
 	}
 #endif
 	//TODO handle this for Linux/Mac
 }
-
 int main(int argc, char *argv[]){
 	SDL_SetHint(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "0");
 	SDL_SetHint(SDL_HINT_APP_ID, "OneshotSunshine");
