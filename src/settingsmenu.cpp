@@ -359,7 +359,7 @@ struct SettingsMenuPrivate{
 	uint32_t winID;
 
 	TTF_Font *font;
-	SDL_PixelFormat *rgb;
+	SDL_PixelFormat rgb; // it was a pointer before
 
 	RGSSThreadData &rtData;
 
@@ -991,8 +991,7 @@ SettingsMenu::SettingsMenu(RGSSThreadData &rtData){
 
 	p->font = shState->fontState().getFont(getFontName(), getFontSize());
 
-
-	*p->rgb = p->winSurf->format;
+	p->rgb = p->winSurf->format;
 
 	const size_t layoutW = 2;
 	const size_t layoutH = 6;
