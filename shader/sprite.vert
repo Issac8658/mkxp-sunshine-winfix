@@ -10,8 +10,7 @@ attribute vec2 texCoord;
 
 varying vec2 v_texCoord;
 
-void main()
-{
+void main(){
 	gl_Position = projMat * spriteMat * vec4(position, 0, 1);
 	v_texCoord = texCoord * texSizeInv;
 }

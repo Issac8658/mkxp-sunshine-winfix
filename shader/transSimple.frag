@@ -7,8 +7,7 @@ uniform float prog;
 
 varying vec2 v_texCoord;
 
-void main()
-{
+void main(){
     vec4 newPixel = texture2D(currentScene, v_texCoord);
     vec4 oldPixel = texture2D(frozenScene, v_texCoord);
 

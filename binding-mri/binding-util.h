@@ -404,8 +404,7 @@ static inline VALUE rb_str_catf(VALUE obj, const char *fmt, ...) {
 	return rb_str_new2("Finish me! rb_str_catf()"); // TODO
 }
 static inline VALUE rb_file_open_str(VALUE filename, const char *mode) {
-    return rb_funcall(rb_cFile, rb_intern("open"), 2, filename,
-                      rb_str_new2(mode));
+    return rb_funcall(rb_cFile, rb_intern("open"), 2, filename, rb_str_new2(mode));
 }
 #endif
 #endif

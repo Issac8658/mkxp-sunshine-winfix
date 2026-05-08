@@ -13,8 +13,7 @@ varying vec2 v_texCoord;
 
 const vec3 lumaF = vec3(.299, .587, .114);
 
-void main()
-{
+void main(){
 	/* Sample source color */
 	vec4 frag = texture2D(texture, v_texCoord);
 	

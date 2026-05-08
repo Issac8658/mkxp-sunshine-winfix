@@ -15,8 +15,7 @@ const float atAreaW = 96.0;
 const float atAreaH = 128.0*7.0;
 const float atAniOffset = 32.0*3.0;
 
-void main()
-{
+void main(){
 	vec2 tex = texCoord;
 
 	lowp float pred = float(tex.x <= atAreaW && tex.y <= atAreaH);

@@ -21,7 +21,6 @@ PluginUninit _pluginUninit = NULL;
 
 int lastAnimId = -1;
 
-
 void _attemptLinkSdk() {
   Debug() << "[_attempLinkSdk] Attempting to bind Chroma SDK";
   #ifdef _WIN32

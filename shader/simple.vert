@@ -9,8 +9,7 @@ attribute vec2 texCoord;
 
 varying vec2 v_texCoord;
 
-void main()
-{
+void main(){
 	gl_Position = projMat * vec4(position + translation, 0, 1);
 
 	v_texCoord = texCoord * texSizeInv;

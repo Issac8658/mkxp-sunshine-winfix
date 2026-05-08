@@ -338,8 +338,7 @@ RB_METHOD(bitmapClearRect){
 		rect = getPrivateDataCheck<Rect>(rectObj, RectType);
 
 		GUARD_EXC( b->clearRect(rect->toIntRect()); );
-	}
-	else{
+	}else{
 		int x, y, width, height;
 
 		rb_get_args(argc, argv, "iiii", &x, &y, &width, &height RB_ARG_END);

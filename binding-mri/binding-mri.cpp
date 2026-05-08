@@ -552,7 +552,6 @@ static void mriBindingExecute(){
 	char **argv = 0;
 	char options_argv1[] = "oneshot", options_argv2[] = "-evd", options_argv3[] = "--jit";
 	char* options_argv[] = {options_argv1, options_argv2, options_argv3, NULL};
-	printf("[mriBindingExecute] %s %s %s\n", options_argv1, options_argv2, options_argv3);
 	ruby_setup();
 	ruby_sysinit(&argc, &argv);
 	rb_enc_set_default_external(rb_enc_from_encoding(rb_utf8_encoding()));
@@ -590,7 +589,7 @@ static void mriBindingExecute(){
 }
 
 static void mriBindingTerminate(){
-	printf("[mriBindingTerminate] Terminating binding...\n");
+	printf("[mriBindingTerminate] Terminating bindings...\n");
 	rb_raise(rb_eSystemExit, " ");
 #ifdef __linux__
 	wallpaperBindingTerminate();
