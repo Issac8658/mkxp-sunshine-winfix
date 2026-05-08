@@ -27,8 +27,7 @@
 struct FileSystemPrivate;
 class SharedFontState;
 
-class FileSystem
-{
+class FileSystem{
 public:
 	FileSystem(bool allowSymlinks);
 	~FileSystem();
@@ -42,8 +41,7 @@ public:
 	 * available font assets */
 	void initFontSets(SharedFontState &sfs);
 
-	struct OpenHandler
-	{
+	struct OpenHandler{
 		/* Try to read and interpret data provided from ops.
 		 * If data cannot be parsed, return false, otherwise true.
 		 * Can be called multiple times until a parseable file is found.

@@ -29,8 +29,7 @@
 #endif
 
 struct ALDataSource{
-	enum Status
-	{
+	enum Status{
 		NoError,
 		EndOfStream,
 		WrapAround,

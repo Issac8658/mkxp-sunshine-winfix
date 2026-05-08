@@ -36,8 +36,7 @@ struct Config;
 
 struct SharedFontStatePrivate;
 
-class SharedFontState
-{
+class SharedFontState{
 public:
 	SharedFontState(const Config &conf);
 	~SharedFontState();
@@ -60,8 +59,7 @@ private:
 
 struct FontPrivate;
 
-class Font
-{
+class Font{
 public:
 	static bool doesExist(const char *name);
 

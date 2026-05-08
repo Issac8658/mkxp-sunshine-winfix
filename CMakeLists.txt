@@ -7,7 +7,7 @@ include(FindPackageHandleStandardArgs)
 option(STEAM "Build for Steam" OFF)
 set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/steamworks" CACHE PATH "Path to Steamworks folder")
 option(DEBUG "Debug mode" ON)
-
+set(SDLTTF_VENDORED ON)
 ## Misc setup ##
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

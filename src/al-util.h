@@ -86,8 +86,7 @@ namespace Buffer{
 	}
 }
 
-namespace Source
-{
+namespace Source{
 	DEF_AL_ID
 
 	inline Source::ID gen(){

@@ -4,6 +4,11 @@ set(STEAMWORKS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../steamworks" CACHE PATH "Path
 set(GAME_LAUNCH_NAME "oneshot" CACHE STRING "Game launch name")
 option(DEBUG "Debug mode" OFF)
 
+if(DEBUG)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3 -O0 -fno-omit-frame-pointer -ggdb")
+endif()
+
 set(SOURCES
 	steamshim_parent.cpp
 )

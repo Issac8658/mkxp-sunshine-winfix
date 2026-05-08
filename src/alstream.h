@@ -34,10 +34,8 @@ struct ALDataSource;
 
 /* State-machine like audio playback stream.
  * This class is NOT thread safe */
-struct ALStream
-{
-	enum State
-	{
+struct ALStream{
+	enum State{
 		Closed,
 		Stopped,
 		Playing,
@@ -77,14 +75,12 @@ struct ALStream
 	// made it pointer, idk if its right. never worked with SDL
 	SDL_IOStream* srcOps;
 
-	struct
-	{
+	struct{
 		ALenum format;
 		ALsizei freq;
 	} stream;
 
-	enum LoopMode
-	{
+	enum LoopMode{
 		Looped,
 		NotLooped
 	};

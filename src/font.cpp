@@ -354,7 +354,7 @@ void Font::initDefaultDynAttribs(){
 
 void Font::initDefaults(const SharedFontState &sfs){
 	std::vector<std::string> &names = FontPrivate::initialDefaultNames;
-
+	
 	switch (rgssVer){
 	case 1 :
 		// FIXME: Japanese version has "MS PGothic" instead
