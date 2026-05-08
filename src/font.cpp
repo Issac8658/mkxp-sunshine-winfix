@@ -82,7 +82,7 @@ SharedFontState::~SharedFontState(){
 }
 
 void SharedFontState::initFontSetCB(SDL_IOStream* &ops, const std::string &filename){
-	TTF_Font *font = TTF_OpenFontIO(ops, false, 0);
+	TTF_Font *font = TTF_OpenFontIO(ops, false, 16);
 
 	if (!font)
 		return;
@@ -101,6 +101,9 @@ void SharedFontState::initFontSetCB(SDL_IOStream* &ops, const std::string &filen
 }
 
 TTF_Font *SharedFontState::getFont(std::string family, int size){
+	if (family.empty())
+		family = "Terminus (TTF)"; // terminus hardcoded :3c
+
 	/* Check for substitutions */
 	if (p->subs.contains(family))
 		family = p->subs[family];
@@ -131,7 +134,7 @@ TTF_Font *SharedFontState::getFont(std::string family, int size){
 		                 ? req.regular.c_str() : req.other.c_str();
 
 		//ops = SDL_OpenIO();
-		SDL_IOStream* ops;
+		// SDL_IOStream* ops;
 		shState->fileSystem().openReadRaw(ops, path);
 	}
 
