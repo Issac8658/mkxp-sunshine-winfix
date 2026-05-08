@@ -291,7 +291,7 @@ class Game_Player < Game_Character
 		  @wheel_squeak = false
 		end
 	  end
-      Audio.se_play("Audio/SE/#{name}.wav", (vol * volume).to_i, pitch.to_i)
+      Audio.se_play("Audio/SE/#{name}.wav", vol * volume, pitch)
     end
     emit_footsplash(@direction)
   end

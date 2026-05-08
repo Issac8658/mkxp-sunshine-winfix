@@ -13,10 +13,8 @@ module RPG
 	  #lowercasing facepic name to be more case insensitive
 	  #to catch the few instances where we use "Niko" instead of "niko"
 	  filename = filename.downcase
-	  
 	  #april fools!
-	  t = Time.now
-	  if t.month == 4 && t.day == 1 && filename.start_with?("niko")
+	  if CTime.month == 4 && CTime.day == 1 && filename.start_with?("niko")
 	    filename = "af"
 	  end
 	  
