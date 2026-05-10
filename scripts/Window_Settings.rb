@@ -250,7 +250,6 @@ class Window_Settings
           end
         when 11
           if(Window_Settings.OneShotMode == true)
-            #EdText.info(tr("WARNING: In this mode, if you close the game NOT through the bed, you will get a bad ending(Like in the Freeware Oneshot version)!"))
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("ON"))
           else
             spr.bitmap.draw_text(VALUE_MARGIN, 0, spr.bitmap.width, spr.bitmap.height, tr("OFF"))

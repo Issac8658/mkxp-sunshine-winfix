@@ -35,7 +35,7 @@ end
 
 class Persistent
   attr_reader :lang
-
+  @@file_name = nil
   def initialize
     steam_lang = nil
     oneshot_lang = nil
@@ -155,7 +155,7 @@ class Persistent
         Marshal.dump($persistent, file)
       end
     rescue => e
-      print("[Scripts>Persistence>save] Saving error: " + e.message)
+      print("Saving error: " + e.message)
     end
   end
 
@@ -185,7 +185,7 @@ class Persistent
         $persistent = Persistent.new
       end
     rescue => e
-      print("[Scripts>Persistence] Error: " + e.message)
+      print("Error: " + e.message)
       $persistent = Persistent.new
     end
   end
