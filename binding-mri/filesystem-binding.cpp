@@ -56,7 +56,6 @@ VALUE fileIntForPath(const char *path, bool rubyExc){
 RB_METHOD(fileIntRead){
 	int length = -1;
 	rb_get_args(argc, argv, "i", &length);
-	printf("[fileIntRead] length: %i\n", length);
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	if (length == -1){
 		Sint64 cur = SDL_TellIO(ops);
@@ -71,7 +70,6 @@ RB_METHOD(fileIntRead){
 	}
 
 	VALUE data = rb_str_new(0, length);
-	printf("[fileIntRead] length: %d\n", length);
 
 	SDL_ReadIO(ops, RSTRING_PTR(data), length);
 
@@ -95,7 +93,6 @@ RB_NA_METHOD(fileIntGetByte){
 	SDL_IOStream *ops = getPrivateData<SDL_IOStream>(self);
 	unsigned char byte = 0;
 	size_t result = SDL_ReadIO(ops, &byte, 1);
-	printf("[fileIntGetByte] Reading %u\n", byte);
 	return (result == 1) ? INT2NUM(byte) : Qnil;
 }
 
@@ -104,7 +101,6 @@ RB_NA_METHOD(fileIntBinmode){
 }
 
 VALUE load_protect(VALUE marsh_and_port) {
-	printf("[Load_protect] Protecting!\n");
     VALUE *arr = (VALUE *)marsh_and_port;
     VALUE marsh = arr[0];
     VALUE port  = arr[1];
@@ -120,9 +116,7 @@ VALUE kernelLoadDataInt(const char *filename, bool rubyExc){
     int state = 0;
     VALUE result = rb_protect(load_protect, (VALUE)args, &state);
 	printf("[kernelLoadDataInt] State %d\n", state);
-	if(RTEST(result) == false){
-		printf("[kernelLoadDataInt] Result = false, bRuH\n");
-	}
+	
 	
     rb_funcallv(port, rb_intern("close"), 0, NULL);
 	

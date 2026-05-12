@@ -27,8 +27,7 @@
 #include <SDL3/SDL_audio.h>
 #include <assert.h>
 
-namespace AL
-{
+namespace AL{
 
 #define DEF_AL_ID \
 struct ID \

@@ -235,7 +235,6 @@ RB_METHOD(mkxpMouseInWindow){
 }
 
 static VALUE rgssMainCb(VALUE block){
-	printf("[rgssMainCb] ...my home is calling, my keep going, no more stolling...\n");
 	rb_funcall2(block, rb_intern("call"), 0, 0);
 	return Qnil;
 }
@@ -438,7 +437,6 @@ static void runRMXPScripts(BacktraceData &btData){
 		if (result != Z_OK){
 			static char buffer[256];
 			snprintf(buffer, sizeof(buffer), "Error decoding script %ld: '%s'\n", i, RSTRING_PTR(scriptName));
-			//printf("[runRMXPScripts] Script Name: %s\n", buffer);
 			showMsg(buffer);
 
 			break;
@@ -546,7 +544,6 @@ static void showExc(VALUE exc, const BacktraceData &btData){
 }
 
 static void mriBindingExecute(){
-	printf("[mirBindingExecute] Setting up ruby\n");
 	/* Normally only a ruby executable would do a sysinit,
 	 * but not doing it will lead to crashes due to closed
 	 * stdio streams on some platforms (eg. Windows) */
